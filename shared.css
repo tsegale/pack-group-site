@@ -793,21 +793,72 @@ section {
 /* ── FOOTER ── */
 footer {
   background: var(--navy);
-  border-top: 1px solid rgba(55, 138, 221, 0.15);
-  padding: 48px 6% 32px;
+}
+.footer-top-bar {
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue-mid), var(--cyan), transparent);
+}
+.footer-main {
+  padding: 56px 6% 40px;
 }
 .footer-inner {
   max-width: 1140px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.8fr 1fr 1.2fr;
+  gap: 48px;
+  align-items: start;
 }
-.footer-brand p {
-  margin-top: 8px;
-  font-size: 12px;
+.footer-logo {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 16px;
+}
+.footer-tagline {
+  font-size: 13px;
   font-style: italic;
   color: var(--gold);
+  margin-bottom: 10px;
+}
+.footer-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.75;
+  margin-bottom: 22px;
+  max-width: 280px;
+}
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-contact-link:hover {
+  color: var(--cyan);
+}
+.footer-contact-link i {
+  color: var(--cyan);
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+.footer-col-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: 18px;
 }
 .footer-links {
   display: flex;
@@ -823,11 +874,68 @@ footer {
 .footer-links a:hover {
   color: var(--cyan);
 }
-.footer-reg p {
+.footer-div-col {
+  display: flex;
+  flex-direction: column;
+}
+.footer-div-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(55, 138, 221, 0.15);
+  margin-bottom: 10px;
+  transition: all 0.22s;
+  background: rgba(255, 255, 255, 0.03);
+}
+.footer-div-card:hover {
+  background: rgba(55, 138, 221, 0.1);
+  border-color: rgba(55, 138, 221, 0.35);
+  transform: translateX(4px);
+}
+.footer-div-card img {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.footer-div-card span {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.35);
-  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 18px 6%;
+}
+.footer-bottom-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-reg-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-reg-strip span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.25);
   letter-spacing: 0.3px;
+}
+.footer-dot {
+  color: rgba(255, 255, 255, 0.15) !important;
+}
+.footer-copy {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.2);
 }
 
 /* ── STEP NUMBER BADGE ── */
@@ -996,8 +1104,11 @@ footer {
     grid-template-columns: 1fr;
   }
   .footer-inner {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .footer-brand-col {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 640px) {
@@ -1047,5 +1158,22 @@ footer {
   }
   section {
     padding: 64px 5%;
+  }
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .footer-reg-strip {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+  .footer-dot {
+    display: none;
   }
 }
