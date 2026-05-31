@@ -204,7 +204,7 @@ blockquote {
   transform: translateX(6px);
 }
 .hero-card-logo {
-  height: 48px;
+  height: 80px;
   width: auto;
   object-fit: contain;
   margin-bottom: 14px;
@@ -494,7 +494,7 @@ section {
   line-height: 1.75;
 }
 .page-hero-logo {
-  height: 64px;
+  height: 100px;
   width: auto;
   object-fit: contain;
   margin-bottom: 28px;
@@ -728,7 +728,7 @@ section {
   margin-top: 40px;
 }
 .logos-row img {
-  height: 56px;
+  height: 90px;
   width: auto;
   object-fit: contain;
 }
@@ -747,7 +747,7 @@ section {
   padding: 36px 30px;
 }
 .contact-card-logo {
-  height: 52px;
+  height: 80px;
   width: auto;
   object-fit: contain;
   margin-bottom: 18px;
@@ -810,7 +810,7 @@ footer {
   align-items: start;
 }
 .footer-logo {
-  height: 52px;
+  height: 80px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -896,7 +896,7 @@ footer {
   transform: translateX(4px);
 }
 .footer-div-card img {
-  height: 34px;
+  height: 52px;
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -956,7 +956,7 @@ footer {
 
 /* ── NAV LOGO ── */
 .nav-logo {
-  height: 44px;
+  height: 56px;
   width: auto;
   object-fit: contain;
 }
