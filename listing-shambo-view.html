@@ -224,6 +224,7 @@
   .features-list { grid-template-columns: 1fr; }
 }
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -231,7 +232,7 @@
   <a href="index.html" class="nav-brand">
     <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="nav-logo">
   </a>
-  <button class="hamburger" id="ham" aria-label="Menu">&#9776;</button>
+  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
   <ul class="nav-links" id="navlinks">
     <li><a href="index.html">Home</a></li>
     <li><a href="real-estate.html" class="active">Real Estate</a></li>
@@ -254,11 +255,11 @@
     <div class="listing-title-row">
       <div class="listing-title">
         <h1>Shambo View<br><em>Okahandja</em></h1>
-        <div class="listing-location">&#128205; Okahandja, Namibia &mdash; 1st Floor Unit</div>
+        <div class="listing-location"><i class="fa-solid fa-location-dot"></i> Okahandja, Namibia &mdash; 1st Floor Unit</div>
         <div class="badge-row">
-          <span class="badge badge-units">&#128293; 2 Units Available</span>
+          <span class="badge badge-units"><i class="fa-solid fa-fire"></i> 2 Units Available</span>
           <span class="badge badge-sale">For Sale</span>
-          <span class="badge badge-invest">&#128200; Investment Opportunity</span>
+          <span class="badge badge-invest"><i class="fa-solid fa-chart-line"></i> Investment Opportunity</span>
           <span class="badge badge-floor">1st Floor</span>
         </div>
       </div>
@@ -294,7 +295,7 @@
     <div class="gallery-item" onclick="openModal(4)" style="position:relative;">
       <img src="assets/listing1/IMG5.png" alt="Bathroom">
       <div class="overlay"></div>
-      <div class="gallery-count">&#128247; View All 5 Photos</div>
+      <div class="gallery-count"><i class="fa-solid fa-camera"></i> View All 5 Photos</div>
     </div>
   </div>
 </div>
@@ -302,10 +303,10 @@
 <!-- MODAL LIGHTBOX -->
 <div class="modal-bg" id="modal" onclick="handleModalClick(event)">
   <div class="modal-inner">
-    <button class="modal-close" onclick="closeModal()">&#215;</button>
-    <button class="modal-nav modal-prev" onclick="modalNav(-1)">&#8249;</button>
+    <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <button class="modal-nav modal-prev" onclick="modalNav(-1)"><i class="fa-solid fa-chevron-left"></i></button>
     <img id="modal-img" src="" alt="Property photo">
-    <button class="modal-nav modal-next" onclick="modalNav(1)">&#8250;</button>
+    <button class="modal-nav modal-next" onclick="modalNav(1)"><i class="fa-solid fa-chevron-right"></i></button>
   </div>
 </div>
 
@@ -318,22 +319,22 @@
       <!-- SPECS ROW -->
       <div class="listing-specs">
         <div class="spec-card">
-          <span class="spec-icon">&#127968;</span>
+          <span class="spec-icon"><i class="fa-solid fa-bed"></i></span>
           <span class="spec-val">2</span>
           <span class="spec-lbl">Bedrooms</span>
         </div>
         <div class="spec-card">
-          <span class="spec-icon">&#128703;</span>
+          <span class="spec-icon"><i class="fa-solid fa-bath"></i></span>
           <span class="spec-val">1</span>
           <span class="spec-lbl">Bathroom</span>
         </div>
         <div class="spec-card">
-          <span class="spec-icon">&#127959;</span>
+          <span class="spec-icon"><i class="fa-solid fa-layer-group"></i></span>
           <span class="spec-val">1st</span>
           <span class="spec-lbl">Floor</span>
         </div>
         <div class="spec-card">
-          <span class="spec-icon">&#128101;</span>
+          <span class="spec-icon"><i class="fa-solid fa-users"></i></span>
           <span class="spec-val">2</span>
           <span class="spec-lbl">Units Available</span>
         </div>
@@ -362,7 +363,7 @@
 
       <!-- INVESTMENT NOTE -->
       <div style="margin-top:36px;background:linear-gradient(135deg,#eaf3fd,#f4f7fc);border-radius:16px;padding:28px 26px;border:1px solid #c5ddf7;" class="reveal">
-        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:10px;">&#128200; Why This Is a Smart Investment</h3>
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:10px;"><i class="fa-solid fa-chart-line"></i> Why This Is a Smart Investment</h3>
         <p style="font-size:14px;line-height:1.75;color:var(--gray-mid);">With tenants already in place, you start earning rental income from the day of transfer. Okahandja is a growing town with consistent rental demand, making this unit a reliable asset. The low entry price of N$400,000 and a manageable monthly levy of N$976.29 make the numbers work for both new and experienced investors.</p>
         <p style="font-size:14px;color:var(--gray-mid);margin-top:10px;">Acquiring both available units at this price point gives you a dual-income property at a competitive total outlay &mdash; a rare opportunity in today&rsquo;s market.</p>
       </div>
@@ -387,18 +388,18 @@
         </div>
         <div class="sidebar-row">
           <span class="sidebar-row-lbl">Rental option</span>
-          <span class="sidebar-row-val no">&#10007; Not available</span>
+          <span class="sidebar-row-val no"><i class="fa-solid fa-xmark"></i> Not available</span>
         </div>
         <div class="sidebar-row">
           <span class="sidebar-row-lbl">Tenants in place</span>
-          <span class="sidebar-row-val yes">&#10003; Yes</span>
+          <span class="sidebar-row-val yes"><i class="fa-solid fa-check"></i> Yes</span>
         </div>
         <div class="sidebar-row">
           <span class="sidebar-row-lbl">Floor</span>
           <span class="sidebar-row-val">1st Floor</span>
         </div>
-        <a href="tel:0817659555" class="contact-btn" style="margin-top:20px;">&#128222; Call to Book a Viewing</a>
-        <a href="https://wa.me/264817659555" class="contact-btn" style="margin-top:10px;background:#25D366;">&#128172; WhatsApp: 081 765 9555</a>
+        <a href="tel:0817659555" class="contact-btn" style="margin-top:20px;"><i class="fa-solid fa-phone"></i> Call to Book a Viewing</a>
+        <a href="https://wa.me/264817659555" class="contact-btn" style="margin-top:10px;background:#25D366;"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 081 765 9555</a>
       </div>
 
       <!-- AGENT CARD -->
@@ -413,7 +414,7 @@
         <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" style="height:40px;object-fit:contain;margin-bottom:16px;opacity:0.85;">
         <div class="sidebar-divider"></div>
         <div class="investor-note">
-          <div class="investor-note-title">&#128200; Investor Alert</div>
+          <div class="investor-note-title"><i class="fa-solid fa-chart-line"></i> Investor Alert</div>
           <p>Tenants are in place &mdash; this property generates income from day one of transfer. Book your viewing before both units are gone.</p>
         </div>
         <a href="contact.html" class="contact-btn outline" style="margin-top:16px;">Enquire About This Listing</a>

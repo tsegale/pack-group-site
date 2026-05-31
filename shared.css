@@ -830,6 +830,22 @@ footer {
   letter-spacing: 0.3px;
 }
 
+/* ── STEP NUMBER BADGE ── */
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--blue-mid);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  line-height: 1;
+}
+
 /* ── NAV LOGO ── */
 .nav-logo {
   height: 44px;

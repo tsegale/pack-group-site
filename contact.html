@@ -6,13 +6,14 @@
 <title>Contact — Pack Group</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 <nav>
   <a href="index.html" class="nav-brand">
     <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="nav-logo">
   </a>
-  <button class="hamburger" id="ham" aria-label="Menu">&#9776;</button>
+  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
   <ul class="nav-links" id="navlinks">
     <li><a href="index.html" >Home</a></li>
     <li><a href="real-estate.html" >Real Estate</a></li>
@@ -96,10 +97,10 @@
       <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;">Send Message &rarr;</button>
     </form>
     <div id="form-success" class="form-success reveal" style="display:none;margin-top:40px;">
-      <div style="font-size:48px;margin-bottom:16px;">&#10003;</div>
+      <div style="font-size:48px;margin-bottom:16px;"><i class="fa-solid fa-check"></i></div>
       <h3>Message received!</h3>
       <p>Thank you for reaching out. A member of our team will contact you shortly.<br>Alternatively, reach us directly on WhatsApp.</p>
-      <a href="https://wa.me/264817659555" class="btn btn-cyan" style="margin-top:8px;">&#128172; WhatsApp Us &rarr;</a>
+      <a href="https://wa.me/264817659555" class="btn btn-cyan" style="margin-top:8px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us &rarr;</a>
     </div>
     <script>
       document.getElementById('enquiry-form').addEventListener('submit', function(e) {
@@ -122,17 +123,17 @@
     <h2 class="section-title reveal" style="text-align:center;">Our process is simple<br>and transparent.</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px;text-align:left;">
       <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon">&#9312;</div>
+        <div class="svc-icon"><span class="step-num">1</span></div>
         <h4>You Reach Out</h4>
         <p>Contact either team via phone, email or social media &mdash; whichever suits you best.</p>
       </div>
       <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon">&#9313;</div>
+        <div class="svc-icon"><span class="step-num">2</span></div>
         <h4>We Listen</h4>
         <p>Our team takes time to understand your specific needs, goals and circumstances.</p>
       </div>
       <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon">&#9314;</div>
+        <div class="svc-icon"><span class="step-num">3</span></div>
         <h4>We Deliver</h4>
         <p>A tailored solution is presented and we walk with you every step of the way.</p>
       </div>
