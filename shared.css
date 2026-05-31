@@ -39,7 +39,7 @@ img {
 }
 
 /* ── NAV ── */
-nav {
+body > nav {
   position: fixed;
   top: 0;
   left: 0;
@@ -1115,7 +1115,7 @@ footer {
   .form-row {
     grid-template-columns: 1fr;
   }
-  nav {
+  body > nav {
     padding: 0 5%;
   }
   .nav-links {
