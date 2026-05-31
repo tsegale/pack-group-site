@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paragon Court, Pioneerspark &mdash; Pack Real Estate</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+.listing-hero { padding:140px 6% 0; background:linear-gradient(135deg,#07172c 0%,#0c2340 40%,#153868 100%); position:relative; overflow:hidden; }
+.listing-hero::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--blue-mid),var(--cyan),transparent); }
+.listing-hero-inner { max-width:1140px; margin:0 auto; }
+.breadcrumb { display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:24px; }
+.breadcrumb a { color:var(--cyan); text-decoration:none; }
+.breadcrumb a:hover { text-decoration:underline; }
+.breadcrumb span { color:rgba(255,255,255,0.25); }
+.listing-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:32px; flex-wrap:wrap; padding-bottom:40px; }
+.listing-title h1 { font-family:'Playfair Display',serif; font-size:clamp(30px,4.5vw,52px); font-weight:900; color:var(--white); line-height:1.1; margin-bottom:10px; }
+.listing-title h1 em { font-style:normal; color:var(--cyan); }
+.listing-location { font-size:14px; color:rgba(255,255,255,0.55); display:flex; align-items:center; gap:6px; }
+.badge-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+.badge { font-size:12px; font-weight:600; padding:6px 14px; border-radius:20px; letter-spacing:0.3px; }
+.badge-sale { background:rgba(32,99,224,0.2); color:var(--blue-light); border:1px solid rgba(32,99,224,0.35); }
+.badge-invest { background:rgba(228,168,56,0.15); color:var(--gold); border:1px solid rgba(228,168,56,0.3); }
+.badge-cc { background:rgba(56,189,248,0.15); color:var(--cyan); border:1px solid rgba(56,189,248,0.3); }
+.badge-type { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.12); }
+.listing-price-box { text-align:right; flex-shrink:0; }
+.price-label { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,0.4); margin-bottom:4px; }
+.price-main { font-family:'Playfair Display',serif; font-size:clamp(28px,4vw,46px); font-weight:700; color:var(--white); line-height:1; }
+.price-excl { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; }
+.price-levy { font-size:13px; color:rgba(255,255,255,0.5); margin-top:8px; }
+.gallery-section { background:var(--off-white); padding:0; }
+.gallery-grid { display:grid; grid-template-columns:1.6fr 1fr 1fr; grid-template-rows:300px 300px; gap:4px; max-height:604px; overflow:hidden; }
+.gallery-item { overflow:hidden; position:relative; cursor:pointer; }
+.gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease; }
+.gallery-item:hover img { transform:scale(1.05); }
+.gallery-item.main { grid-row:span 2; }
+.gallery-item .overlay { position:absolute; inset:0; background:linear-gradient(to bottom,transparent 60%,rgba(7,23,44,0.5)); opacity:0; transition:opacity 0.3s; }
+.gallery-item:hover .overlay { opacity:1; }
+.gallery-count { position:absolute; bottom:14px; right:14px; background:rgba(7,23,44,0.8); color:var(--white); font-size:12px; font-weight:600; padding:6px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.15); }
+.modal-bg { display:none; position:fixed; inset:0; z-index:1000; background:rgba(5,12,25,0.96); align-items:center; justify-content:center; }
+.modal-bg.open { display:flex; }
+.modal-inner { position:relative; max-width:90vw; max-height:90vh; }
+.modal-inner img { max-width:90vw; max-height:85vh; object-fit:contain; border-radius:8px; }
+.modal-close { position:absolute; top:-40px; right:0; background:none; border:none; color:var(--white); font-size:28px; cursor:pointer; line-height:1; }
+.modal-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:var(--white); font-size:22px; width:44px; height:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+.modal-nav:hover { background:rgba(32,99,224,0.4); }
+.modal-prev { left:-56px; } .modal-next { right:-56px; }
+.listing-body { padding:60px 6%; background:var(--white); }
+.listing-body-inner { max-width:1140px; margin:0 auto; display:grid; grid-template-columns:1fr 380px; gap:48px; align-items:start; }
+.listing-specs { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px; }
+.spec-card { background:var(--off-white); border-radius:12px; padding:20px 16px; text-align:center; border:1px solid var(--gray-light); }
+.spec-icon { font-size:26px; margin-bottom:8px; display:block; }
+.spec-val { font-size:20px; font-weight:700; color:var(--navy); display:block; }
+.spec-lbl { font-size:11px; color:var(--gray-mid); text-transform:uppercase; letter-spacing:1px; }
+.listing-desc h3 { font-family:'Playfair Display',serif; font-size:24px; color:var(--navy); margin-bottom:16px; }
+.listing-desc p { font-size:15px; line-height:1.8; color:var(--gray-mid); margin-bottom:14px; }
+.features-list { list-style:none; margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.features-list li { font-size:14px; color:var(--text-body); display:flex; align-items:center; gap:10px; }
+.features-list li::before { content:'\2713'; color:var(--blue-mid); font-weight:700; font-size:14px; width:22px; height:22px; background:rgba(32,99,224,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.listing-sidebar { display:flex; flex-direction:column; gap:20px; }
+.sidebar-card { background:var(--off-white); border-radius:16px; padding:28px 24px; border:1px solid var(--gray-light); }
+.sidebar-card.dark { background:var(--navy); border-color:rgba(32,99,224,0.25); }
+.sidebar-price-big { font-family:'Playfair Display',serif; font-size:36px; font-weight:900; color:var(--navy); margin-bottom:4px; }
+.sidebar-card.dark .sidebar-price-big { color:var(--white); }
+.sidebar-levy { font-size:13px; color:var(--gray-mid); margin-bottom:20px; }
+.sidebar-card.dark .sidebar-levy { color:rgba(255,255,255,0.45); }
+.sidebar-divider { height:1px; background:var(--gray-light); margin:16px 0; }
+.sidebar-card.dark .sidebar-divider { background:rgba(255,255,255,0.08); }
+.sidebar-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; }
+.sidebar-row-lbl { font-size:13px; color:var(--gray-mid); }
+.sidebar-card.dark .sidebar-row-lbl { color:rgba(255,255,255,0.45); }
+.sidebar-row-val { font-size:13px; font-weight:600; color:var(--navy); }
+.sidebar-card.dark .sidebar-row-val { color:var(--white); }
+.sidebar-row-val.yes { color:#27ae60; }
+.contact-btn { display:block; width:100%; text-align:center; background:var(--blue-mid); color:var(--white); padding:15px; border-radius:10px; font-size:15px; font-weight:600; text-decoration:none; transition:all 0.22s; margin-top:16px; border:none; cursor:pointer; }
+.contact-btn:hover { background:var(--blue-dark); transform:translateY(-1px); }
+.contact-btn.outline { background:transparent; border:1.5px solid rgba(255,255,255,0.25); color:var(--white); }
+.contact-btn.outline:hover { border-color:var(--cyan); color:var(--cyan); }
+.agent-row { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.agent-avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--blue-mid),var(--cyan)); display:flex; align-items:center; justify-content:center; color:var(--white); font-weight:700; font-size:16px; flex-shrink:0; }
+.agent-name { font-size:15px; font-weight:600; color:var(--white); }
+.agent-role { font-size:12px; color:rgba(255,255,255,0.45); }
+.more-listings { padding:60px 6%; background:var(--off-white); text-align:center; }
+@media (max-width:900px) {
+  .listing-body-inner { grid-template-columns:1fr; }
+  .listing-sidebar { order:-1; }
+  .gallery-grid { grid-template-columns:1fr 1fr; grid-template-rows:220px 220px 220px; }
+  .gallery-item.main { grid-row:span 1; }
+  .listing-specs { grid-template-columns:1fr 1fr; }
+  .listing-title-row { flex-direction:column; gap:20px; }
+  .listing-price-box { text-align:left; }
+  .modal-prev { left:-10px; } .modal-next { right:-10px; }
+}
+@media (max-width:600px) {
+  .gallery-grid { grid-template-columns:1fr; grid-template-rows:repeat(5,200px); }
+  .features-list { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="nav-logo">
+  </a>
+  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+  <ul class="nav-links" id="navlinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="real-estate.html" class="active">Real Estate</a></li>
+    <li><a href="insurance.html">Insurance</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="listing-hero">
+  <div class="listing-hero-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>/</span>
+      <a href="real-estate.html">Real Estate</a><span>/</span>
+      <span style="color:rgba(255,255,255,0.6);">Paragon Court, Pioneerspark</span>
+    </div>
+    <div class="listing-title-row">
+      <div class="listing-title">
+        <h1>Paragon Court<br><em>Pioneerspark</em></h1>
+        <div class="listing-location"><i class="fa-solid fa-location-dot"></i> Pioneerspark, Namibia &mdash; Duplex Apartment</div>
+        <div class="badge-row">
+          <span class="badge badge-sale">For Sale</span>
+          <span class="badge badge-type">Duplex Apartment</span>
+          <span class="badge badge-cc"><i class="fa-solid fa-shield-halved"></i> CC Registered</span>
+          <span class="badge badge-invest"><i class="fa-solid fa-star"></i> Premium</span>
+        </div>
+      </div>
+      <div class="listing-price-box">
+        <div class="price-label">Asking Price</div>
+        <div class="price-main">N$1,500,000</div>
+        <div class="price-excl">Excl. Transfer &amp; Bond Costs</div>
+        <div class="price-levy">Levy: N$1,606.00 / month</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gallery-section">
+  <div class="gallery-grid">
+    <div class="gallery-item main" onclick="openModal(4)">
+      <img src="assets/listing2/IMG_5088.jpeg" alt="Paragon Court">
+      <div class="overlay"></div>
+    </div>
+    <div class="gallery-item" onclick="openModal(0)">
+      <img src="assets/listing2/IMG_5074.jpeg" alt="Paragon Court">
+      <div class="overlay"></div>
+    </div>
+    <div class="gallery-item" onclick="openModal(1)">
+      <img src="assets/listing2/IMG_5075.jpeg" alt="Paragon Court">
+      <div class="overlay"></div>
+    </div>
+    <div class="gallery-item" onclick="openModal(2)">
+      <img src="assets/listing2/IMG_5083.jpeg" alt="Paragon Court">
+      <div class="overlay"></div>
+    </div>
+    <div class="gallery-item" onclick="openModal(3)" style="position:relative;">
+      <img src="assets/listing2/IMG_5087.jpeg" alt="Paragon Court">
+      <div class="overlay"></div>
+      <div class="gallery-count"><i class="fa-solid fa-camera"></i> View All 5 Photos</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal" onclick="handleModalClick(event)">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <button class="modal-nav modal-prev" onclick="modalNav(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+    <img id="modal-img" src="" alt="Property photo">
+    <button class="modal-nav modal-next" onclick="modalNav(1)"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+</div>
+
+<section class="listing-body">
+  <div class="listing-body-inner">
+    <div class="listing-left">
+      <div class="listing-specs">
+        <div class="spec-card">
+          <span class="spec-icon"><i class="fa-solid fa-bed"></i></span>
+          <span class="spec-val">2</span>
+          <span class="spec-lbl">Bedrooms</span>
+        </div>
+        <div class="spec-card">
+          <span class="spec-icon"><i class="fa-solid fa-bath"></i></span>
+          <span class="spec-val">En-Suite</span>
+          <span class="spec-lbl">Main Bathroom</span>
+        </div>
+        <div class="spec-card">
+          <span class="spec-icon"><i class="fa-solid fa-car"></i></span>
+          <span class="spec-val">1</span>
+          <span class="spec-lbl">Garage</span>
+        </div>
+        <div class="spec-card">
+          <span class="spec-icon"><i class="fa-solid fa-layer-group"></i></span>
+          <span class="spec-val">Duplex</span>
+          <span class="spec-lbl">Apartment Type</span>
+        </div>
+      </div>
+
+      <div class="listing-desc reveal">
+        <h3>About This Property</h3>
+        <p>Stunning duplex apartment in the sought-after Paragon Court complex, located in the heart of Pioneerspark &mdash; one of Windhoek&rsquo;s most desirable residential suburbs. This well-designed unit offers a comfortable and modern lifestyle with quality finishes throughout.</p>
+        <p>The open-plan kitchen and living room create a spacious, light-filled environment ideal for both relaxing and entertaining. The main bedroom features an en-suite bathroom, while a private garage and courtyard add exceptional value and convenience.</p>
+        <p>This property is CC registered, offering security of ownership and ease of transfer. With a competitive asking price and a manageable monthly levy, this is a strong opportunity for both homebuyers and property investors.</p>
+        <ul class="features-list">
+          <li>2 Bedrooms</li>
+          <li>Main bedroom en-suite</li>
+          <li>Open-plan kitchen &amp; living room</li>
+          <li>Private garage</li>
+          <li>Private courtyard</li>
+          <li>CC registered</li>
+          <li>Quality finishes throughout</li>
+          <li>Secure complex</li>
+          <li>Pioneerspark location</li>
+          <li>Close to amenities</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:36px;background:linear-gradient(135deg,#eaf3fd,#f4f7fc);border-radius:16px;padding:28px 26px;border:1px solid #c5ddf7;" class="reveal">
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:10px;"><i class="fa-solid fa-star" style="color:var(--gold);margin-right:8px;"></i>Why This Property Stands Out</h3>
+        <p style="font-size:14px;line-height:1.75;color:var(--gray-mid);">Paragon Court offers a rare combination of premium location, thoughtful design and CC ownership structure. Pioneerspark is a highly sought-after suburb known for its accessibility, security and established community &mdash; making this an excellent long-term asset whether you plan to live in it or lease it out.</p>
+        <p style="font-size:14px;color:var(--gray-mid);margin-top:10px;">At N$1,500,000, this duplex represents solid value in one of Windhoek&rsquo;s most in-demand neighbourhoods.</p>
+      </div>
+    </div>
+
+    <div class="listing-sidebar">
+      <div class="sidebar-card reveal">
+        <div class="price-label" style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--gray-mid);margin-bottom:4px;">Asking Price</div>
+        <div class="sidebar-price-big">N$1,500,000</div>
+        <div class="sidebar-levy">+ Levy N$1,606.00/month</div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Transfer costs</span><span class="sidebar-row-val">Excluded</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Ownership type</span><span class="sidebar-row-val">CC Registered</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Property type</span><span class="sidebar-row-val">Duplex Apartment</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Garage</span><span class="sidebar-row-val yes"><i class="fa-solid fa-check"></i> Included</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Courtyard</span><span class="sidebar-row-val yes"><i class="fa-solid fa-check"></i> Yes</span></div>
+        <div class="sidebar-row"><span class="sidebar-row-lbl">Location</span><span class="sidebar-row-val">Pioneerspark</span></div>
+        <a href="tel:0817659555" class="contact-btn" style="margin-top:20px;"><i class="fa-solid fa-phone"></i> Call to Book a Viewing</a>
+        <a href="https://wa.me/264817659555" class="contact-btn" style="margin-top:10px;background:#25D366;"><i class="fa-brands fa-whatsapp"></i> WhatsApp: 081 765 9555</a>
+      </div>
+
+      <div class="sidebar-card dark reveal">
+        <div class="agent-row">
+          <div class="agent-avatar">PR</div>
+          <div>
+            <div class="agent-name">Pack Real Estate</div>
+            <div class="agent-role">Your Property Specialists</div>
+          </div>
+        </div>
+        <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" style="height:48px;width:auto;object-fit:contain;margin-bottom:16px;">
+        <div class="sidebar-divider"></div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;">Pioneerspark is one of Windhoek&rsquo;s most sought-after residential areas. This property won&rsquo;t stay on the market long &mdash; book your viewing today.</p>
+        <a href="contact.html" class="contact-btn outline" style="margin-top:16px;">Enquire About This Listing</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="more-listings">
+  <div class="inner">
+    <span class="section-label reveal" style="display:block;text-align:center;">Pack Real Estate</span>
+    <h2 class="section-title reveal" style="text-align:center;margin-bottom:12px;">View more properties</h2>
+    <p class="section-intro reveal" style="text-align:center;margin:0 auto 36px;">Explore our other listings or contact us to discuss your requirements across Namibia.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="reveal">
+      <a href="real-estate.html#listings" class="btn btn-primary">All Listings</a>
+      <a href="contact.html" class="btn btn-outline" style="color:var(--navy);border-color:var(--gray-light);">Contact Our Team</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-top-bar"></div>
+  <div class="footer-main">
+    <div class="footer-inner">
+      <div class="footer-brand-col">
+        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="footer-logo">
+        <p class="footer-tagline">&ldquo;Built on Trust. Driven by Unity.&rdquo;</p>
+        <p class="footer-desc">Uniting property and protection under one trusted name across Namibia.</p>
+        <div class="footer-contact">
+          <a href="tel:0817659555" class="footer-contact-link"><i class="fa-solid fa-phone"></i> 081 765 9555</a>
+          <a href="https://wa.me/264817659555" class="footer-contact-link"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
+        </div>
+      </div>
+      <div class="footer-nav-col">
+        <h6 class="footer-col-title">Navigate</h6>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="real-estate.html">Real Estate</a>
+          <a href="insurance.html">Insurance</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-div-col">
+        <h6 class="footer-col-title">Our Divisions</h6>
+        <a href="real-estate.html" class="footer-div-card">
+          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate">
+          <span>Property Solutions</span>
+        </a>
+        <a href="insurance.html" class="footer-div-card">
+          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker">
+          <span>Protection &amp; Cover</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <div class="footer-reg-strip">
+        <span>Pack Real Estate &middot; Reg. cc/2024/08487</span>
+        <span class="footer-dot">&bull;</span>
+        <span>Pack Insurance Broker &middot; Reg. cc/2025/13889</span>
+      </div>
+      <span class="footer-copy">&copy; 2025 Pack Group. Namibia.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+const galleryImgs = [
+  "assets/listing2/IMG_5074.jpeg",
+  "assets/listing2/IMG_5075.jpeg",
+  "assets/listing2/IMG_5083.jpeg",
+  "assets/listing2/IMG_5087.jpeg",
+  "assets/listing2/IMG_5088.jpeg"
+];
+let currentIdx = 0;
+function openModal(idx) {
+  currentIdx = idx;
+  document.getElementById('modal-img').src = galleryImgs[idx];
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function modalNav(dir) {
+  currentIdx = (currentIdx + dir + galleryImgs.length) % galleryImgs.length;
+  document.getElementById('modal-img').src = galleryImgs[currentIdx];
+}
+function handleModalClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'ArrowRight') modalNav(1);
+  if (e.key === 'ArrowLeft') modalNav(-1);
+});
+</script>
+</body>
+</html>
