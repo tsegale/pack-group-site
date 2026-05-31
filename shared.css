@@ -1,14 +1,14 @@
 :root {
-  --navy: #0a1628;
-  --navy-mid: #122040;
-  --navy-light: #1a2f55;
+  --navy: #1e3d72;
+  --navy-mid: #25487d;
+  --navy-light: #2e558e;
   --blue-dark: #185fa5;
   --blue-mid: #378add;
   --blue-light: #85b7eb;
   --cyan: #00c8e0;
   --white: #ffffff;
-  --off-white: #f4f7fc;
-  --gray-light: #e4eaf4;
+  --off-white: #f5f8ff;
+  --gray-light: #dde6f5;
   --gray-mid: #8a9ab8;
   --text-body: #2c3547;
   --gold: #d4a843;
@@ -50,9 +50,10 @@ nav {
   justify-content: space-between;
   padding: 0 6%;
   height: 70px;
-  background: rgba(10, 22, 40, 0.97);
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(55, 138, 221, 0.2);
+  border-bottom: 1px solid rgba(55, 138, 221, 0.18);
+  box-shadow: 0 1px 24px rgba(30, 61, 114, 0.08);
 }
 .nav-brand {
   text-decoration: none;
@@ -81,7 +82,7 @@ nav {
   list-style: none;
 }
 .nav-links a {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--gray-mid);
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
@@ -92,8 +93,8 @@ nav {
 }
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--white);
-  background: rgba(255, 255, 255, 0.09);
+  color: var(--navy);
+  background: rgba(55, 138, 221, 0.09);
 }
 .nav-cta {
   background: var(--blue-mid) !important;
@@ -105,8 +106,8 @@ nav {
 .hamburger {
   display: none;
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--white);
+  border: 1px solid rgba(30, 61, 114, 0.2);
+  color: var(--navy);
   font-size: 18px;
   padding: 6px 10px;
   border-radius: 6px;
@@ -829,6 +830,89 @@ footer {
   letter-spacing: 0.3px;
 }
 
+/* ── NAV LOGO ── */
+.nav-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ── FORMS ── */
+.enquiry-form {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.3px;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--gray-light);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "DM Sans", sans-serif;
+  color: var(--text-body);
+  background: var(--white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--blue-mid);
+  box-shadow: 0 0 0 3px rgba(55, 138, 221, 0.12);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+.form-group select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9ab8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.form-success {
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--gray-light);
+  background: var(--off-white);
+}
+.form-success h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 28px;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+.form-success p {
+  font-size: 15px;
+  color: var(--gray-mid);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
   from {
@@ -901,6 +985,9 @@ footer {
   }
 }
 @media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
   nav {
     padding: 0 5%;
   }
@@ -911,10 +998,11 @@ footer {
     top: 70px;
     left: 0;
     right: 0;
-    background: var(--navy);
+    background: var(--white);
     padding: 16px;
     gap: 4px;
-    border-bottom: 1px solid rgba(55, 138, 221, 0.2);
+    border-bottom: 1px solid rgba(55, 138, 221, 0.15);
+    box-shadow: 0 8px 20px rgba(30, 61, 114, 0.08);
   }
   .nav-links.open {
     display: flex;
