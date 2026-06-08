@@ -10,6 +10,251 @@
     />
     <link rel="stylesheet" href="shared.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== Hero Carousel ===== */
+    .hero-carousel {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 580px;
+      overflow: hidden;
+      background: #07172c;
+      padding: 0;
+    }
+
+    .hc-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.9s ease;
+    }
+
+    .hc-slide.active { opacity: 1; z-index: 2; }
+
+    .hslide-img {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.08);
+    }
+
+    .hc-slide.active .hslide-img {
+      animation: hcKenBurns 6.5s linear forwards;
+    }
+
+    @keyframes hcKenBurns {
+      from { transform: scale(1.08); }
+      to   { transform: scale(1.00); }
+    }
+
+    .hslide-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(7,23,44,0.78) 0%,
+        rgba(7,23,44,0.42) 55%,
+        rgba(7,23,44,0.18) 100%
+      );
+    }
+
+    .hslide-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 110px clamp(28px, 8vw, 120px) 100px;
+      max-width: 760px;
+    }
+
+    .hslide-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border: 1.5px solid currentColor;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      width: fit-content;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s 0.15s ease, transform 0.5s 0.15s ease;
+    }
+
+    .hc-slide.active .hslide-tag { opacity: 1; transform: translateY(0); }
+
+    .hslide-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(30px, 5.5vw, 60px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin: 0 0 28px;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s 0.3s ease, transform 0.6s 0.3s ease;
+    }
+
+    .hc-slide.active .hslide-headline { opacity: 1; transform: translateY(0); }
+
+    .hslide-ctas {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s 0.5s ease, transform 0.5s 0.5s ease;
+    }
+
+    .hc-slide.active .hslide-ctas { opacity: 1; transform: translateY(0); }
+
+    .hslide-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 13px 26px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .hslide-btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
+
+    .hslide-btn-out {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+
+    .hslide-btn-out:hover {
+      border-color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Division badges — top-left */
+    .hc-badges {
+      position: absolute;
+      top: 90px;
+      left: clamp(28px, 6vw, 100px);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hc-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 14px 7px 10px;
+      background: rgba(7,23,44,0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .hc-badge:hover { background: rgba(7,23,44,0.85); transform: translateY(-2px); }
+
+    .hc-badge-logo { height: 30px; width: auto; display: block; }
+
+    /* Prev / Next arrows */
+    .hc-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(7,23,44,0.5);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .hc-arrow:hover { background: rgba(55,138,221,0.7); transform: translateY(-50%) scale(1.1); }
+
+    .hc-prev { left:  clamp(14px, 2.5vw, 36px); }
+    .hc-next { right: clamp(14px, 2.5vw, 36px); }
+
+    /* Bottom bar: counter + dots */
+    .hc-bottom-bar {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .hc-counter {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 2px;
+    }
+
+    .hc-cur { color: #fff; font-weight: 700; font-size: 14px; }
+
+    .hc-dots { display: flex; gap: 7px; align-items: center; }
+
+    .hc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .hc-dot.active { background: #fff; transform: scale(1.35); }
+
+    /* Progress bar */
+    .hc-progress-track {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      z-index: 10;
+    }
+
+    .hc-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #378ADD, #00c8e0);
+    }
+  </style>
 </head>
   <body>
     <nav>
@@ -25,60 +270,92 @@
         <li><a href="contact.html" class="nav-cta">Contact</a></li>
       </ul>
     </nav>
-    <section class="hero-full">
-      <div class="hero-arc"></div>
-      <div class="hero-inner">
-        <div class="hero-text">
-          <span class="eyebrow animate">The Pack Group &mdash; Namibia</span>
-          <h1 class="animate d1">
-            One Pack.<br />Two <em>Pillars.</em><br />Your Future.
-          </h1>
-          <p class="hero-sub animate d2">
-            Uniting property and protection under one trusted name. We guide
-            individuals, families and businesses with strategy, dedication and
-            the strength of a united team.
-          </p>
-          <blockquote class="animate d3">
-            &ldquo;Built on Trust. Driven by Unity.&rdquo;
-          </blockquote>
-          <div class="hero-btns animate d4">
-            <a href="real-estate.html" class="btn btn-primary"
-              >Explore Real Estate</a
-            >
-            <a href="insurance.html" class="btn btn-outline"
-              >Explore Insurance</a
-            >
+    <section class="hero-carousel" id="heroCarousel">
+
+      <!-- Division badges — top-left -->
+      <div class="hc-badges">
+        <a href="real-estate.html" class="hc-badge">
+          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="hc-badge-logo">
+        </a>
+        <a href="insurance.html" class="hc-badge">
+          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" class="hc-badge-logo">
+        </a>
+      </div>
+
+      <!-- Slide 1 — Real Estate: Property Exterior -->
+      <div class="hc-slide active" data-index="0">
+        <div class="hslide-img" style="background-image:url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1400&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
+        <div class="hslide-overlay"></div>
+        <div class="hslide-content">
+          <span class="hslide-tag" style="color:#378ADD;border-color:#378ADD;">PROPERTY LISTINGS</span>
+          <h2 class="hslide-headline">Find Your Perfect Property</h2>
+          <div class="hslide-ctas">
+            <a href="real-estate.html" class="hslide-btn" style="background:#378ADD;">View Listings</a>
+            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
           </div>
         </div>
-        <div class="hero-cards animate d2">
-          <a href="real-estate.html" class="hero-card">
-            <img
-              src="assets/logo/realestate_logo.png"
-              alt="Pack Real Estate"
-              class="hero-card-logo"
-            />
-            <p class="hero-card-desc">
-              Residential, commercial, rental and property management services
-              built on market insight and personalised care.
-            </p>
-            <span class="reg-no">Reg. No cc/2024/08487</span>
-            <span class="card-arrow">Explore &rarr;</span>
-          </a>
-          <a href="insurance.html" class="hero-card">
-            <img
-              src="assets/logo/insurance_logo.png"
-              alt="Pack Insurance Broker"
-              class="hero-card-logo"
-            />
-            <p class="hero-card-desc">
-              Personal and business insurance solutions tailored to your needs
-              &mdash; with claims support every step of the way.
-            </p>
-            <span class="reg-no">Reg. No cc/2025/13889</span>
-            <span class="card-arrow">Explore &rarr;</span>
-          </a>
+      </div>
+
+      <!-- Slide 2 — Real Estate: Interior / Investment -->
+      <div class="hc-slide" data-index="1">
+        <div class="hslide-img" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1400&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
+        <div class="hslide-overlay"></div>
+        <div class="hslide-content">
+          <span class="hslide-tag" style="color:#2a7fc4;border-color:#2a7fc4;">BUY &middot; SELL &middot; RENT</span>
+          <h2 class="hslide-headline">Your Property Journey Starts Here</h2>
+          <div class="hslide-ctas">
+            <a href="real-estate.html" class="hslide-btn" style="background:#2a7fc4;">View Listings</a>
+            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
+          </div>
         </div>
       </div>
+
+      <!-- Slide 3 — Insurance: Professional Consultation -->
+      <div class="hc-slide" data-index="2">
+        <div class="hslide-img" style="background-image:url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
+        <div class="hslide-overlay"></div>
+        <div class="hslide-content">
+          <span class="hslide-tag" style="color:#00b4d4;border-color:#00b4d4;">FINANCIAL PROTECTION</span>
+          <h2 class="hslide-headline">Protecting What Matters Most</h2>
+          <div class="hslide-ctas">
+            <a href="insurance.html" class="hslide-btn" style="background:#00b4d4;">Get Covered</a>
+            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4 — Insurance: Family / Protection -->
+      <div class="hc-slide" data-index="3">
+        <div class="hslide-img" style="background-image:url('https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1400&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
+        <div class="hslide-overlay"></div>
+        <div class="hslide-content">
+          <span class="hslide-tag" style="color:#00c8e0;border-color:#00c8e0;">PEACE OF MIND</span>
+          <h2 class="hslide-headline">No Client Stands Alone</h2>
+          <div class="hslide-ctas">
+            <a href="insurance.html" class="hslide-btn" style="background:#00b4d4;">Get Covered</a>
+            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prev / Next arrows -->
+      <button class="hc-arrow hc-prev" aria-label="Previous slide"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="hc-arrow hc-next" aria-label="Next slide"><i class="fa-solid fa-chevron-right"></i></button>
+
+      <!-- Bottom bar: slide counter + dot navigation -->
+      <div class="hc-bottom-bar">
+        <div class="hc-counter"><span class="hc-cur">01</span><span style="color:rgba(255,255,255,0.35);margin:0 5px;">/</span><span>04</span></div>
+        <div class="hc-dots">
+          <button class="hc-dot active" data-slide="0" aria-label="Slide 1"></button>
+          <button class="hc-dot" data-slide="1" aria-label="Slide 2"></button>
+          <button class="hc-dot" data-slide="2" aria-label="Slide 3"></button>
+          <button class="hc-dot" data-slide="3" aria-label="Slide 4"></button>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="hc-progress-track"><div class="hc-progress-fill"></div></div>
+
     </section>
 
     <div class="stats-strip">
@@ -326,6 +603,94 @@
     </div>
   </div>
 </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var c = document.getElementById('heroCarousel');
+      if (!c) return;
+
+      var slides  = Array.from(c.querySelectorAll('.hc-slide'));
+      var dots    = Array.from(c.querySelectorAll('.hc-dot'));
+      var prevBtn = c.querySelector('.hc-prev');
+      var nextBtn = c.querySelector('.hc-next');
+      var curEl   = c.querySelector('.hc-cur');
+      var fill    = c.querySelector('.hc-progress-fill');
+
+      if (!slides.length) return;
+
+      var N = slides.length, INTERVAL = 6000, cur = 0, timer = null;
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function kbRestart(idx) {
+        var img = slides[idx].querySelector('.hslide-img');
+        if (!img) return;
+        img.style.animation = 'none';
+        void img.offsetWidth;
+        img.style.animation = '';
+      }
+
+      function activate(idx) {
+        slides[cur].classList.remove('active');
+        dots[cur].classList.remove('active');
+        cur = ((idx % N) + N) % N;
+        slides[cur].classList.add('active');
+        dots[cur].classList.add('active');
+        if (curEl) curEl.textContent = pad(cur + 1);
+        kbRestart(cur);
+      }
+
+      function startProgress() {
+        if (!fill) return;
+        fill.style.transition = 'none';
+        fill.style.width = '0%';
+        void fill.offsetWidth;
+        fill.style.transition = 'width ' + INTERVAL + 'ms linear';
+        fill.style.width = '100%';
+      }
+
+      function scheduleNext() {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          activate(cur + 1);
+          startProgress();
+          scheduleNext();
+        }, INTERVAL);
+      }
+
+      function goTo(idx) {
+        activate(idx);
+        startProgress();
+        scheduleNext();
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { goTo(cur - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { goTo(cur + 1); });
+
+      dots.forEach(function (d) {
+        d.addEventListener('click', function () { goTo(parseInt(this.dataset.slide, 10)); });
+      });
+
+      c.addEventListener('mouseenter', function () {
+        clearTimeout(timer);
+        if (fill) fill.style.transition = 'none';
+      });
+
+      c.addEventListener('mouseleave', function () {
+        startProgress();
+        scheduleNext();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft')  goTo(cur - 1);
+        if (e.key === 'ArrowRight') goTo(cur + 1);
+      });
+
+      // Kick off — slide 0 already has `active` in HTML; just restart KB + progress
+      kbRestart(0);
+      startProgress();
+      scheduleNext();
+    });
+    </script>
     <script src="shared.js"></script>
   </body>
 </html>
