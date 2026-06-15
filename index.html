@@ -75,17 +75,20 @@
     .hslide-tag {
       display: inline-block;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
       border: 1.5px solid currentColor;
-      padding: 5px 14px;
+      background: rgba(7,23,44,0.55);
+      backdrop-filter: blur(6px);
+      padding: 6px 16px;
       border-radius: 20px;
       margin-bottom: 18px;
       width: fit-content;
       opacity: 0;
       transform: translateY(18px);
       transition: opacity 0.5s 0.15s ease, transform 0.5s 0.15s ease;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.4);
     }
 
     .hc-slide.active .hslide-tag { opacity: 1; transform: translateY(0); }
