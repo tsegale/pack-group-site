@@ -962,6 +962,34 @@ footer {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.2);
 }
+.footer-credit {
+  text-align: center;
+  padding: 10px 6% 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 10px;
+}
+.footer-credit a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+.footer-credit a:hover {
+  opacity: 0.65;
+}
+.footer-credit img {
+  height: 18px;
+  width: auto;
+  display: inline-block;
+  filter: brightness(0) invert(1);
+}
+.footer-credit span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.3px;
+}
 
 /* ── STEP NUMBER BADGE ── */
 .step-num {
