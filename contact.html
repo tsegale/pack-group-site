@@ -104,14 +104,37 @@
     <script>
       document.getElementById('enquiry-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        var name = document.getElementById('eq-name').value;
+        var form     = this;
+        var btn      = form.querySelector('button[type="submit"]');
+        var name     = document.getElementById('eq-name').value.trim();
+        var email    = document.getElementById('eq-email').value.trim();
+        var phone    = document.getElementById('eq-phone').value.trim();
         var division = document.getElementById('eq-division').value;
-        var message = document.getElementById('eq-message').value;
-        var phone = document.getElementById('eq-phone').value;
-        var text = encodeURIComponent('Hello Pack Group!\n\nName: ' + name + '\nPhone: ' + phone + '\nEnquiry: ' + division + '\n\nMessage: ' + message);
-        window.open('https://wa.me/264858196462?text=' + text, '_blank');
-        this.style.display = 'none';
-        document.getElementById('form-success').style.display = 'block';
+        var message  = document.getElementById('eq-message').value.trim();
+        var source   = (division === 'insurance') ? 'insurance' : 'real-estate';
+        btn.disabled    = true;
+        btn.textContent = 'Sending…';
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, phone: phone, message: message, source_division: source })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) {
+            form.style.display = 'none';
+            document.getElementById('form-success').style.display = 'block';
+          } else {
+            btn.disabled    = false;
+            btn.textContent = 'Send Message →';
+            alert(data.error || 'Could not send message. Please try again.');
+          }
+        })
+        .catch(function() {
+          btn.disabled    = false;
+          btn.textContent = 'Send Message →';
+          alert('Network error. Please check your connection and try again.');
+        });
       });
     </script>
   </div>

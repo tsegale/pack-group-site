@@ -1,0 +1,212 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<div class="section-header">
+  <h2>Insurance Products</h2>
+  <button class="btn btn-primary" onclick="openModal('add')">
+    <i class="fa-solid fa-plus"></i> Add Product
+  </button>
+</div>
+
+<% if (products.length === 0) { %>
+<div class="table-wrap">
+  <div class="empty-state">
+    <i class="fa-solid fa-shield-halved"></i>
+    <p>No insurance products yet. <button class="btn btn-sm btn-primary" onclick="openModal('add')">Add one &rarr;</button></p>
+  </div>
+</div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Icon</th>
+        <th>Title &amp; Category</th>
+        <th>Short Description</th>
+        <th>Order</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% products.forEach(p => { %>
+      <tr>
+        <td style="width:50px;text-align:center;">
+          <i class="fa-solid <%= p.icon_name %>" style="font-size:22px;color:var(--blue-mid);"></i>
+        </td>
+        <td>
+          <strong><%= p.title %></strong>
+          <% if (p.category) { %>
+          <div style="font-size:11.5px;color:var(--gray-mid);margin-top:2px;"><%= p.category %></div>
+          <% } %>
+        </td>
+        <td style="max-width:260px;">
+          <span style="font-size:12.5px;color:var(--gray-mid);">
+            <%= p.short_description ? p.short_description.substring(0, 80) + (p.short_description.length > 80 ? '…' : '') : '—' %>
+          </span>
+        </td>
+        <td style="width:80px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <form method="POST" action="/admin/insurance/<%= p.id %>/move" style="display:inline;">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="direction" value="up">
+              <button type="submit" class="btn btn-sm btn-outline" style="padding:3px 7px;" title="Move up">
+                <i class="fa-solid fa-arrow-up"></i>
+              </button>
+            </form>
+            <span style="font-size:12px;color:var(--gray-mid);padding:0 2px;"><%= p.sort_order %></span>
+            <form method="POST" action="/admin/insurance/<%= p.id %>/move" style="display:inline;">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <input type="hidden" name="direction" value="down">
+              <button type="submit" class="btn btn-sm btn-outline" style="padding:3px 7px;" title="Move down">
+                <i class="fa-solid fa-arrow-down"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+        <td>
+          <button class="badge badge-<%= p.active ? 'active' : 'inactive' %>"
+                  style="border:none;cursor:pointer;font-family:inherit;"
+                  onclick="toggleActive('<%= p.id %>', this)"
+                  data-csrf="<%= csrfToken %>"
+                  title="Click to toggle">
+            <%= p.active ? 'Active' : 'Inactive' %>
+          </button>
+        </td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn btn-sm btn-outline" onclick='openModal("edit", <%= JSON.stringify(p) %>)'>
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+            <form method="POST" action="/admin/insurance/<%= p.id %>/delete"
+                  onsubmit="return confirm('Delete this product?')">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="ins-modal">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h2 class="modal-title" id="modal-title">Add Insurance Product</h2>
+    <form method="POST" id="ins-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="m-title">Title *</label>
+          <input type="text" id="m-title" name="title" required placeholder="e.g. Personal Insurance">
+        </div>
+        <div class="form-group">
+          <label for="m-category">Category</label>
+          <input type="text" id="m-category" name="category" placeholder="e.g. Personal, Commercial">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="m-icon">Icon (Font Awesome class)</label>
+          <input type="text" id="m-icon" name="icon_name" placeholder="fa-shield-halved">
+          <div class="form-hint">From Font Awesome 6 solid icons, e.g. fa-user, fa-briefcase</div>
+        </div>
+        <div class="form-group">
+          <label for="m-order">Sort Order</label>
+          <input type="number" id="m-order" name="sort_order" min="0" value="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="m-short">Short Description</label>
+        <textarea id="m-short" name="short_description" rows="2"
+                  placeholder="Brief summary shown on the insurance page cards…"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="m-full">Full Description</label>
+        <textarea id="m-full" name="full_description" rows="4"
+                  placeholder="Detailed description of this insurance product…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-check">
+          <input type="checkbox" id="m-active" name="active" checked>
+          <span>Active (visible on website)</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modal-submit-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Save Product
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const CSRF = '<%= csrfToken %>';
+
+function openModal(mode, product) {
+  const modal = document.getElementById('ins-modal');
+  const form  = document.getElementById('ins-form');
+  const title = document.getElementById('modal-title');
+  const submitBtn = document.getElementById('modal-submit-btn');
+
+  form.reset();
+  document.getElementById('m-active').checked = true;
+
+  if (mode === 'edit' && product) {
+    title.textContent    = 'Edit Insurance Product';
+    submitBtn.innerHTML  = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    form.action          = `/admin/insurance/${product.id}`;
+    document.getElementById('m-title').value    = product.title || '';
+    document.getElementById('m-category').value = product.category || '';
+    document.getElementById('m-icon').value     = product.icon_name || 'fa-shield-halved';
+    document.getElementById('m-order').value    = product.sort_order || 0;
+    document.getElementById('m-short').value    = product.short_description || '';
+    document.getElementById('m-full').value     = product.full_description || '';
+    document.getElementById('m-active').checked = product.active === 1;
+  } else {
+    title.textContent   = 'Add Insurance Product';
+    submitBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Create Product';
+    form.action         = '/admin/insurance';
+  }
+
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('ins-modal').classList.remove('open');
+}
+
+document.getElementById('ins-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+async function toggleActive(id, btn) {
+  const res  = await fetch(`/admin/insurance/${id}/toggle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `_csrf=${encodeURIComponent(CSRF)}`,
+  });
+  const data = await res.json();
+  if (data.active !== undefined) {
+    btn.textContent  = data.active ? 'Active' : 'Inactive';
+    btn.className    = `badge badge-${data.active ? 'active' : 'inactive'}`;
+    Object.assign(btn.style, { border: 'none', cursor: 'pointer', fontFamily: 'inherit' });
+  }
+}
+</script>
+
+<%- include('_foot') %>

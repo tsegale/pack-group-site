@@ -1,0 +1,7 @@
+node_modules/
+db/pack.db
+.env
+public/uploads/*.jpg
+public/uploads/*.jpeg
+public/uploads/*.png
+public/uploads/*.webp

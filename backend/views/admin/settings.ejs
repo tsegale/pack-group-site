@@ -1,0 +1,120 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<form method="POST" action="/admin/settings">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <!-- HERO -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-image" style="color:var(--blue-mid);margin-right:8px;"></i>Homepage Hero</div>
+    <div class="form-group">
+      <label for="hero_headline">Hero Headline (Slide 1)</label>
+      <input type="text" id="hero_headline" name="hero_headline"
+             value="<%= settings.hero_headline || '' %>"
+             placeholder="Find Your Perfect Property">
+    </div>
+    <div class="form-group">
+      <label for="hero_subheadline">Hero Sub-headline (Slide 2)</label>
+      <input type="text" id="hero_subheadline" name="hero_subheadline"
+             value="<%= settings.hero_subheadline || '' %>"
+             placeholder="Your Property Journey Starts Here">
+    </div>
+    <div class="form-group">
+      <label for="hero_tagline">Pack Philosophy Tagline</label>
+      <input type="text" id="hero_tagline" name="hero_tagline"
+             value="<%= settings.hero_tagline || '' %>"
+             placeholder="Like a wolf pack, strategic, connected, and dependable.">
+    </div>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-chart-bar" style="color:var(--gold);margin-right:8px;"></i>Homepage Stats Strip</div>
+    <p style="font-size:12.5px;color:var(--gray-mid);margin-bottom:16px;">These numbers appear in the strip below the hero carousel.</p>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label for="stat_companies">Companies Stat</label>
+        <input type="text" id="stat_companies" name="stat_companies"
+               value="<%= settings.stat_companies || '2' %>" placeholder="2">
+        <div class="form-hint">Label: "Companies"</div>
+      </div>
+      <div class="form-group">
+        <label for="stat_brand">Trusted Brand Stat</label>
+        <input type="text" id="stat_brand" name="stat_brand"
+               value="<%= settings.stat_brand || '1' %>" placeholder="1">
+        <div class="form-hint">Label: "Trusted Brand"</div>
+      </div>
+      <div class="form-group">
+        <label for="stat_commitment">Commitment Stat</label>
+        <input type="text" id="stat_commitment" name="stat_commitment"
+               value="<%= settings.stat_commitment || '∞' %>" placeholder="∞">
+        <div class="form-hint">Label: "Client Commitment"</div>
+      </div>
+    </div>
+    <div class="form-group" style="max-width:300px;">
+      <label for="stat_region">Region Stat</label>
+      <input type="text" id="stat_region" name="stat_region"
+             value="<%= settings.stat_region || 'Namibia' %>" placeholder="Namibia">
+      <div class="form-hint">Label: "Registered &amp; Compliant"</div>
+    </div>
+  </div>
+
+  <!-- CONTACT DETAILS -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-phone" style="color:var(--cyan);margin-right:8px;"></i>Contact Details</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="contact_phone">Phone Number</label>
+        <input type="text" id="contact_phone" name="contact_phone"
+               value="<%= settings.contact_phone || '' %>" placeholder="085 819 6462">
+      </div>
+      <div class="form-group">
+        <label for="contact_whatsapp">WhatsApp Number</label>
+        <input type="text" id="contact_whatsapp" name="contact_whatsapp"
+               value="<%= settings.contact_whatsapp || '' %>" placeholder="264858196462">
+        <div class="form-hint">International format without +, e.g. 264858196462</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="contact_email">Email Address</label>
+        <input type="email" id="contact_email" name="contact_email"
+               value="<%= settings.contact_email || '' %>" placeholder="info@packgroup.na">
+      </div>
+      <div class="form-group">
+        <label for="contact_address">Physical Address</label>
+        <input type="text" id="contact_address" name="contact_address"
+               value="<%= settings.contact_address || '' %>" placeholder="123 Main Street, Windhoek">
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-align-left" style="color:var(--navy-light);margin-right:8px;"></i>Footer Text</div>
+    <div class="form-group">
+      <label for="footer_tagline">Footer Tagline</label>
+      <input type="text" id="footer_tagline" name="footer_tagline"
+             value="<%= settings.footer_tagline || '' %>"
+             placeholder="Built on Trust. Driven by Unity.">
+    </div>
+    <div class="form-group">
+      <label for="footer_description">Footer Description</label>
+      <input type="text" id="footer_description" name="footer_description"
+             value="<%= settings.footer_description || '' %>"
+             placeholder="Uniting property and protection under one trusted name across Namibia.">
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    <i class="fa-solid fa-floppy-disk"></i> Save All Settings
+  </button>
+</form>
+
+<%- include('_foot') %>

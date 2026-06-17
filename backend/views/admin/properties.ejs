@@ -1,0 +1,120 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<div class="section-header">
+  <div>
+    <div class="filter-tabs">
+      <a href="/admin/properties" class="filter-tab <%= filter === 'all' ? 'active' : '' %>">All</a>
+      <a href="/admin/properties?status=available" class="filter-tab <%= filter === 'available' ? 'active' : '' %>">Available</a>
+      <a href="/admin/properties?status=under-offer" class="filter-tab <%= filter === 'under-offer' ? 'active' : '' %>">Under Offer</a>
+      <a href="/admin/properties?status=sold" class="filter-tab <%= filter === 'sold' ? 'active' : '' %>">Sold</a>
+      <a href="/admin/properties?status=rented" class="filter-tab <%= filter === 'rented' ? 'active' : '' %>">Rented</a>
+    </div>
+  </div>
+  <a href="/admin/properties/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus"></i> Add Property
+  </a>
+</div>
+
+<% if (properties.length === 0) { %>
+<div class="table-wrap">
+  <div class="empty-state">
+    <i class="fa-solid fa-house"></i>
+    <p>No properties found. <a href="/admin/properties/new">Add your first listing &rarr;</a></p>
+  </div>
+</div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:70px;">Photo</th>
+        <th>Title &amp; Location</th>
+        <th>Price</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th style="width:60px;text-align:center;">Featured</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% properties.forEach(p => { %>
+      <tr>
+        <td>
+          <% if (p.coverImage) { %>
+            <img src="/<%= p.coverImage %>" alt="<%= p.title %>" class="tbl-thumb">
+          <% } else { %>
+            <div class="tbl-thumb-ph"><i class="fa-solid fa-image"></i></div>
+          <% } %>
+        </td>
+        <td>
+          <strong><%= p.title %></strong>
+          <div style="font-size:11.5px;color:var(--gray-mid);margin-top:2px;">
+            <i class="fa-solid fa-location-dot" style="font-size:10px;"></i> <%= p.location %>
+          </div>
+          <div style="font-size:10.5px;color:var(--gray-mid);margin-top:1px;">/<%= p.slug %></div>
+        </td>
+        <td>
+          <strong>N$<%= Number(p.price).toLocaleString() %></strong>
+          <% if (p.levy) { %><div style="font-size:11.5px;color:var(--gray-mid);">Levy: N$<%= p.levy %>/mo</div><% } %>
+        </td>
+        <td>
+          <span class="badge" style="background:rgba(32,99,224,.08);color:var(--blue-mid);border:1px solid rgba(32,99,224,.15);">
+            <%= p.type === 'sale' ? 'For Sale' : 'To Rent' %>
+          </span>
+        </td>
+        <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+        <td style="text-align:center;">
+          <button class="star-btn <%= p.featured ? 'active' : '' %>"
+                  data-id="<%= p.id %>"
+                  data-csrf="<%= csrfToken %>"
+                  onclick="toggleFeatured(this)"
+                  title="<%= p.featured ? 'Remove from featured' : 'Mark as featured' %>">
+            <i class="fa-solid fa-star"></i>
+          </button>
+        </td>
+        <td>
+          <div class="actions-cell">
+            <a href="/admin/properties/<%= p.id %>/edit" class="btn btn-sm btn-outline">
+              <i class="fa-solid fa-pen"></i> Edit
+            </a>
+            <form method="POST" action="/admin/properties/<%= p.id %>/delete"
+                  onsubmit="return confirm('Delete \'<%= p.title %>\'? This cannot be undone.')">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<script>
+async function toggleFeatured(btn) {
+  const id    = btn.dataset.id;
+  const csrf  = btn.dataset.csrf;
+  const res   = await fetch(`/admin/properties/${id}/toggle-featured`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `_csrf=${encodeURIComponent(csrf)}`,
+  });
+  const data = await res.json();
+  if (data.featured !== undefined) {
+    btn.classList.toggle('active', data.featured === 1);
+    btn.title = data.featured ? 'Remove from featured' : 'Mark as featured';
+  }
+}
+</script>
+
+<%- include('_foot') %>

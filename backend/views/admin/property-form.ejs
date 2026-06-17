@@ -1,0 +1,265 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<div style="margin-bottom:16px;">
+  <a href="/admin/properties" style="font-size:13px;color:var(--gray-mid);text-decoration:none;">
+    <i class="fa-solid fa-arrow-left"></i> Back to Properties
+  </a>
+</div>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<form method="POST"
+      action="<%= property ? `/admin/properties/${property.id}` : '/admin/properties' %>"
+      enctype="multipart/form-data"
+      id="prop-form">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <!-- SECTION 1: Basic Info -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-house" style="color:var(--blue-mid);margin-right:8px;"></i>Basic Information</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="title">Property Title *</label>
+        <input type="text" id="title" name="title" required
+               value="<%= property ? property.title : '' %>"
+               placeholder="e.g. Shambo View"
+               oninput="generateSlug(this.value)">
+      </div>
+      <div class="form-group">
+        <label for="slug">URL Slug *</label>
+        <input type="text" id="slug" name="slug"
+               value="<%= property ? property.slug : '' %>"
+               placeholder="e.g. shambo-view">
+        <div class="form-hint">Auto-generated from title. Used in listing URL.</div>
+      </div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label for="type">Listing Type</label>
+        <select id="type" name="type">
+          <option value="sale" <%= (!property || property.type === 'sale') ? 'selected' : '' %>>For Sale</option>
+          <option value="rent" <%= (property && property.type === 'rent') ? 'selected' : '' %>>To Rent</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="available"   <%= (!property || property.status === 'available')   ? 'selected' : '' %>>Available</option>
+          <option value="under-offer" <%= (property && property.status === 'under-offer')  ? 'selected' : '' %>>Under Offer</option>
+          <option value="sold"        <%= (property && property.status === 'sold')         ? 'selected' : '' %>>Sold</option>
+          <option value="rented"      <%= (property && property.status === 'rented')       ? 'selected' : '' %>>Rented</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="contact_phone">Contact Phone</label>
+        <input type="text" id="contact_phone" name="contact_phone"
+               value="<%= property ? property.contact_phone : '0858196462' %>"
+               placeholder="0858196462">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="location">Location *</label>
+      <input type="text" id="location" name="location" required
+             value="<%= property ? property.location : '' %>"
+             placeholder="e.g. Okahandja, Namibia">
+    </div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <label class="form-check">
+        <input type="checkbox" name="featured" <%= (property && property.featured) ? 'checked' : '' %>>
+        <label><i class="fa-solid fa-star" style="color:var(--gold);"></i> Feature on Homepage</label>
+      </label>
+      <label class="form-check">
+        <input type="checkbox" name="rental_option" <%= (property && property.rental_option) ? 'checked' : '' %>>
+        <label>Rental Option Available</label>
+      </label>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Pricing -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-tag" style="color:var(--gold);margin-right:8px;"></i>Pricing</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="price">Price (N$) *</label>
+        <input type="number" id="price" name="price" required min="0" step="0.01"
+               value="<%= property ? property.price : '' %>"
+               placeholder="400000">
+      </div>
+      <div class="form-group">
+        <label for="levy">Monthly Levy (N$)</label>
+        <input type="text" id="levy" name="levy"
+               value="<%= property ? (property.levy || '') : '' %>"
+               placeholder="e.g. 976.29 (leave blank if none)">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Property Details -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-list-check" style="color:var(--cyan);margin-right:8px;"></i>Property Details</div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label for="bedrooms">Bedrooms</label>
+        <input type="number" id="bedrooms" name="bedrooms" min="0"
+               value="<%= property ? property.bedrooms : 0 %>">
+      </div>
+      <div class="form-group">
+        <label for="bathrooms">Bathrooms</label>
+        <input type="number" id="bathrooms" name="bathrooms" min="0"
+               value="<%= property ? property.bathrooms : 0 %>">
+      </div>
+      <div class="form-group">
+        <label for="units_available">Units Available</label>
+        <input type="number" id="units_available" name="units_available" min="1"
+               value="<%= property ? property.units_available : 1 %>">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Description -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-align-left" style="color:var(--navy-light);margin-right:8px;"></i>Description</div>
+    <div class="form-group">
+      <label for="description">Full Description</label>
+      <textarea id="description" name="description" rows="8"
+                placeholder="Describe the property, features, location highlights..."><%= property ? (property.description || '') : '' %></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Images -->
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-images" style="color:var(--blue-mid);margin-right:8px;"></i>Photos</div>
+
+    <% if (images && images.length > 0) { %>
+    <div class="image-grid" id="image-grid">
+      <% images.forEach(img => { %>
+      <div class="image-item <%= img.is_cover ? 'is-cover' : '' %>" id="img-<%= img.id %>">
+        <img src="/<%= img.filename %>" alt="Property photo">
+        <% if (img.is_cover) { %><span class="cover-badge">Cover</span><% } %>
+        <div class="image-actions">
+          <% if (!img.is_cover) { %>
+          <button type="button" title="Set as cover"
+                  onclick="setCover('<%= property.id %>', '<%= img.id %>')">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <% } %>
+          <button type="button" title="Move up"
+                  onclick="moveImage('<%= property.id %>', '<%= img.id %>', 'up')">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button type="button" title="Move down"
+                  onclick="moveImage('<%= property.id %>', '<%= img.id %>', 'down')">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+          <button type="button" class="danger" title="Delete"
+                  onclick="deleteImage('<%= property.id %>', '<%= img.id %>')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--gray-mid);">
+      <i class="fa-solid fa-circle-info"></i>
+      Gold border = cover photo shown on listing cards. First image is cover by default.
+    </div>
+    <div style="margin-top:16px;border-top:1px solid var(--gray-light);padding-top:16px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Add More Photos</div>
+    <% } %>
+
+    <label class="upload-label" for="images">
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <span>Click to upload photos (JPEG, PNG, WebP · max 5MB each)</span>
+      <span style="font-size:11.5px;">Multiple files supported</span>
+      <input type="file" id="images" name="images" multiple accept="image/jpeg,image/png,image/webp">
+    </label>
+
+    <% if (images && images.length > 0) { %>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- SUBMIT -->
+  <div style="display:flex;gap:12px;">
+    <button type="submit" class="btn btn-primary">
+      <i class="fa-solid fa-floppy-disk"></i>
+      <%= property ? 'Save Changes' : 'Create Property' %>
+    </button>
+    <a href="/admin/properties" class="btn btn-outline">Cancel</a>
+    <% if (property) { %>
+    <a href="/listing.html?slug=<%= property.slug %>" target="_blank" class="btn btn-outline" style="margin-left:auto;">
+      <i class="fa-solid fa-eye"></i> Preview Listing
+    </a>
+    <% } %>
+  </div>
+</form>
+
+<script>
+const CSRF = '<%= csrfToken %>';
+
+function generateSlug(title) {
+  const manualSlug = document.getElementById('slug');
+  if (!manualSlug._touched) {
+    manualSlug.value = title.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/[\s-]+/g, '-');
+  }
+}
+document.getElementById('slug').addEventListener('input', function() {
+  this._touched = true;
+});
+<% if (!property) { %>
+document.getElementById('title').addEventListener('blur', function() {
+  generateSlug(this.value);
+});
+<% } %>
+
+async function postAction(url) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `_csrf=${encodeURIComponent(CSRF)}`,
+  });
+  return res.json();
+}
+
+async function postActionWithBody(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body + `&_csrf=${encodeURIComponent(CSRF)}`,
+  });
+  return res.json();
+}
+
+async function setCover(propId, imgId) {
+  await postAction(`/admin/properties/${propId}/images/${imgId}/cover`);
+  location.reload();
+}
+
+async function moveImage(propId, imgId, direction) {
+  await postActionWithBody(`/admin/properties/${propId}/images/${imgId}/move`, `direction=${direction}`);
+  location.reload();
+}
+
+async function deleteImage(propId, imgId) {
+  if (!confirm('Delete this photo? This cannot be undone.')) return;
+  await postAction(`/admin/properties/${propId}/images/${imgId}/delete`);
+  document.getElementById(`img-${imgId}`)?.remove();
+}
+
+// Show filename preview on file select
+document.getElementById('images').addEventListener('change', function() {
+  const count = this.files.length;
+  const span = this.closest('label').querySelector('span:nth-of-type(2)');
+  if (span) span.textContent = count > 0 ? `${count} file(s) selected` : 'Multiple files supported';
+});
+</script>
+
+<%- include('_foot') %>

@@ -1,0 +1,164 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<!-- SUMMARY CHIPS -->
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+  <div class="stat-card accent-gold" style="padding:12px 18px;display:inline-flex;flex-direction:column;align-items:flex-start;">
+    <span class="stat-card-label">Total</span>
+    <span class="stat-card-value" style="font-size:24px;"><%= counts.total %></span>
+  </div>
+  <div class="stat-card accent-blue" style="padding:12px 18px;display:inline-flex;flex-direction:column;align-items:flex-start;">
+    <span class="stat-card-label">Real Estate</span>
+    <span class="stat-card-value" style="font-size:24px;"><%= counts.re_count %></span>
+  </div>
+  <div class="stat-card accent-cyan" style="padding:12px 18px;display:inline-flex;flex-direction:column;align-items:flex-start;">
+    <span class="stat-card-label">Insurance</span>
+    <span class="stat-card-value" style="font-size:24px;"><%= counts.ins_count %></span>
+  </div>
+  <div class="stat-card accent-navy" style="padding:12px 18px;display:inline-flex;flex-direction:column;align-items:flex-start;">
+    <span class="stat-card-label">Awaiting Reply</span>
+    <span class="stat-card-value" style="font-size:24px;"><%= counts.new_count %></span>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-tabs">
+  <a href="/admin/leads" class="filter-tab <%= division === 'all' && status === 'all' ? 'active' : '' %>">All</a>
+  <a href="/admin/leads?division=real-estate" class="filter-tab <%= division === 'real-estate' ? 'active' : '' %>">Real Estate</a>
+  <a href="/admin/leads?division=insurance" class="filter-tab <%= division === 'insurance' ? 'active' : '' %>">Insurance</a>
+  <a href="/admin/leads?status=new" class="filter-tab <%= status === 'new' ? 'active' : '' %>" style="color:#0369a1;">New</a>
+  <a href="/admin/leads?status=contacted" class="filter-tab <%= status === 'contacted' ? 'active' : '' %>">Contacted</a>
+  <a href="/admin/leads?status=closed" class="filter-tab <%= status === 'closed' ? 'active' : '' %>">Closed</a>
+</div>
+
+<% if (leads.length === 0) { %>
+<div class="table-wrap">
+  <div class="empty-state">
+    <i class="fa-solid fa-inbox"></i>
+    <p>No leads match the current filter.</p>
+  </div>
+</div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="data-table" id="leads-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Division</th>
+        <th>Property</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th style="width:36px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% leads.forEach(lead => { %>
+      <tr class="lead-row" data-id="<%= lead.id %>">
+        <td><strong><%= lead.name %></strong></td>
+        <td>
+          <% if (lead.email) { %>
+          <a href="mailto:<%= lead.email %>" style="color:var(--blue-mid);font-size:12.5px;text-decoration:none;">
+            <i class="fa-solid fa-envelope" style="font-size:11px;"></i> <%= lead.email %>
+          </a>
+          <% } %>
+          <% if (lead.phone) { %>
+          <div style="margin-top:2px;">
+            <a href="tel:<%= lead.phone.replace(/\s/g,'') %>" style="color:var(--text-body);font-size:12.5px;text-decoration:none;">
+              <i class="fa-solid fa-phone" style="font-size:11px;color:var(--gray-mid);"></i> <%= lead.phone %>
+            </a>
+          </div>
+          <% } %>
+        </td>
+        <td>
+          <span class="badge badge-<%= lead.source_division === 'real-estate' ? 're' : 'ins' %>">
+            <%= lead.source_division === 'real-estate' ? 'Real Estate' : 'Insurance' %>
+          </span>
+        </td>
+        <td>
+          <% if (lead.property_title) { %>
+          <a href="/listing.html?slug=<%= lead.property_slug %>" target="_blank" style="font-size:12.5px;color:var(--blue-mid);text-decoration:none;">
+            <%= lead.property_title %>
+          </a>
+          <% } else { %>
+          <span style="color:var(--gray-mid);font-size:12.5px;">—</span>
+          <% } %>
+        </td>
+        <td>
+          <select class="status-select" data-id="<%= lead.id %>" data-csrf="<%= csrfToken %>"
+                  onchange="updateStatus(this)">
+            <option value="new"       <%= lead.status === 'new'       ? 'selected' : '' %>>New</option>
+            <option value="contacted" <%= lead.status === 'contacted' ? 'selected' : '' %>>Contacted</option>
+            <option value="closed"    <%= lead.status === 'closed'    ? 'selected' : '' %>>Closed</option>
+          </select>
+        </td>
+        <td style="font-size:12px;color:var(--gray-mid);white-space:nowrap;">
+          <%= new Date(lead.created_at).toLocaleDateString('en-NA', {day:'numeric',month:'short',year:'numeric'}) %>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-outline" style="padding:4px 8px;"
+                  onclick="toggleExpand('<%= lead.id %>')" title="View message">
+            <i class="fa-solid fa-chevron-down" id="chevron-<%= lead.id %>"></i>
+          </button>
+        </td>
+      </tr>
+      <tr class="lead-expand" id="expand-<%= lead.id %>">
+        <td colspan="7">
+          <div class="lead-expand-inner">
+            <% if (lead.message) { %>
+            <strong style="color:var(--navy);font-size:13px;">Message:</strong>
+            <p style="margin-top:6px;white-space:pre-wrap;"><%= lead.message %></p>
+            <% } else { %>
+            <span style="color:var(--gray-mid);font-style:italic;">No message provided.</span>
+            <% } %>
+            <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;">
+              <% if (lead.email) { %>
+              <a href="mailto:<%= lead.email %>" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-envelope"></i> Email
+              </a>
+              <% } %>
+              <% if (lead.phone) { %>
+              <a href="https://wa.me/264<%= lead.phone.replace(/^0/, '').replace(/\s/g,'') %>" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+              <a href="tel:<%= lead.phone.replace(/\s/g,'') %>" class="btn btn-sm btn-outline">
+                <i class="fa-solid fa-phone"></i> Call
+              </a>
+              <% } %>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<script>
+function toggleExpand(id) {
+  const row     = document.getElementById(`expand-${id}`);
+  const chevron = document.getElementById(`chevron-${id}`);
+  const isOpen  = row.classList.toggle('open');
+  chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
+}
+
+async function updateStatus(select) {
+  const id     = select.dataset.id;
+  const csrf   = select.dataset.csrf;
+  const status = select.value;
+  await fetch(`/admin/leads/${id}/status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `status=${encodeURIComponent(status)}&_csrf=${encodeURIComponent(csrf)}`,
+  });
+}
+</script>
+
+<%- include('_foot') %>

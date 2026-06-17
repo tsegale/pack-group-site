@@ -1,0 +1,101 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+  <div class="stat-card accent-blue">
+    <div class="stat-card-label">Active Listings</div>
+    <div class="stat-card-value"><%= stats.activeListings %></div>
+    <div class="stat-card-sub"><%= stats.totalListings %> total properties</div>
+  </div>
+  <div class="stat-card accent-gold">
+    <div class="stat-card-label">New Leads (7 days)</div>
+    <div class="stat-card-value"><%= stats.newLeads %></div>
+    <div class="stat-card-sub"><%= stats.newStatus %> awaiting response</div>
+  </div>
+  <div class="stat-card accent-navy">
+    <div class="stat-card-label">Real Estate Leads</div>
+    <div class="stat-card-value"><%= stats.reLeads %></div>
+    <div class="stat-card-sub">Total enquiries</div>
+  </div>
+  <div class="stat-card accent-cyan">
+    <div class="stat-card-label">Insurance Leads</div>
+    <div class="stat-card-value"><%= stats.insLeads %></div>
+    <div class="stat-card-sub">Total enquiries</div>
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="quick-actions">
+  <a href="/admin/properties/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus"></i> Add Property
+  </a>
+  <a href="/admin/leads?status=new" class="btn btn-gold">
+    <i class="fa-solid fa-bell"></i> View New Leads (<%= stats.newStatus %>)
+  </a>
+  <a href="/admin/insurance" class="btn btn-outline">
+    <i class="fa-solid fa-shield-halved"></i> Insurance Products
+  </a>
+  <a href="/admin/settings" class="btn btn-outline">
+    <i class="fa-solid fa-gear"></i> Site Settings
+  </a>
+</div>
+
+<!-- RECENT LEADS -->
+<div class="section-header">
+  <h2>Recent Leads</h2>
+  <a href="/admin/leads" class="btn btn-sm btn-outline">View All &rarr;</a>
+</div>
+
+<% if (recentLeads.length === 0) { %>
+<div class="table-wrap">
+  <div class="empty-state">
+    <i class="fa-solid fa-inbox"></i>
+    <p>No leads yet. They will appear here when visitors submit enquiry forms.</p>
+  </div>
+</div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>Division</th>
+        <th>Property</th>
+        <th>Status</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% recentLeads.forEach(lead => { %>
+      <tr>
+        <td><strong><%= lead.name %></strong></td>
+        <td>
+          <% if (lead.email) { %><div style="font-size:12px;color:var(--gray-mid);"><%= lead.email %></div><% } %>
+          <% if (lead.phone) { %><div style="font-size:12px;"><%= lead.phone %></div><% } %>
+        </td>
+        <td>
+          <span class="badge badge-<%= lead.source_division === 'real-estate' ? 're' : 'ins' %>">
+            <%= lead.source_division === 'real-estate' ? 'Real Estate' : 'Insurance' %>
+          </span>
+        </td>
+        <td><%= lead.property_title || '—' %></td>
+        <td><span class="badge badge-<%= lead.status %>"><%= lead.status %></span></td>
+        <td style="font-size:12px;color:var(--gray-mid);">
+          <%= new Date(lead.created_at).toLocaleDateString('en-NA', {day:'numeric',month:'short',year:'numeric'}) %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<%- include('_foot') %>

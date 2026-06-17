@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Listing | Pack Real Estate</title>
+<link rel="icon" type="image/png" href="assets/logo/realestate_logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+.listing-hero{padding:140px 6% 0;background:var(--navy);position:relative;overflow:hidden;}
+.listing-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue-mid),var(--cyan),transparent);}
+.listing-hero-inner{max-width:1140px;margin:0 auto;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:24px;}
+.breadcrumb a{color:var(--cyan);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+.breadcrumb span{color:rgba(255,255,255,0.25);}
+.listing-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;padding-bottom:40px;}
+.listing-title h1{font-family:'Playfair Display',serif;font-size:clamp(30px,4.5vw,52px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:10px;}
+.listing-title h1 em{font-style:normal;color:var(--cyan);}
+.listing-location{font-size:14px;color:rgba(255,255,255,0.55);display:flex;align-items:center;gap:6px;}
+.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.badge{font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;letter-spacing:.3px;}
+.badge-sale{background:rgba(55,138,221,.2);color:var(--blue-light);border:1px solid rgba(55,138,221,.35);}
+.badge-units{background:rgba(0,200,224,.15);color:var(--cyan);border:1px solid rgba(0,200,224,.3);}
+.badge-invest{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.3);}
+.badge-floor{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);}
+.listing-price-box{text-align:right;flex-shrink:0;}
+.price-label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:4px;}
+.price-main{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,46px);font-weight:700;color:var(--white);line-height:1;}
+.price-excl{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;}
+.price-levy{font-size:13px;color:rgba(255,255,255,.5);margin-top:8px;}
+.gallery-section{background:var(--off-white);padding:0;}
+.gallery-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:300px 300px;gap:4px;max-height:604px;overflow:hidden;}
+.gallery-item{overflow:hidden;position:relative;cursor:pointer;}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
+.gallery-item:hover img{transform:scale(1.05);}
+.gallery-item.main{grid-row:span 2;}
+.gallery-item .overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(30,61,114,.5));opacity:0;transition:opacity .3s;}
+.gallery-item:hover .overlay{opacity:1;}
+.gallery-count{position:absolute;bottom:14px;right:14px;background:rgba(30,61,114,.8);color:var(--white);font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);}
+.modal-bg{display:none;position:fixed;inset:0;z-index:1000;background:rgba(5,12,25,.96);align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal-inner{position:relative;max-width:90vw;max-height:90vh;}
+.modal-inner img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;}
+.modal-close{position:absolute;top:-40px;right:0;background:none;border:none;color:var(--white);font-size:28px;cursor:pointer;line-height:1;}
+.modal-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--white);font-size:22px;width:44px;height:44px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.modal-nav:hover{background:rgba(55,138,221,.4);}
+.modal-prev{left:-56px;}
+.modal-next{right:-56px;}
+.listing-body{padding:60px 6%;background:var(--white);}
+.listing-body-inner{max-width:1140px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:start;}
+.listing-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;}
+.spec-card{background:var(--off-white);border-radius:12px;padding:20px 16px;text-align:center;border:1px solid var(--gray-light);}
+.spec-icon{font-size:26px;margin-bottom:8px;display:block;}
+.spec-val{font-size:20px;font-weight:700;color:var(--navy);display:block;}
+.spec-lbl{font-size:11px;color:var(--gray-mid);text-transform:uppercase;letter-spacing:1px;}
+.listing-desc h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--navy);margin-bottom:16px;}
+.listing-desc p{font-size:15px;line-height:1.8;color:var(--gray-mid);margin-bottom:14px;}
+.features-list{list-style:none;margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.features-list li{font-size:14px;color:var(--text-body);display:flex;align-items:center;gap:10px;}
+.features-list li::before{content:'✓';color:var(--blue-mid);font-weight:700;font-size:14px;width:22px;height:22px;background:rgba(55,138,221,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.listing-sidebar{display:flex;flex-direction:column;gap:20px;}
+.sidebar-card{background:var(--off-white);border-radius:16px;padding:28px 24px;border:1px solid var(--gray-light);}
+.sidebar-card.dark{background:var(--navy);border-color:rgba(55,138,221,.25);}
+.sidebar-price-big{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--navy);margin-bottom:4px;}
+.sidebar-card.dark .sidebar-price-big{color:var(--white);}
+.sidebar-levy{font-size:13px;color:var(--gray-mid);margin-bottom:20px;}
+.sidebar-card.dark .sidebar-levy{color:rgba(255,255,255,.45);}
+.sidebar-divider{height:1px;background:var(--gray-light);margin:16px 0;}
+.sidebar-card.dark .sidebar-divider{background:rgba(255,255,255,.08);}
+.sidebar-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;}
+.sidebar-row-lbl{font-size:13px;color:var(--gray-mid);}
+.sidebar-card.dark .sidebar-row-lbl{color:rgba(255,255,255,.45);}
+.sidebar-row-val{font-size:13px;font-weight:600;color:var(--navy);}
+.sidebar-card.dark .sidebar-row-val{color:var(--white);}
+.contact-btn{display:block;width:100%;text-align:center;background:var(--blue-mid);color:var(--white);padding:15px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;transition:all .22s;margin-top:16px;border:none;cursor:pointer;}
+.contact-btn:hover{background:var(--blue-dark);transform:translateY(-1px);}
+.contact-btn.outline{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:var(--white);}
+.contact-btn.outline:hover{border-color:var(--cyan);color:var(--cyan);}
+.agent-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.agent-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue-mid),var(--cyan));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:16px;flex-shrink:0;}
+.agent-name{font-size:15px;font-weight:600;color:var(--white);}
+.agent-role{font-size:12px;color:rgba(255,255,255,.45);}
+.more-listings{padding:60px 6%;background:var(--off-white);text-align:center;}
+#listing-loading{display:flex;align-items:center;justify-content:center;min-height:300px;font-size:18px;color:var(--gray-mid);}
+#listing-error{display:none;padding:60px 6%;text-align:center;}
+@media(max-width:900px){.listing-body-inner{grid-template-columns:1fr;}.listing-sidebar{order:-1;}.gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:220px 220px 220px;}.gallery-item.main{grid-row:span 1;}.listing-specs{grid-template-columns:1fr 1fr;}.listing-title-row{flex-direction:column;gap:20px;}.listing-price-box{text-align:left;}.modal-prev{left:-10px;}.modal-next{right:-10px;}}
+@media(max-width:600px){.gallery-grid{grid-template-columns:1fr;grid-template-rows:repeat(5,200px);}.features-list{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="nav-logo">
+  </a>
+  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+  <ul class="nav-links" id="navlinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="real-estate.html" class="active">Real Estate</a></li>
+    <li><a href="insurance.html">Insurance</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="contact.html" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- LOADING STATE -->
+<div id="listing-loading" style="margin-top:72px;">
+  <div style="text-align:center;">
+    <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;color:var(--blue-mid);"></i>
+    <p style="margin-top:12px;">Loading listing&hellip;</p>
+  </div>
+</div>
+
+<!-- ERROR STATE -->
+<div id="listing-error" style="margin-top:72px;">
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <span class="eyebrow" style="color:var(--cyan)">Not Found</span>
+      <h1>Property not found.</h1>
+      <p>This listing may have been removed or the link may be incorrect.</p>
+    </div>
+  </section>
+  <div class="more-listings">
+    <a href="real-estate.html" class="btn btn-primary">View All Listings &rarr;</a>
+  </div>
+</div>
+
+<!-- DYNAMIC CONTENT -->
+<div id="listing-content" style="display:none;">
+
+  <section class="listing-hero">
+    <div class="listing-hero-inner">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a><span>/</span>
+        <a href="real-estate.html">Real Estate</a><span>/</span>
+        <span id="bc-title" style="color:rgba(255,255,255,0.6);"></span>
+      </div>
+      <div class="listing-title-row">
+        <div class="listing-title">
+          <h1 id="lh-title"></h1>
+          <div class="listing-location"><i class="fa-solid fa-location-dot"></i> <span id="lh-location"></span></div>
+          <div class="badge-row" id="lh-badges"></div>
+        </div>
+        <div class="listing-price-box">
+          <div class="price-label">Asking Price</div>
+          <div class="price-main" id="lh-price"></div>
+          <div class="price-excl">Excl. Transfer &amp; Bond Costs</div>
+          <div class="price-levy" id="lh-levy" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gallery-section">
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+
+  <div class="modal-bg" id="modal" onclick="handleModalClick(event)">
+    <div class="modal-inner">
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-nav modal-prev" onclick="modalNav(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+      <img id="modal-img" src="" alt="Property photo">
+      <button class="modal-nav modal-next" onclick="modalNav(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <section class="listing-body">
+    <div class="listing-body-inner">
+      <div class="listing-left">
+        <div class="listing-specs" id="listing-specs"></div>
+        <div class="listing-desc reveal" id="listing-desc">
+          <h3>About This Property</h3>
+          <div id="listing-description"></div>
+        </div>
+      </div>
+      <div class="listing-sidebar">
+        <div class="sidebar-card" id="sidebar-price-card"></div>
+        <div class="sidebar-card dark reveal" id="sidebar-agent-card"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="more-listings">
+    <div class="inner">
+      <span class="section-label reveal" style="display:block;text-align:center;">Pack Real Estate</span>
+      <h2 class="section-title reveal" style="text-align:center;margin-bottom:12px;">View more properties</h2>
+      <p class="section-intro reveal" style="text-align:center;margin:0 auto 36px;">Explore our other listings or contact us to discuss your requirements across Namibia.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="reveal">
+        <a href="real-estate.html#listings" class="btn btn-primary">All Listings</a>
+        <a href="contact.html" class="btn btn-outline" style="color:var(--navy);border-color:var(--gray-light);">Contact Our Team</a>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /listing-content -->
+
+<footer>
+  <div class="footer-top-bar"></div>
+  <div class="footer-main">
+    <div class="footer-inner">
+      <div class="footer-brand-col">
+        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="footer-logo" loading="lazy">
+        <p class="footer-tagline">&ldquo;Built on Trust. Driven by Unity.&rdquo;</p>
+        <p class="footer-desc">Uniting property and protection under one trusted name across Namibia.</p>
+        <div class="footer-contact">
+          <a href="tel:0858196462" class="footer-contact-link"><i class="fa-solid fa-phone"></i> 085 819 6462</a>
+          <a href="https://wa.me/264858196462" class="footer-contact-link"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
+        </div>
+      </div>
+      <div class="footer-nav-col">
+        <h6 class="footer-col-title">Navigate</h6>
+        <nav class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="real-estate.html">Real Estate</a>
+          <a href="insurance.html">Insurance</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+      <div class="footer-div-col">
+        <h6 class="footer-col-title">Our Divisions</h6>
+        <a href="real-estate.html" class="footer-div-card">
+          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" loading="lazy">
+          <span>Property Solutions</span>
+        </a>
+        <a href="insurance.html" class="footer-div-card">
+          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" loading="lazy">
+          <span>Protection &amp; Cover</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <div class="footer-reg-strip">
+        <span>Pack Real Estate</span><span class="footer-dot">&bull;</span><span>Pack Insurance Broker</span>
+      </div>
+      <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
+    </div>
+    <div class="footer-credit">
+      <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
+        <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc.">
+        <span>Designed &amp; Hosted by Spybitech, Inc. (www.spybitech.com.na)</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script src="shared.js"></script>
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const slug   = params.get('slug');
+
+  if (!slug) { showError(); return; }
+
+  fetch('/api/properties/' + encodeURIComponent(slug))
+    .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+    .then(p => renderProperty(p))
+    .catch(() => showError());
+
+  function showError() {
+    document.getElementById('listing-loading').style.display = 'none';
+    document.getElementById('listing-error').style.display   = 'block';
+  }
+
+  function fmt(n) {
+    return 'N$' + Number(n).toLocaleString('en-NA');
+  }
+
+  let galleryImgs = [];
+  let currentIdx  = 0;
+
+  function renderProperty(p) {
+    document.title = p.title + ' | Pack Real Estate';
+
+    // Breadcrumb
+    document.getElementById('bc-title').textContent = p.title + ', ' + p.location;
+
+    // Title
+    const titleParts = p.title.split(' ');
+    const first = titleParts.slice(0, -1).join(' ') || p.title;
+    const last  = titleParts.length > 1 ? titleParts[titleParts.length - 1] : '';
+    document.getElementById('lh-title').innerHTML = first + (last ? '<br><em>' + last + '</em>' : '');
+
+    // Location
+    document.getElementById('lh-location').textContent = p.location;
+
+    // Badges
+    const badgeContainer = document.getElementById('lh-badges');
+    const typeBadge = p.type === 'sale' ? 'For Sale' : 'To Rent';
+    badgeContainer.innerHTML = `<span class="badge badge-sale">${typeBadge}</span>`;
+    if (p.units_available > 1) {
+      badgeContainer.innerHTML += `<span class="badge badge-units"><i class="fa-solid fa-fire"></i> ${p.units_available} Units Available</span>`;
+    }
+    if (p.featured) {
+      badgeContainer.innerHTML += `<span class="badge badge-invest"><i class="fa-solid fa-chart-line"></i> Investment Opportunity</span>`;
+    }
+
+    // Price
+    document.getElementById('lh-price').textContent = fmt(p.price);
+    const levyEl = document.getElementById('lh-levy');
+    if (p.levy) {
+      levyEl.textContent = 'Levy: N$' + p.levy + ' / month';
+      levyEl.style.display = '';
+    }
+
+    // Gallery
+    galleryImgs = p.images || [];
+    const grid = document.getElementById('gallery-grid');
+    if (galleryImgs.length === 0) {
+      grid.closest('.gallery-section').style.display = 'none';
+    } else {
+      const displayImgs = galleryImgs.slice(0, 5);
+      const mainImg = galleryImgs.find(i => i.is_cover) || galleryImgs[0];
+      const rest = displayImgs.filter(i => i.filename !== mainImg.filename);
+
+      let gridHTML = `
+        <div class="gallery-item main" onclick="openModal(${galleryImgs.indexOf(mainImg)})">
+          <img src="/${mainImg.filename}" alt="${p.title}" loading="lazy">
+          <div class="overlay"></div>
+        </div>
+      `;
+      rest.slice(0, 4).forEach((img, i) => {
+        const isLast = i === 3 && galleryImgs.length > 5;
+        gridHTML += `
+          <div class="gallery-item" onclick="openModal(${galleryImgs.indexOf(img)})">
+            <img src="/${img.filename}" alt="Photo ${i+2}" loading="lazy">
+            <div class="overlay"></div>
+            ${isLast ? `<div class="gallery-count"><i class="fa-solid fa-camera"></i> View All ${galleryImgs.length} Photos</div>` : ''}
+          </div>
+        `;
+      });
+      grid.innerHTML = gridHTML;
+    }
+
+    // Specs
+    const specsEl = document.getElementById('listing-specs');
+    specsEl.innerHTML = `
+      <div class="spec-card"><span class="spec-icon"><i class="fa-solid fa-bed"></i></span><span class="spec-val">${p.bedrooms}</span><span class="spec-lbl">Bedrooms</span></div>
+      <div class="spec-card"><span class="spec-icon"><i class="fa-solid fa-bath"></i></span><span class="spec-val">${p.bathrooms}</span><span class="spec-lbl">Bathrooms</span></div>
+      <div class="spec-card"><span class="spec-icon"><i class="fa-solid fa-map-location-dot"></i></span><span class="spec-val" style="font-size:13px;">${p.location.split(',')[0]}</span><span class="spec-lbl">Location</span></div>
+      <div class="spec-card"><span class="spec-icon"><i class="fa-solid fa-users"></i></span><span class="spec-val">${p.units_available}</span><span class="spec-lbl">Units Available</span></div>
+    `;
+
+    // Description
+    const descEl = document.getElementById('listing-description');
+    if (p.description) {
+      descEl.innerHTML = p.description.split('\n\n').map(para =>
+        para.trim() ? '<p>' + para.replace(/\n/g, '<br>') + '</p>' : ''
+      ).join('');
+    }
+
+    // Sidebar price card
+    const phone = p.contact_phone || '0858196462';
+    const wa    = '264' + phone.replace(/^0/, '').replace(/\s/g, '');
+    document.getElementById('sidebar-price-card').innerHTML = `
+      <div class="price-label" style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--gray-mid);margin-bottom:4px;">Selling Price</div>
+      <div class="sidebar-price-big">${fmt(p.price)}</div>
+      <div class="sidebar-levy">${p.levy ? 'Monthly levy: N$' + p.levy : 'Monthly levy payable'}</div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-row"><span class="sidebar-row-lbl">Type</span><span class="sidebar-row-val">${p.type === 'sale' ? 'For Sale' : 'To Rent'}</span></div>
+      <div class="sidebar-row"><span class="sidebar-row-lbl">Bedrooms</span><span class="sidebar-row-val">${p.bedrooms}</span></div>
+      <div class="sidebar-row"><span class="sidebar-row-lbl">Bathrooms</span><span class="sidebar-row-val">${p.bathrooms}</span></div>
+      ${p.units_available > 1 ? `<div class="sidebar-row"><span class="sidebar-row-lbl">Units Available</span><span class="sidebar-row-val">${p.units_available}</span></div>` : ''}
+      <div class="sidebar-row"><span class="sidebar-row-lbl">Status</span><span class="sidebar-row-val">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span></div>
+      <a href="tel:${phone}" class="contact-btn" style="margin-top:20px;"><i class="fa-solid fa-phone"></i> Call to Book a Viewing</a>
+      <a href="https://wa.me/${wa}" target="_blank" class="contact-btn" style="margin-top:10px;background:#25D366;"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us</a>
+    `;
+
+    // Sidebar agent card
+    document.getElementById('sidebar-agent-card').innerHTML = `
+      <div class="agent-row">
+        <div class="agent-avatar">PR</div>
+        <div><div class="agent-name">Pack Real Estate</div><div class="agent-role">Your Property Specialists</div></div>
+      </div>
+      <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" style="height:48px;width:auto;object-fit:contain;margin-bottom:16px;" loading="lazy">
+      <div class="sidebar-divider"></div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;">Professional property solutions across Namibia. Contact us today to arrange a viewing or enquire about this listing.</p>
+      <a href="contact.html?property=${encodeURIComponent(p.slug)}" class="contact-btn outline" style="margin-top:16px;">Enquire About This Listing</a>
+    `;
+
+    // Show content
+    document.getElementById('listing-loading').style.display = 'none';
+    document.getElementById('listing-content').style.display  = 'block';
+
+    // Re-run scroll reveal for newly added elements
+    document.querySelectorAll('.reveal').forEach(el => {
+      observer.observe(el);
+    });
+  }
+
+  window.openModal = function(idx) {
+    currentIdx = idx;
+    document.getElementById('modal-img').src = '/' + galleryImgs[idx].filename;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeModal = function() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  window.modalNav = function(dir) {
+    currentIdx = (currentIdx + dir + galleryImgs.length) % galleryImgs.length;
+    document.getElementById('modal-img').src = '/' + galleryImgs[currentIdx].filename;
+  };
+  window.handleModalClick = function(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowRight') modalNav(1);
+    if (e.key === 'ArrowLeft')  modalNav(-1);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<%- include('_head', { title, page, user, csrfToken }) %>
+
+<% if (flash) { %>
+<div class="alert alert-<%= flash.type === 'success' ? 'success' : 'error' %>">
+  <i class="fa-solid fa-<%= flash.type === 'success' ? 'circle-check' : 'circle-exclamation' %>"></i>
+  <%= flash.msg %>
+</div>
+<% } %>
+
+<div style="max-width:540px;">
+  <div class="form-card">
+    <div class="form-card-title"><i class="fa-solid fa-circle-user" style="color:var(--blue-mid);margin-right:8px;"></i>Account Details</div>
+    <p style="font-size:13px;color:var(--gray-mid);margin-bottom:18px;">
+      Signed in as <strong><%= user.name %></strong> &bull; <%= user.email %>
+    </p>
+
+    <form method="POST" action="/admin/account">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+      <div class="form-group">
+        <label for="current_password">Current Password *</label>
+        <input type="password" id="current_password" name="current_password"
+               placeholder="Your current password" required autocomplete="current-password">
+        <div class="form-hint">Required to confirm any changes below.</div>
+      </div>
+
+      <div style="height:1px;background:var(--gray-light);margin:20px 0;"></div>
+
+      <div class="form-group">
+        <label for="new_email">New Email Address</label>
+        <input type="email" id="new_email" name="new_email"
+               placeholder="<%= user.email %>" autocomplete="email">
+        <div class="form-hint">Leave blank to keep current email.</div>
+      </div>
+
+      <div style="height:1px;background:var(--gray-light);margin:20px 0;"></div>
+
+      <div class="form-group">
+        <label for="new_password">New Password</label>
+        <input type="password" id="new_password" name="new_password"
+               placeholder="Min 8 characters" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm New Password</label>
+        <input type="password" id="confirm_password" name="confirm_password"
+               placeholder="Repeat new password" autocomplete="new-password">
+        <div class="form-hint">Leave both blank to keep current password.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-floppy-disk"></i> Update Account
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- include('_foot') %>

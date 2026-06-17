@@ -170,14 +170,37 @@
     <script>
       document.getElementById('quote-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        var name = document.getElementById('q-name').value;
-        var cover = document.getElementById('q-cover').value;
-        var message = document.getElementById('q-details').value;
-        var phone = document.getElementById('q-phone').value;
-        var text = encodeURIComponent('Hello Pack Insurance Broker!\n\nName: ' + name + '\nPhone: ' + phone + '\nCover type: ' + cover + '\n\nDetails: ' + message);
-        window.open('https://wa.me/264858196462?text=' + text, '_blank');
-        this.style.display = 'none';
-        document.getElementById('quote-success').style.display = 'block';
+        var form    = this;
+        var btn     = form.querySelector('button[type="submit"]');
+        var name    = document.getElementById('q-name').value.trim();
+        var email   = document.getElementById('q-email').value.trim();
+        var phone   = document.getElementById('q-phone').value.trim();
+        var cover   = document.getElementById('q-cover').value;
+        var details = document.getElementById('q-details').value.trim();
+        var message = (cover ? 'Cover type: ' + cover + '\n' : '') + (details || '');
+        btn.disabled    = true;
+        btn.textContent = 'Sending…';
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, phone: phone, message: message, source_division: 'insurance' })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.success) {
+            form.style.display = 'none';
+            document.getElementById('quote-success').style.display = 'block';
+          } else {
+            btn.disabled    = false;
+            btn.textContent = 'Request My Quote →';
+            alert(data.error || 'Could not submit request. Please try again.');
+          }
+        })
+        .catch(function() {
+          btn.disabled    = false;
+          btn.textContent = 'Request My Quote →';
+          alert('Network error. Please check your connection and try again.');
+        });
       });
     </script>
   </div>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Pack Group Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/admin-assets/css/admin.css">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+</head>
+<body class="admin-body">
+
+<!-- SIDEBAR -->
+<nav class="admin-sidebar">
+  <div class="sidebar-brand">
+    <img src="/assets/logo/packgroup_logo.png" alt="Pack Group" class="sidebar-logo">
+    <span class="sidebar-admin-label">Admin Panel</span>
+  </div>
+  <ul class="sidebar-nav">
+    <li>
+      <a href="/admin/dashboard" class="<%= page === 'dashboard' ? 'active' : '' %>">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="/admin/properties" class="<%= page === 'properties' ? 'active' : '' %>">
+        <i class="fa-solid fa-house"></i> Properties
+      </a>
+    </li>
+    <li>
+      <a href="/admin/insurance" class="<%= page === 'insurance' ? 'active' : '' %>">
+        <i class="fa-solid fa-shield-halved"></i> Insurance
+      </a>
+    </li>
+    <li>
+      <a href="/admin/leads" class="<%= page === 'leads' ? 'active' : '' %>">
+        <i class="fa-solid fa-users"></i> Leads
+      </a>
+    </li>
+    <li>
+      <a href="/admin/settings" class="<%= page === 'settings' ? 'active' : '' %>">
+        <i class="fa-solid fa-gear"></i> Settings
+      </a>
+    </li>
+  </ul>
+  <div class="sidebar-bottom">
+    <a href="/admin/account" class="sidebar-account-link <%= page === 'account' ? 'active' : '' %>">
+      <i class="fa-solid fa-circle-user"></i>
+      <span><%= user.name %></span>
+    </a>
+    <a href="/admin/logout" class="sidebar-logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="admin-main">
+  <header class="admin-topbar">
+    <h1 class="admin-page-title"><%= title %></h1>
+    <a href="/" target="_blank" class="admin-view-site">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
+    </a>
+  </header>
+  <div class="admin-content">
