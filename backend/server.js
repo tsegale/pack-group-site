@@ -1,9 +1,11 @@
 require('dotenv').config();
-const express  = require('express');
-const path     = require('path');
-const crypto   = require('crypto');
-const session  = require('express-session');
-const helmet   = require('helmet');
+const express        = require('express');
+const path           = require('path');
+const crypto         = require('crypto');
+const session        = require('express-session');
+const helmet         = require('helmet');
+const BetterSqlite3  = require('better-sqlite3');
+const SqliteStore    = require('better-sqlite3-session-store')(session);
 
 const { requireAuth } = require('./middleware/requireAuth');
 
@@ -36,6 +38,10 @@ app.use(express.urlencoded({ extended: true }));
 
 /* ── SESSION ── */
 app.use(session({
+  store: new SqliteStore({
+    client: new BetterSqlite3(path.join(__dirname, 'db', 'sessions.db')),
+    expired: { clear: true, intervalMs: 15 * 60 * 1000 },
+  }),
   secret:            process.env.SESSION_SECRET || 'dev-secret-please-change',
   resave:            false,
   saveUninitialized: false,
