@@ -349,13 +349,13 @@ blockquote {
 
 /* ── STATS STRIP ── */
 .stats-strip {
-  background: linear-gradient(90deg, #07172c 0%, #0c2340 50%, #07172c 100%);
+  background: var(--off-white);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0;
   padding: 30px 6%;
-  border-bottom: 1px solid rgba(32, 99, 224, 0.2);
+  border-bottom: 1px solid var(--gray-light);
 }
 .stat {
   text-align: center;
@@ -365,19 +365,19 @@ blockquote {
   display: block;
   font-family: "Playfair Display", serif;
   font-size: 32px;
-  color: var(--cyan);
+  color: var(--blue-dark);
   font-weight: 700;
 }
 .stat span {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--gray-mid);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 .stat-div {
   width: 1px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--gray-light);
 }
 
 /* ── BUTTONS ── */
@@ -441,7 +441,7 @@ section {
   background: var(--off-white);
 }
 .section-dark {
-  background: linear-gradient(180deg, var(--navy-mid) 0%, var(--navy) 100%);
+  background: var(--off-white);
 }
 .inner {
   max-width: 1140px;
@@ -552,8 +552,8 @@ section {
 .phil-num {
   font-family: "Playfair Display", serif;
   font-size: 40px;
-  color: var(--cyan);
-  opacity: 0.25;
+  color: var(--blue-mid);
+  opacity: 0.35;
   display: block;
   line-height: 1;
   margin-bottom: 12px;
@@ -561,12 +561,12 @@ section {
 .phil-item h4 {
   font-size: 15px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 8px;
 }
 .phil-item p {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--gray-mid);
   line-height: 1.6;
 }
 
@@ -691,15 +691,15 @@ section {
   margin-top: 52px;
 }
 .dark-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(32, 99, 224, 0.22);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
   border-radius: 14px;
   padding: 28px 26px;
   transition: all 0.22s;
 }
 .dark-card:hover {
-  background: rgba(32, 99, 224, 0.12);
-  border-color: rgba(56, 189, 248, 0.45);
+  background: #eaf3fd;
+  border-color: rgba(55, 138, 221, 0.4);
   transform: translateY(-3px);
 }
 .dark-card-hd {
@@ -712,22 +712,23 @@ section {
   width: 46px;
   height: 46px;
   border-radius: 10px;
-  background: rgba(32, 99, 224, 0.22);
+  background: rgba(32, 99, 224, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
-  border: 1px solid rgba(32, 99, 224, 0.3);
+  border: 1px solid rgba(32, 99, 224, 0.22);
+  color: var(--blue-dark);
 }
 .dark-card h4 {
   font-size: 17px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--navy);
 }
 .dark-card p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--gray-mid);
   line-height: 1.65;
 }
 .tags {
@@ -736,9 +737,9 @@ section {
   gap: 8px;
 }
 .tag {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #ffffff;
+  background: rgba(55, 138, 221, 0.1);
+  border: 1px solid rgba(55, 138, 221, 0.3);
+  color: var(--navy);
   font-size: 12px;
   padding: 5px 13px;
   border-radius: 20px;
@@ -874,8 +875,8 @@ section {
   margin-top: 52px;
 }
 .contact-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(55, 138, 221, 0.25);
+  background: var(--white);
+  border: 1px solid var(--gray-light);
   border-radius: 18px;
   padding: 36px 30px;
 }
@@ -888,7 +889,7 @@ section {
 .contact-card h3 {
   font-family: "Playfair Display", serif;
   font-size: 22px;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 4px;
 }
 .contact-card .rno {
@@ -903,7 +904,7 @@ section {
   align-items: flex-start;
   gap: 10px;
   padding: 11px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--gray-light);
 }
 .cf:last-child {
   border-bottom: none;
@@ -913,19 +914,19 @@ section {
   font-weight: 600;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--cyan);
+  color: var(--blue-mid);
   min-width: 72px;
   padding-top: 1px;
 }
 .cf-val {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--gray-mid);
   font-style: italic;
 }
 
 /* ── FOOTER ── */
 footer {
-  background: var(--navy);
+  background: var(--navy-mid);
 }
 .footer-top-bar {
   height: 3px;
