@@ -4,23 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About | Pack Group</title>
-    <link rel="icon" type="image/png" href="assets/logo/packgroup_logo.png">
+    <link rel="icon" type="image/png" href="assets/logo/packgroup_logo.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="shared.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
   <body>
     <nav>
       <a href="index.html" class="nav-brand">
-        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="nav-logo">
+        <img
+          src="assets/logo/packgroup_logo.png"
+          alt="Pack Group"
+          class="nav-logo"
+        />
       </a>
-      <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+      <button class="hamburger" id="ham" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       <ul class="nav-links" id="navlinks">
         <li><a href="index.html">Home</a></li>
-        <li><a href="real-estate.html">Real Estate</a></li>
+        <li class="nav-has-dropdown">
+          <a href="real-estate.html" class="nav-dropdown-trigger"
+            >Real Estate</a
+          >
+          <ul class="nav-dropdown-menu">
+            <li><a href="real-estate.html">Overview</a></li>
+            <li><a href="listings.html">All Listings</a></li>
+          </ul>
+        </li>
         <li><a href="insurance.html">Insurance</a></li>
         <li><a href="about.html" class="active">About</a></li>
         <li><a href="contact.html" class="nav-cta">Contact</a></li>
@@ -35,8 +52,8 @@
         <h1 class="animate d1">Who We Are.<br /><em>Why We Exist.</em></h1>
         <p class="animate d2">
           The Pack Group brings together two specialist companies under one
-          unified brand philosophy, rooted in the belief that lasting
-          success is built through collaboration, trust and collective strength.
+          unified brand philosophy, rooted in the belief that lasting success is
+          built through collaboration, trust and collective strength.
         </p>
       </div>
     </section>
@@ -185,7 +202,9 @@
             </p>
           </div>
           <div class="svc-card reveal">
-            <div class="svc-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+            <div class="svc-icon">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
             <h4>Ethical Business Practices</h4>
             <p>
               We conduct business with full transparency, honesty and respect
@@ -220,8 +239,8 @@
             <div class="svc-icon"><i class="fa-solid fa-chart-line"></i></div>
             <h4>Continuous Growth</h4>
             <p>
-              We evolve, learn and improve, so that our clients always
-              benefit from the best the pack has to offer.
+              We evolve, learn and improve, so that our clients always benefit
+              from the best the pack has to offer.
             </p>
           </div>
         </div>
@@ -234,66 +253,85 @@
     </section>
 
     <footer>
-  <div class="footer-top-bar"></div>
-  <div class="footer-main">
-    <div class="footer-inner">
+      <div class="footer-top-bar"></div>
+      <div class="footer-main">
+        <div class="footer-inner">
+          <div class="footer-brand-col">
+            <img
+              src="assets/logo/packgroup_logo.png"
+              alt="Pack Group"
+              class="footer-logo"
+              loading="lazy"
+            />
+            <p class="footer-tagline">
+              &ldquo;Built on Trust. Driven by Unity.&rdquo;
+            </p>
+            <p class="footer-desc">
+              Uniting property and protection under one trusted name across
+              Namibia.
+            </p>
+            <div class="footer-contact">
+              <a href="tel:0858196462" class="footer-contact-link">
+                <i class="fa-solid fa-phone"></i> 085 819 6462
+              </a>
+              <a href="https://wa.me/264858196462" class="footer-contact-link">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+              </a>
+            </div>
+          </div>
 
-      <div class="footer-brand-col">
-        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="footer-logo" loading="lazy">
-        <p class="footer-tagline">&ldquo;Built on Trust. Driven by Unity.&rdquo;</p>
-        <p class="footer-desc">Uniting property and protection under one trusted name across Namibia.</p>
-        <div class="footer-contact">
-          <a href="tel:0858196462" class="footer-contact-link">
-            <i class="fa-solid fa-phone"></i> 085 819 6462
-          </a>
-          <a href="https://wa.me/264858196462" class="footer-contact-link">
-            <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+          <div class="footer-nav-col">
+            <h6 class="footer-col-title">Navigate</h6>
+            <nav class="footer-links">
+              <a href="index.html">Home</a>
+              <a href="real-estate.html">Real Estate</a>
+              <a href="insurance.html">Insurance</a>
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+            </nav>
+          </div>
+
+          <div class="footer-div-col">
+            <h6 class="footer-col-title">Our Divisions</h6>
+            <a href="real-estate.html" class="footer-div-card">
+              <img
+                src="assets/logo/realestate_logo.png"
+                alt="Pack Real Estate"
+                loading="lazy"
+              />
+              <span>Property Solutions</span>
+            </a>
+            <a href="insurance.html" class="footer-div-card">
+              <img
+                src="assets/logo/insurance_logo.png"
+                alt="Pack Insurance Broker"
+                loading="lazy"
+              />
+              <span>Protection &amp; Cover</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <div class="footer-reg-strip">
+            <span>Pack Real Estate</span>
+            <span class="footer-dot">&bull;</span>
+            <span>Pack Insurance Broker</span>
+          </div>
+          <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
+        </div>
+        <div class="footer-credit">
+          <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
+            <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc." />
+            <span
+              >Designed &amp; Hosted by Spybitech, Inc.
+              (www.spybitech.com.na)</span
+            >
           </a>
         </div>
       </div>
-
-      <div class="footer-nav-col">
-        <h6 class="footer-col-title">Navigate</h6>
-        <nav class="footer-links">
-          <a href="index.html">Home</a>
-          <a href="real-estate.html">Real Estate</a>
-          <a href="insurance.html">Insurance</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-        </nav>
-      </div>
-
-      <div class="footer-div-col">
-        <h6 class="footer-col-title">Our Divisions</h6>
-        <a href="real-estate.html" class="footer-div-card">
-          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" loading="lazy">
-          <span>Property Solutions</span>
-        </a>
-        <a href="insurance.html" class="footer-div-card">
-          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" loading="lazy">
-          <span>Protection &amp; Cover</span>
-        </a>
-      </div>
-
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-bottom-inner">
-      <div class="footer-reg-strip">
-        <span>Pack Real Estate</span>
-        <span class="footer-dot">&bull;</span>
-        <span>Pack Insurance Broker</span>
-      </div>
-      <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
-    </div>
-    <div class="footer-credit">
-      <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
-        <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc.">
-        <span>Designed &amp; Hosted by Spybitech, Inc. (www.spybitech.com.na)</span>
-      </a>
-    </div>
-  </div>
-</footer>
+    </footer>
     <script src="shared.js"></script>
   </body>
 </html>

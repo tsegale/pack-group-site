@@ -1,169 +1,312 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pack Real Estate | Property Solutions</title>
-<link rel="icon" type="image/png" href="assets/logo/realestate_logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
-<nav>
-  <a href="index.html" class="nav-brand">
-    <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="nav-logo">
-  </a>
-  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-  <ul class="nav-links" id="navlinks">
-    <li><a href="index.html" >Home</a></li>
-    <li><a href="real-estate.html" class='active'>Real Estate</a></li>
-    <li><a href="insurance.html" >Insurance</a></li>
-    <li><a href="about.html" >About</a></li>
-    <li><a href="contact.html" class="nav-cta" >Contact</a></li>
-  </ul>
-</nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pack Real Estate | Property Solutions</title>
+    <link rel="icon" type="image/png" href="assets/logo/realestate_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="nav-brand">
+        <img
+          src="assets/logo/realestate_logo.png"
+          alt="Pack Real Estate"
+          class="nav-logo"
+        />
+      </a>
+      <button class="hamburger" id="ham" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-has-dropdown">
+          <a href="real-estate.html" class="nav-dropdown-trigger active"
+            >Real Estate</a
+          >
+          <ul class="nav-dropdown-menu">
+            <li><a href="real-estate.html" class="active">Overview</a></li>
+            <li><a href="listings.html">All Listings</a></li>
+          </ul>
+        </li>
+        <li><a href="insurance.html">Insurance</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="nav-cta">Contact</a></li>
+      </ul>
+    </nav>
 
-<section class="page-hero">
-  <div class="page-hero-inner">
-    <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="page-hero-logo">
-    <span class="eyebrow animate" style="color:var(--cyan)">Pack Real Estate</span>
-    <h1 class="animate d1">Your Property.<br><em>Our Purpose.</em></h1>
-    <p class="animate d2">Whether you are buying your first home, growing an investment portfolio or seeking commercial space, Pack Real Estate delivers professional property solutions designed around your unique goals.</p>
-  </div>
-</section>
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <img
+          src="assets/logo/realestate_logo.png"
+          alt="Pack Real Estate"
+          class="page-hero-logo"
+        />
+        <span class="eyebrow animate" style="color: var(--cyan)"
+          >Pack Real Estate</span
+        >
+        <h1 class="animate d1">Your Property.<br /><em>Our Purpose.</em></h1>
+        <p class="animate d2">
+          Whether you are buying your first home, growing an investment
+          portfolio or seeking commercial space, Pack Real Estate delivers
+          professional property solutions designed around your unique goals.
+        </p>
+      </div>
+    </section>
 
-<section class="section-light">
-  <div class="inner">
-    <span class="section-label reveal">Our Services</span>
-    <h2 class="section-title reveal">Everything you need,<br>in one professional team.</h2>
-    <div class="services-grid">
-      <div class="svc-card reveal">
-        <div class="svc-icon"><i class="fa-solid fa-house"></i></div>
-        <h4>Residential Real Estate</h4>
-        <ul>
-          <li>Buying and selling homes</li>
-          <li>Property listings and marketing</li>
-          <li>First-time buyer assistance</li>
-        </ul>
-      </div>
-      <div class="svc-card reveal">
-        <div class="svc-icon"><i class="fa-solid fa-building"></i></div>
-        <h4>Commercial Real Estate</h4>
-        <ul>
-          <li>Office and retail property solutions</li>
-          <li>Commercial leasing and sales</li>
-          <li>Investment property opportunities</li>
-        </ul>
-      </div>
-      <div class="svc-card reveal">
-        <div class="svc-icon"><i class="fa-solid fa-key"></i></div>
-        <h4>Rental Services</h4>
-        <ul>
-          <li>Tenant placement</li>
-          <li>Rental property marketing</li>
-          <li>Lease management support</li>
-        </ul>
-      </div>
-      <div class="svc-card reveal">
-        <div class="svc-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-        <h4>Property Management</h4>
-        <ul>
-          <li>Day-to-day property oversight</li>
-          <li>Maintenance coordination</li>
-          <li>Tenant communication and support</li>
-        </ul>
-      </div>
-      <div class="svc-card reveal">
-        <div class="svc-icon"><i class="fa-solid fa-chart-bar"></i></div>
-        <h4>Property Consulting</h4>
-        <ul>
-          <li>Market analysis</li>
-          <li>Investment guidance</li>
-          <li>Property valuation support</li>
-        </ul>
-      </div>
-      <div class="svc-card reveal" style="background:var(--navy);border-color:rgba(55,138,221,0.3);display:flex;flex-direction:column;justify-content:space-between;">
-        <div>
-          <h4 style="color:#fff;margin-bottom:12px;">Ready to find your property?</h4>
-          <p style="color:rgba(255,255,255,0.55);">Our team combines strategy, teamwork and personal attention to guide you through every step of your property journey.</p>
+    <section class="section-light">
+      <div class="inner">
+        <span class="section-label reveal">Our Services</span>
+        <h2 class="section-title reveal">
+          Everything you need,<br />in one professional team.
+        </h2>
+        <div class="services-grid">
+          <div class="svc-card reveal">
+            <div class="svc-icon"><i class="fa-solid fa-house"></i></div>
+            <h4>Residential Real Estate</h4>
+            <ul>
+              <li>Buying and selling homes</li>
+              <li>Property listings and marketing</li>
+              <li>First-time buyer assistance</li>
+            </ul>
+          </div>
+          <div class="svc-card reveal">
+            <div class="svc-icon"><i class="fa-solid fa-building"></i></div>
+            <h4>Commercial Real Estate</h4>
+            <ul>
+              <li>Office and retail property solutions</li>
+              <li>Commercial leasing and sales</li>
+              <li>Investment property opportunities</li>
+            </ul>
+          </div>
+          <div class="svc-card reveal">
+            <div class="svc-icon"><i class="fa-solid fa-key"></i></div>
+            <h4>Rental Services</h4>
+            <ul>
+              <li>Tenant placement</li>
+              <li>Rental property marketing</li>
+              <li>Lease management support</li>
+            </ul>
+          </div>
+          <div class="svc-card reveal">
+            <div class="svc-icon">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+            <h4>Property Management</h4>
+            <ul>
+              <li>Day-to-day property oversight</li>
+              <li>Maintenance coordination</li>
+              <li>Tenant communication and support</li>
+            </ul>
+          </div>
+          <div class="svc-card reveal">
+            <div class="svc-icon"><i class="fa-solid fa-chart-bar"></i></div>
+            <h4>Property Consulting</h4>
+            <ul>
+              <li>Market analysis</li>
+              <li>Investment guidance</li>
+              <li>Property valuation support</li>
+            </ul>
+          </div>
+          <div
+            class="svc-card reveal"
+            style="
+              background: var(--navy);
+              border-color: rgba(55, 138, 221, 0.3);
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+            "
+          >
+            <div>
+              <h4 style="color: #fff; margin-bottom: 12px">
+                Ready to find your property?
+              </h4>
+              <p style="color: rgba(255, 255, 255, 0.55)">
+                Our team combines strategy, teamwork and personal attention to
+                guide you through every step of your property journey.
+              </p>
+            </div>
+            <a
+              href="contact.html"
+              class="btn btn-primary"
+              style="margin-top: 24px; justify-content: center"
+              >Get In Touch &rarr;</a
+            >
+          </div>
         </div>
-        <a href="contact.html" class="btn btn-primary" style="margin-top:24px;justify-content:center;">Get In Touch &rarr;</a>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section class="section-offwhite">
-  <div class="inner">
-    <span class="section-label reveal">Our Values</span>
-    <h2 class="section-title reveal">What drives everything we do.</h2>
-    <div class="values-grid">
-      <div class="val-card reveal"><span class="val-num">01</span><h5>Connection</h5><p>Strong relationships create strong communities</p></div>
-      <div class="val-card reveal"><span class="val-num">02</span><h5>Trust</h5><p>Honesty, accountability and transparency always</p></div>
-      <div class="val-card reveal"><span class="val-num">03</span><h5>Growth</h5><p>Smart property decisions that build futures</p></div>
-      <div class="val-card reveal"><span class="val-num">04</span><h5>Collaboration</h5><p>Better outcomes through shared expertise</p></div>
-      <div class="val-card reveal"><span class="val-num">05</span><h5>Reliability</h5><p>Dependable and responsive throughout every process</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section-dark">
-  <div class="inner">
-    <span class="section-label reveal" style="color:var(--cyan)">Our Difference</span>
-    <h2 class="section-title reveal" style="color:#fff">The boutique attention.<br>The strength of a united team.</h2>
-    <p class="section-intro reveal" style="color:rgba(255,255,255,0.55);margin-bottom:40px;">Pack Real Estate combines the personal attention of a boutique agency with the power of a collaborative team, because successful real estate requires listening, planning and long-term support.</p>
-    <div class="philosophy-grid">
-      <div class="phil-item reveal"><span class="phil-num">&check;</span><h4>Identify Opportunities</h4><p>We scan the market to find the right property at the right time for every client.</p></div>
-      <div class="phil-item reveal"><span class="phil-num">&check;</span><h4>Solve Challenges</h4><p>Complex transactions handled efficiently with creative and professional solutions.</p></div>
-      <div class="phil-item reveal"><span class="phil-num">&check;</span><h4>Tailored Solutions</h4><p>Every client receives a service plan built around their specific goals and lifestyle.</p></div>
-      <div class="phil-item reveal"><span class="phil-num">&check;</span><h4>Smooth Transactions</h4><p>Professional process management ensuring a seamless experience from start to finish.</p></div>
-    </div>
-    <div style="text-align:center;margin-top:48px;" class="reveal">
-      <a href="contact.html" class="btn btn-primary">Start Your Property Journey &rarr;</a>
-    </div>
-  </div>
-</section>
-
-
-<section class="section-offwhite" id="listings">
-  <div class="inner">
-    <span class="section-label reveal">Featured Listings</span>
-    <h2 class="section-title reveal">Properties available now.</h2>
-    <p class="section-intro reveal">Browse our current listings, from residential apartments to investment opportunities across Namibia.</p>
-    <div id="listings-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:48px;">
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-mid);">
-        <i class="fa-solid fa-spinner fa-spin" style="font-size:28px;"></i>
-        <p style="margin-top:12px;">Loading listings&hellip;</p>
+    <section class="section-offwhite">
+      <div class="inner">
+        <span class="section-label reveal">Our Values</span>
+        <h2 class="section-title reveal">What drives everything we do.</h2>
+        <div class="values-grid">
+          <div class="val-card reveal">
+            <span class="val-num">01</span>
+            <h5>Connection</h5>
+            <p>Strong relationships create strong communities</p>
+          </div>
+          <div class="val-card reveal">
+            <span class="val-num">02</span>
+            <h5>Trust</h5>
+            <p>Honesty, accountability and transparency always</p>
+          </div>
+          <div class="val-card reveal">
+            <span class="val-num">03</span>
+            <h5>Growth</h5>
+            <p>Smart property decisions that build futures</p>
+          </div>
+          <div class="val-card reveal">
+            <span class="val-num">04</span>
+            <h5>Collaboration</h5>
+            <p>Better outcomes through shared expertise</p>
+          </div>
+          <div class="val-card reveal">
+            <span class="val-num">05</span>
+            <h5>Reliability</h5>
+            <p>Dependable and responsive throughout every process</p>
+          </div>
+        </div>
       </div>
-    </div><!-- /listings-grid -->
-  </div>
-</section>
-<script>
-(function() {
-  fetch('/api/properties')
-    .then(r => r.json())
-    .then(props => {
-      const grid = document.getElementById('listings-grid');
-      if (!props.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-mid);">No listings available at this time. Check back soon.</div>';
-        return;
-      }
-      grid.innerHTML = props.map(renderCard).join('');
-      grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    })
-    .catch(() => {
-      document.getElementById('listings-grid').innerHTML =
-        '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-mid);">Unable to load listings. Please refresh the page.</div>';
-    });
+    </section>
 
-  function renderCard(p) {
-    const cover = (p.images || []).find(i => i.is_cover) || (p.images || [])[0];
-    const img   = cover ? `<img src="/${cover.filename}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">` : '';
-    const typeLabel = p.type === 'sale' ? 'For Sale' : 'To Rent';
-    const priceFmt  = 'N$' + Number(p.price).toLocaleString('en-NA');
-    const levyFmt   = p.levy ? `Levy N$${p.levy}/month` : '';
-    return `
+    <section class="section-dark">
+      <div class="inner">
+        <span class="section-label reveal" style="color: var(--cyan)"
+          >Our Difference</span
+        >
+        <h2 class="section-title reveal" style="color: #fff">
+          The boutique attention.<br />The strength of a united team.
+        </h2>
+        <p
+          class="section-intro reveal"
+          style="color: rgba(255, 255, 255, 0.55); margin-bottom: 40px"
+        >
+          Pack Real Estate combines the personal attention of a boutique agency
+          with the power of a collaborative team, because successful real estate
+          requires listening, planning and long-term support.
+        </p>
+        <div class="philosophy-grid">
+          <div class="phil-item reveal">
+            <span class="phil-num">&check;</span>
+            <h4>Identify Opportunities</h4>
+            <p>
+              We scan the market to find the right property at the right time
+              for every client.
+            </p>
+          </div>
+          <div class="phil-item reveal">
+            <span class="phil-num">&check;</span>
+            <h4>Solve Challenges</h4>
+            <p>
+              Complex transactions handled efficiently with creative and
+              professional solutions.
+            </p>
+          </div>
+          <div class="phil-item reveal">
+            <span class="phil-num">&check;</span>
+            <h4>Tailored Solutions</h4>
+            <p>
+              Every client receives a service plan built around their specific
+              goals and lifestyle.
+            </p>
+          </div>
+          <div class="phil-item reveal">
+            <span class="phil-num">&check;</span>
+            <h4>Smooth Transactions</h4>
+            <p>
+              Professional process management ensuring a seamless experience
+              from start to finish.
+            </p>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 48px" class="reveal">
+          <a href="contact.html" class="btn btn-primary"
+            >Start Your Property Journey &rarr;</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="section-offwhite" id="listings">
+      <div class="inner">
+        <span class="section-label reveal">Featured Listings</span>
+        <h2 class="section-title reveal">Properties available now.</h2>
+        <p class="section-intro reveal">
+          Browse our current listings, from residential apartments to investment
+          opportunities across Namibia.
+        </p>
+        <div
+          id="listings-grid"
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+          "
+        >
+          <div
+            style="
+              grid-column: 1/-1;
+              text-align: center;
+              padding: 40px;
+              color: var(--gray-mid);
+            "
+          >
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 28px"></i>
+            <p style="margin-top: 12px">Loading listings&hellip;</p>
+          </div>
+        </div>
+        <!-- /listings-grid -->
+        <div style="text-align: center; margin-top: 40px" class="reveal">
+          <a href="listings.html" class="btn btn-primary"
+            >View All Listings &rarr;</a
+          >
+        </div>
+      </div>
+    </section>
+    <script>
+      (function () {
+        fetch("/api/properties")
+          .then((r) => r.json())
+          .then((props) => {
+            const grid = document.getElementById("listings-grid");
+            if (!props.length) {
+              grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-mid);">No listings available at this time. Check back soon.</div>';
+              return;
+            }
+            grid.innerHTML = props.map(renderCard).join("");
+            grid
+              .querySelectorAll(".reveal")
+              .forEach((el) => observer.observe(el));
+          })
+          .catch(() => {
+            document.getElementById("listings-grid").innerHTML =
+              '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-mid);">Unable to load listings. Please refresh the page.</div>';
+          });
+
+        function renderCard(p) {
+          const cover =
+            (p.images || []).find((i) => i.is_cover) || (p.images || [])[0];
+          const img = cover
+            ? `<img src="/${cover.filename}" alt="${esc(p.title)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
+            : "";
+          const typeLabel = p.type === "sale" ? "For Sale" : "To Rent";
+          const priceFmt = "N$" + Number(p.price).toLocaleString("en-NA");
+          const levyFmt = p.levy ? `Levy N$${p.levy}/month` : "";
+          return `
       <div class="reveal" style="background:var(--white);border-radius:18px;border:1px solid var(--gray-light);overflow:hidden;transition:all 0.25s;box-shadow:0 2px 12px rgba(0,0,0,0.04);"
            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(32,99,224,0.13)';"
            onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.04)';">
@@ -171,9 +314,9 @@
           ${img}
           <div style="position:absolute;top:14px;left:14px;display:flex;gap:8px;flex-wrap:wrap;">
             <span style="background:var(--blue-mid);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;">${typeLabel}</span>
-            ${p.featured ? '<span style="background:rgba(228,168,56,0.9);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;"><i class="fa-solid fa-star"></i> Featured</span>' : ''}
+            ${p.featured ? '<span style="background:rgba(228,168,56,0.9);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;"><i class="fa-solid fa-star"></i> Featured</span>' : ""}
           </div>
-          ${p.units_available > 1 ? `<div style="position:absolute;top:14px;right:14px;background:rgba(7,23,44,0.8);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;">${p.units_available} Units</div>` : ''}
+          ${p.units_available > 1 ? `<div style="position:absolute;top:14px;right:14px;background:rgba(7,23,44,0.8);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;">${p.units_available} Units</div>` : ""}
         </div>
         <div style="padding:24px;">
           <p style="font-size:11px;color:var(--gray-mid);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">${esc(p.location)}</p>
@@ -186,7 +329,7 @@
             <div>
               <div style="font-size:11px;color:var(--gray-mid);text-transform:uppercase;letter-spacing:1px;">Price</div>
               <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);">${priceFmt}</div>
-              ${levyFmt ? `<div style="font-size:11px;color:var(--gray-mid);">${esc(levyFmt)}</div>` : ''}
+              ${levyFmt ? `<div style="font-size:11px;color:var(--gray-mid);">${esc(levyFmt)}</div>` : ""}
             </div>
             <a href="listing.html?slug=${encodeURIComponent(p.slug)}"
                style="background:var(--blue-mid);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;"
@@ -194,72 +337,97 @@
           </div>
         </div>
       </div>`;
-  }
+        }
 
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-})();
-</script>
-<footer>
-  <div class="footer-top-bar"></div>
-  <div class="footer-main">
-    <div class="footer-inner">
+        function esc(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+      })();
+    </script>
+    <footer>
+      <div class="footer-top-bar"></div>
+      <div class="footer-main">
+        <div class="footer-inner">
+          <div class="footer-brand-col">
+            <img
+              src="assets/logo/packgroup_logo.png"
+              alt="Pack Group"
+              class="footer-logo"
+              loading="lazy"
+            />
+            <p class="footer-tagline">
+              &ldquo;Built on Trust. Driven by Unity.&rdquo;
+            </p>
+            <p class="footer-desc">
+              Uniting property and protection under one trusted name across
+              Namibia.
+            </p>
+            <div class="footer-contact">
+              <a href="tel:0858196462" class="footer-contact-link">
+                <i class="fa-solid fa-phone"></i> 085 819 6462
+              </a>
+              <a href="https://wa.me/264858196462" class="footer-contact-link">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+              </a>
+            </div>
+          </div>
 
-      <div class="footer-brand-col">
-        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="footer-logo" loading="lazy">
-        <p class="footer-tagline">&ldquo;Built on Trust. Driven by Unity.&rdquo;</p>
-        <p class="footer-desc">Uniting property and protection under one trusted name across Namibia.</p>
-        <div class="footer-contact">
-          <a href="tel:0858196462" class="footer-contact-link">
-            <i class="fa-solid fa-phone"></i> 085 819 6462
-          </a>
-          <a href="https://wa.me/264858196462" class="footer-contact-link">
-            <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+          <div class="footer-nav-col">
+            <h6 class="footer-col-title">Navigate</h6>
+            <nav class="footer-links">
+              <a href="index.html">Home</a>
+              <a href="real-estate.html">Real Estate</a>
+              <a href="insurance.html">Insurance</a>
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+            </nav>
+          </div>
+
+          <div class="footer-div-col">
+            <h6 class="footer-col-title">Our Divisions</h6>
+            <a href="real-estate.html" class="footer-div-card">
+              <img
+                src="assets/logo/realestate_logo.png"
+                alt="Pack Real Estate"
+                loading="lazy"
+              />
+              <span>Property Solutions</span>
+            </a>
+            <a href="insurance.html" class="footer-div-card">
+              <img
+                src="assets/logo/insurance_logo.png"
+                alt="Pack Insurance Broker"
+                loading="lazy"
+              />
+              <span>Protection &amp; Cover</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <div class="footer-reg-strip">
+            <span>Pack Real Estate</span>
+            <span class="footer-dot">&bull;</span>
+            <span>Pack Insurance Broker</span>
+          </div>
+          <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
+        </div>
+        <div class="footer-credit">
+          <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
+            <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc." />
+            <span
+              >Designed &amp; Hosted by Spybitech, Inc.
+              (www.spybitech.com.na)</span
+            >
           </a>
         </div>
       </div>
-
-      <div class="footer-nav-col">
-        <h6 class="footer-col-title">Navigate</h6>
-        <nav class="footer-links">
-          <a href="index.html">Home</a>
-          <a href="real-estate.html">Real Estate</a>
-          <a href="insurance.html">Insurance</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-        </nav>
-      </div>
-
-      <div class="footer-div-col">
-        <h6 class="footer-col-title">Our Divisions</h6>
-        <a href="real-estate.html" class="footer-div-card">
-          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" loading="lazy">
-          <span>Property Solutions</span>
-        </a>
-        <a href="insurance.html" class="footer-div-card">
-          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" loading="lazy">
-          <span>Protection &amp; Cover</span>
-        </a>
-      </div>
-
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-bottom-inner">
-      <div class="footer-reg-strip">
-        <span>Pack Real Estate</span>
-        <span class="footer-dot">&bull;</span>
-        <span>Pack Insurance Broker</span>
-      </div>
-      <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
-    </div>
-    <div class="footer-credit">
-      <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
-        <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc.">
-        <span>Designed &amp; Hosted by Spybitech, Inc. (www.spybitech.com.na)</span>
-      </a>
-    </div>
-  </div>
-</footer>
-<script src="shared.js"></script></body></html>
+    </footer>
+    <script src="shared.js"></script>
+  </body>
+</html>

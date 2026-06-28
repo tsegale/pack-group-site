@@ -1,227 +1,429 @@
-﻿<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact | Pack Group</title>
-<link rel="icon" type="image/png" href="assets/logo/packgroup_logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body>
-<nav>
-  <a href="index.html" class="nav-brand">
-    <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="nav-logo">
-  </a>
-  <button class="hamburger" id="ham" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-  <ul class="nav-links" id="navlinks">
-    <li><a href="index.html" >Home</a></li>
-    <li><a href="real-estate.html" >Real Estate</a></li>
-    <li><a href="insurance.html" >Insurance</a></li>
-    <li><a href="about.html" >About</a></li>
-    <li><a href="contact.html" class="nav-cta" >Contact</a></li>
-  </ul>
-</nav>
-
-<section class="page-hero">
-  <div class="page-hero-inner">
-    <span class="eyebrow animate" style="color:var(--cyan)">Contact Us</span>
-    <h1 class="animate d1">Connect with<br><em>The Pack.</em></h1>
-    <p class="animate d2">Both companies are ready to assist you. Reach out to the right team for your needs, or let us guide you to the right specialist.</p>
-  </div>
-</section>
-
-<section class="section-dark">
-  <div class="inner">
-    <span class="section-label reveal" style="color:var(--cyan)">Get In Touch</span>
-    <h2 class="section-title reveal" style="color:#fff">Two teams.<br>Always ready for you.</h2>
-    <div class="contact-grid">
-      <div class="contact-card reveal">
-        <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" class="contact-card-logo" loading="lazy">
-        <h3>Pack Real Estate</h3>
-        <div class="cf"><span class="cf-lbl">Phone</span><span class="cf-val"><a href="tel:0858196462" style="color:inherit;text-decoration:none;">085 819 6462</a></span></div>
-        <div class="cf"><span class="cf-lbl">Email</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Address</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Website</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">WhatsApp</span><span class="cf-val"><a href="https://wa.me/264858196462" style="color:inherit;text-decoration:none;">085 819 6462</a></span></div>
-      </div>
-      <div class="contact-card reveal">
-        <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" class="contact-card-logo" loading="lazy">
-        <h3>Pack Insurance Broker</h3>
-        <div class="cf"><span class="cf-lbl">Phone</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Email</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Address</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Website</span><span class="cf-val">To be updated</span></div>
-        <div class="cf"><span class="cf-lbl">Social</span><span class="cf-val">To be updated</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="section-light" id="enquire">
-  <div class="inner" style="max-width:680px;margin:0 auto;">
-    <span class="section-label reveal" style="display:block;text-align:center;">Send Us a Message</span>
-    <h2 class="section-title reveal" style="text-align:center;">We&rsquo;d love to hear<br>from you.</h2>
-    <p class="section-intro reveal" style="text-align:center;margin:0 auto 0;">Fill in the form below and a member of our team will get back to you promptly.</p>
-    <form class="enquiry-form reveal" id="enquiry-form">
-      <div class="form-group">
-        <label for="eq-name">Your Name</label>
-        <input type="text" id="eq-name" name="name" placeholder="Full name" required>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="eq-email">Email Address</label>
-          <input type="email" id="eq-email" name="email" placeholder="email@example.com" required>
-        </div>
-        <div class="form-group">
-          <label for="eq-phone">Phone Number</label>
-          <input type="tel" id="eq-phone" name="phone" placeholder="081 xxx xxxx">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="eq-division">I&rsquo;m enquiring about</label>
-        <select id="eq-division" name="division" required>
-          <option value="">Select a division&hellip;</option>
-          <option value="real-estate">Pack Real Estate &middot; Property</option>
-          <option value="insurance">Pack Insurance Broker &middot; Cover</option>
-          <option value="both">Both Divisions</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="eq-message">Your Message</label>
-        <textarea id="eq-message" name="message" rows="5" placeholder="Tell us how we can help you&hellip;" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;">Send Message &rarr;</button>
-    </form>
-    <div id="form-success" class="form-success reveal" style="display:none;margin-top:40px;">
-      <div style="font-size:48px;margin-bottom:16px;"><i class="fa-solid fa-check"></i></div>
-      <h3>Message received!</h3>
-      <p>Thank you for reaching out. A member of our team will contact you shortly.<br>Alternatively, reach us directly on WhatsApp.</p>
-      <a href="https://wa.me/264858196462" class="btn btn-cyan" style="margin-top:8px;"><i class="fa-brands fa-whatsapp"></i> WhatsApp Us &rarr;</a>
-    </div>
-    <script>
-      document.getElementById('enquiry-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var form     = this;
-        var btn      = form.querySelector('button[type="submit"]');
-        var name     = document.getElementById('eq-name').value.trim();
-        var email    = document.getElementById('eq-email').value.trim();
-        var phone    = document.getElementById('eq-phone').value.trim();
-        var division = document.getElementById('eq-division').value;
-        var message  = document.getElementById('eq-message').value.trim();
-        var source   = (division === 'insurance') ? 'insurance' : 'real-estate';
-        btn.disabled    = true;
-        btn.textContent = 'Sending…';
-        fetch('/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, email: email, phone: phone, message: message, source_division: source })
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.success) {
-            form.style.display = 'none';
-            document.getElementById('form-success').style.display = 'block';
-          } else {
-            btn.disabled    = false;
-            btn.textContent = 'Send Message →';
-            alert(data.error || 'Could not send message. Please try again.');
-          }
-        })
-        .catch(function() {
-          btn.disabled    = false;
-          btn.textContent = 'Send Message →';
-          alert('Network error. Please check your connection and try again.');
-        });
-      });
-    </script>
-  </div>
-</section>
-<section class="section-offwhite">
-  <div class="inner" style="text-align:center;max-width:640px;margin:0 auto;">
-    <span class="section-label reveal" style="display:block;text-align:center;">What Happens Next</span>
-    <h2 class="section-title reveal" style="text-align:center;">Our process is simple<br>and transparent.</h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px;text-align:left;">
-      <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon"><span class="step-num">1</span></div>
-        <h4>You Reach Out</h4>
-        <p>Contact either team via phone, email or social media, whichever suits you best.</p>
-      </div>
-      <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon"><span class="step-num">2</span></div>
-        <h4>We Listen</h4>
-        <p>Our team takes time to understand your specific needs, goals and circumstances.</p>
-      </div>
-      <div class="svc-card reveal" style="text-align:center;">
-        <div class="svc-icon"><span class="step-num">3</span></div>
-        <h4>We Deliver</h4>
-        <p>A tailored solution is presented and we walk with you every step of the way.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-top-bar"></div>
-  <div class="footer-main">
-    <div class="footer-inner">
-
-      <div class="footer-brand-col">
-        <img src="assets/logo/packgroup_logo.png" alt="Pack Group" class="footer-logo" loading="lazy">
-        <p class="footer-tagline">&ldquo;Built on Trust. Driven by Unity.&rdquo;</p>
-        <p class="footer-desc">Uniting property and protection under one trusted name across Namibia.</p>
-        <div class="footer-contact">
-          <a href="tel:0858196462" class="footer-contact-link">
-            <i class="fa-solid fa-phone"></i> 085 819 6462
-          </a>
-          <a href="https://wa.me/264858196462" class="footer-contact-link">
-            <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
-          </a>
-        </div>
-      </div>
-
-      <div class="footer-nav-col">
-        <h6 class="footer-col-title">Navigate</h6>
-        <nav class="footer-links">
-          <a href="index.html">Home</a>
-          <a href="real-estate.html">Real Estate</a>
-          <a href="insurance.html">Insurance</a>
-          <a href="about.html">About</a>
-          <a href="contact.html">Contact</a>
-        </nav>
-      </div>
-
-      <div class="footer-div-col">
-        <h6 class="footer-col-title">Our Divisions</h6>
-        <a href="real-estate.html" class="footer-div-card">
-          <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" loading="lazy">
-          <span>Property Solutions</span>
-        </a>
-        <a href="insurance.html" class="footer-div-card">
-          <img src="assets/logo/insurance_logo.png" alt="Pack Insurance Broker" loading="lazy">
-          <span>Protection &amp; Cover</span>
-        </a>
-      </div>
-
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-bottom-inner">
-      <div class="footer-reg-strip">
-        <span>Pack Real Estate</span>
-        <span class="footer-dot">&bull;</span>
-        <span>Pack Insurance Broker</span>
-      </div>
-      <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
-    </div>
-    <div class="footer-credit">
-      <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
-        <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc.">
-        <span>Designed &amp; Hosted by Spybitech, Inc. (www.spybitech.com.na)</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | Pack Group</title>
+    <link rel="icon" type="image/png" href="assets/logo/packgroup_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="nav-brand">
+        <img
+          src="assets/logo/packgroup_logo.png"
+          alt="Pack Group"
+          class="nav-logo"
+        />
       </a>
-    </div>
-  </div>
-</footer>
-<script src="shared.js"></script></body></html>
+      <button class="hamburger" id="ham" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-has-dropdown">
+          <a href="real-estate.html" class="nav-dropdown-trigger"
+            >Real Estate</a
+          >
+          <ul class="nav-dropdown-menu">
+            <li><a href="real-estate.html">Overview</a></li>
+            <li><a href="listings.html">All Listings</a></li>
+          </ul>
+        </li>
+        <li><a href="insurance.html">Insurance</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="nav-cta">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <span class="eyebrow animate" style="color: var(--cyan)"
+          >Contact Us</span
+        >
+        <h1 class="animate d1">Connect with<br /><em>The Pack.</em></h1>
+        <p class="animate d2">
+          Both companies are ready to assist you. Reach out to the right team
+          for your needs, or let us guide you to the right specialist.
+        </p>
+      </div>
+    </section>
+
+    <section class="section-dark">
+      <div class="inner">
+        <span class="section-label reveal" style="color: var(--cyan)"
+          >Get In Touch</span
+        >
+        <h2 class="section-title reveal" style="color: #fff">
+          Two teams.<br />Always ready for you.
+        </h2>
+        <div class="contact-grid">
+          <div class="contact-card reveal">
+            <img
+              src="assets/logo/realestate_logo.png"
+              alt="Pack Real Estate"
+              class="contact-card-logo"
+              loading="lazy"
+            />
+            <h3>Pack Real Estate</h3>
+            <div class="cf">
+              <span class="cf-lbl">Phone</span
+              ><span class="cf-val"
+                ><a
+                  href="tel:0858196462"
+                  style="color: inherit; text-decoration: none"
+                  >085 819 6462</a
+                ></span
+              >
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Email</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Address</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Website</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">WhatsApp</span
+              ><span class="cf-val"
+                ><a
+                  href="https://wa.me/264858196462"
+                  style="color: inherit; text-decoration: none"
+                  >085 819 6462</a
+                ></span
+              >
+            </div>
+          </div>
+          <div class="contact-card reveal">
+            <img
+              src="assets/logo/insurance_logo.png"
+              alt="Pack Insurance Broker"
+              class="contact-card-logo"
+              loading="lazy"
+            />
+            <h3>Pack Insurance Broker</h3>
+            <div class="cf">
+              <span class="cf-lbl">Phone</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Email</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Address</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Website</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+            <div class="cf">
+              <span class="cf-lbl">Social</span
+              ><span class="cf-val">To be updated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-light" id="enquire">
+      <div class="inner" style="max-width: 680px; margin: 0 auto">
+        <span
+          class="section-label reveal"
+          style="display: block; text-align: center"
+          >Send Us a Message</span
+        >
+        <h2 class="section-title reveal" style="text-align: center">
+          We&rsquo;d love to hear<br />from you.
+        </h2>
+        <p
+          class="section-intro reveal"
+          style="text-align: center; margin: 0 auto 0"
+        >
+          Fill in the form below and a member of our team will get back to you
+          promptly.
+        </p>
+        <form class="enquiry-form reveal" id="enquiry-form">
+          <div class="form-group">
+            <label for="eq-name">Your Name</label>
+            <input
+              type="text"
+              id="eq-name"
+              name="name"
+              placeholder="Full name"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="eq-email">Email Address</label>
+              <input
+                type="email"
+                id="eq-email"
+                name="email"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="eq-phone">Phone Number</label>
+              <input
+                type="tel"
+                id="eq-phone"
+                name="phone"
+                placeholder="081 xxx xxxx"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="eq-division">I&rsquo;m enquiring about</label>
+            <select id="eq-division" name="division" required>
+              <option value="">Select a division&hellip;</option>
+              <option value="real-estate">
+                Pack Real Estate &middot; Property
+              </option>
+              <option value="insurance">
+                Pack Insurance Broker &middot; Cover
+              </option>
+              <option value="both">Both Divisions</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="eq-message">Your Message</label>
+            <textarea
+              id="eq-message"
+              name="message"
+              rows="5"
+              placeholder="Tell us how we can help you&hellip;"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; justify-content: center; font-size: 15px"
+          >
+            Send Message &rarr;
+          </button>
+        </form>
+        <div
+          id="form-success"
+          class="form-success reveal"
+          style="display: none; margin-top: 40px"
+        >
+          <div style="font-size: 48px; margin-bottom: 16px">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h3>Message received!</h3>
+          <p>
+            Thank you for reaching out. A member of our team will contact you
+            shortly.<br />Alternatively, reach us directly on WhatsApp.
+          </p>
+          <a
+            href="https://wa.me/264858196462"
+            class="btn btn-cyan"
+            style="margin-top: 8px"
+            ><i class="fa-brands fa-whatsapp"></i> WhatsApp Us &rarr;</a
+          >
+        </div>
+        <script>
+          document
+            .getElementById("enquiry-form")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              var form = this;
+              var btn = form.querySelector('button[type="submit"]');
+              var name = document.getElementById("eq-name").value.trim();
+              var email = document.getElementById("eq-email").value.trim();
+              var phone = document.getElementById("eq-phone").value.trim();
+              var division = document.getElementById("eq-division").value;
+              var message = document.getElementById("eq-message").value.trim();
+              var source =
+                division === "insurance" ? "insurance" : "real-estate";
+              btn.disabled = true;
+              btn.textContent = "Sending…";
+              fetch("/api/leads", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: name,
+                  email: email,
+                  phone: phone,
+                  message: message,
+                  source_division: source,
+                }),
+              })
+                .then(function (r) {
+                  return r.json();
+                })
+                .then(function (data) {
+                  if (data.success) {
+                    form.style.display = "none";
+                    document.getElementById("form-success").style.display =
+                      "block";
+                  } else {
+                    btn.disabled = false;
+                    btn.textContent = "Send Message →";
+                    alert(
+                      data.error || "Could not send message. Please try again.",
+                    );
+                  }
+                })
+                .catch(function () {
+                  btn.disabled = false;
+                  btn.textContent = "Send Message →";
+                  alert(
+                    "Network error. Please check your connection and try again.",
+                  );
+                });
+            });
+        </script>
+      </div>
+    </section>
+    <section class="section-offwhite">
+      <div
+        class="inner"
+        style="text-align: center; max-width: 640px; margin: 0 auto"
+      >
+        <span
+          class="section-label reveal"
+          style="display: block; text-align: center"
+          >What Happens Next</span
+        >
+        <h2 class="section-title reveal" style="text-align: center">
+          Our process is simple<br />and transparent.
+        </h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 48px;
+            text-align: left;
+          "
+        >
+          <div class="svc-card reveal" style="text-align: center">
+            <div class="svc-icon"><span class="step-num">1</span></div>
+            <h4>You Reach Out</h4>
+            <p>
+              Contact either team via phone, email or social media, whichever
+              suits you best.
+            </p>
+          </div>
+          <div class="svc-card reveal" style="text-align: center">
+            <div class="svc-icon"><span class="step-num">2</span></div>
+            <h4>We Listen</h4>
+            <p>
+              Our team takes time to understand your specific needs, goals and
+              circumstances.
+            </p>
+          </div>
+          <div class="svc-card reveal" style="text-align: center">
+            <div class="svc-icon"><span class="step-num">3</span></div>
+            <h4>We Deliver</h4>
+            <p>
+              A tailored solution is presented and we walk with you every step
+              of the way.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-top-bar"></div>
+      <div class="footer-main">
+        <div class="footer-inner">
+          <div class="footer-brand-col">
+            <img
+              src="assets/logo/packgroup_logo.png"
+              alt="Pack Group"
+              class="footer-logo"
+              loading="lazy"
+            />
+            <p class="footer-tagline">
+              &ldquo;Built on Trust. Driven by Unity.&rdquo;
+            </p>
+            <p class="footer-desc">
+              Uniting property and protection under one trusted name across
+              Namibia.
+            </p>
+            <div class="footer-contact">
+              <a href="tel:0858196462" class="footer-contact-link">
+                <i class="fa-solid fa-phone"></i> 085 819 6462
+              </a>
+              <a href="https://wa.me/264858196462" class="footer-contact-link">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-nav-col">
+            <h6 class="footer-col-title">Navigate</h6>
+            <nav class="footer-links">
+              <a href="index.html">Home</a>
+              <a href="real-estate.html">Real Estate</a>
+              <a href="insurance.html">Insurance</a>
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+            </nav>
+          </div>
+
+          <div class="footer-div-col">
+            <h6 class="footer-col-title">Our Divisions</h6>
+            <a href="real-estate.html" class="footer-div-card">
+              <img
+                src="assets/logo/realestate_logo.png"
+                alt="Pack Real Estate"
+                loading="lazy"
+              />
+              <span>Property Solutions</span>
+            </a>
+            <a href="insurance.html" class="footer-div-card">
+              <img
+                src="assets/logo/insurance_logo.png"
+                alt="Pack Insurance Broker"
+                loading="lazy"
+              />
+              <span>Protection &amp; Cover</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <div class="footer-reg-strip">
+            <span>Pack Real Estate</span>
+            <span class="footer-dot">&bull;</span>
+            <span>Pack Insurance Broker</span>
+          </div>
+          <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
+        </div>
+        <div class="footer-credit">
+          <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
+            <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc." />
+            <span
+              >Designed &amp; Hosted by Spybitech, Inc.
+              (www.spybitech.com.na)</span
+            >
+          </a>
+        </div>
+      </div>
+    </footer>
+    <script src="shared.js"></script>
+  </body>
+</html>
