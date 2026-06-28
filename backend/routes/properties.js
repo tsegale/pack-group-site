@@ -115,7 +115,7 @@ adminRouter.get('/new', (req, res) => {
 });
 
 /* CREATE */
-adminRouter.post('/', validateCsrf, upload.array('images', 20), (req, res) => {
+adminRouter.post('/', upload.array('images', 20), validateCsrf, (req, res) => {
   const db = getDb();
   let { title, type, price, levy, bedrooms, bathrooms, location,
         description, status, units_available, rental_option,
@@ -173,7 +173,7 @@ adminRouter.get('/:id/edit', (req, res) => {
 });
 
 /* UPDATE */
-adminRouter.post('/:id', validateCsrf, upload.array('images', 20), (req, res) => {
+adminRouter.post('/:id', upload.array('images', 20), validateCsrf, (req, res) => {
   const db   = getDb();
   const prop = db.prepare('SELECT * FROM properties WHERE id = ?').get(req.params.id);
   if (!prop) return res.redirect('/admin/properties');
