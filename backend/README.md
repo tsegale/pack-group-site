@@ -13,6 +13,7 @@ npm start              # starts server on PORT (default 3000)
 ```
 
 For development with auto-reload:
+
 ```bash
 npm run dev
 ```
@@ -21,20 +22,21 @@ npm run dev
 
 Copy `.env.example` to `.env` and fill in:
 
-| Variable         | Description                              | Default        |
-|-----------------|------------------------------------------|----------------|
-| `PORT`          | HTTP port to listen on                   | `3000`         |
-| `NODE_ENV`      | `production` or `development`            | `development`  |
-| `SESSION_SECRET`| Long random string for session signing   | *(required)*   |
-| `ADMIN_NAME`    | Name for the seeded admin account        | `Admin`        |
-| `ADMIN_EMAIL`   | Email to log into /admin/login           | *(required)*   |
-| `ADMIN_PASSWORD`| Password for admin account               | *(required)*   |
+| Variable         | Description                            | Default       |
+| ---------------- | -------------------------------------- | ------------- |
+| `PORT`           | HTTP port to listen on                 | `3000`        |
+| `NODE_ENV`       | `production` or `development`          | `development` |
+| `SESSION_SECRET` | Long random string for session signing | _(required)_  |
+| `ADMIN_NAME`     | Name for the seeded admin account      | `Admin`       |
+| `ADMIN_EMAIL`    | Email to log into /admin/login         | _(required)_  |
+| `ADMIN_PASSWORD` | Password for admin account             | _(required)_  |
 
 ## Admin Dashboard
 
 Visit `/admin/login` after starting the server.
 
 **Pages:**
+
 - `/admin/dashboard` — overview stats + recent leads
 - `/admin/properties` — manage property listings
 - `/admin/insurance` — manage insurance products
@@ -44,13 +46,13 @@ Visit `/admin/login` after starting the server.
 
 ## Public API
 
-| Method | Endpoint                    | Description                       |
-|--------|-----------------------------|-----------------------------------|
-| GET    | `/api/properties`           | All available properties          |
-| GET    | `/api/properties/featured`  | Featured + available only         |
-| GET    | `/api/properties/:slug`     | Single property with images       |
-| GET    | `/api/insurance`            | Active insurance products         |
-| POST   | `/api/leads`                | Submit an enquiry (rate-limited)  |
+| Method | Endpoint                   | Description                      |
+| ------ | -------------------------- | -------------------------------- |
+| GET    | `/api/properties`          | All available properties         |
+| GET    | `/api/properties/featured` | Featured + available only        |
+| GET    | `/api/properties/:slug`    | Single property with images      |
+| GET    | `/api/insurance`           | Active insurance products        |
+| POST   | `/api/leads`               | Submit an enquiry (rate-limited) |
 
 ## Deploy to Railway
 
