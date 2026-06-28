@@ -1,5 +1,8 @@
 node_modules/
 db/pack.db
+db/pack.db-shm
+db/pack.db-wal
+db/sessions.db
 .env
 public/uploads/*.jpg
 public/uploads/*.jpeg
