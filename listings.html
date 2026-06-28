@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Listings | Pack Real Estate</title>
+    <link rel="icon" type="image/png" href="assets/logo/realestate_logo.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      .listings-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 20px;
+      }
+      .listings-breadcrumb a {
+        color: var(--cyan);
+        text-decoration: none;
+      }
+      .listings-breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .listings-breadcrumb .sep {
+        margin: 0 8px;
+        color: rgba(255, 255, 255, 0.2);
+      }
+      .pagination-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="nav-brand">
+        <img
+          src="assets/logo/realestate_logo.png"
+          alt="Pack Real Estate"
+          class="nav-logo"
+        />
+      </a>
+      <button class="hamburger" id="ham" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-has-dropdown">
+          <a href="real-estate.html" class="nav-dropdown-trigger active"
+            >Real Estate</a
+          >
+          <ul class="nav-dropdown-menu">
+            <li><a href="real-estate.html">Overview</a></li>
+            <li><a href="listings.html" class="active">All Listings</a></li>
+          </ul>
+        </li>
+        <li><a href="insurance.html">Insurance</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html" class="nav-cta">Contact</a></li>
+      </ul>
+    </nav>
+
+    <section class="page-hero">
+      <div class="page-hero-inner">
+        <div class="listings-breadcrumb animate">
+          <a href="index.html">Home</a>
+          <span class="sep">/</span>
+          <a href="real-estate.html">Real Estate</a>
+          <span class="sep">/</span>
+          <span style="color: rgba(255, 255, 255, 0.6)">All Listings</span>
+        </div>
+        <span class="eyebrow animate" style="color: var(--cyan)"
+          >Pack Real Estate</span
+        >
+        <h1 class="animate d1">All <em>Listings.</em></h1>
+        <p class="animate d2">
+          Browse every property across Namibia. Filter by status or type to find
+          exactly what you are looking for.
+        </p>
+      </div>
+    </section>
+
+    <section class="section-offwhite" id="listings-section">
+      <div class="inner">
+        <div class="filter-bar">
+          <div class="filter-group">
+            <span class="filter-label">Status:</span>
+            <button class="filter-chip active" data-status="">All</button>
+            <button class="filter-chip" data-status="available">
+              Available
+            </button>
+            <button class="filter-chip" data-status="under-offer">
+              Under Offer
+            </button>
+            <button class="filter-chip" data-status="sold">Sold</button>
+            <button class="filter-chip" data-status="rented">Rented</button>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">Type:</span>
+            <button class="filter-chip active" data-type="">All</button>
+            <button class="filter-chip" data-type="sale">For Sale</button>
+            <button class="filter-chip" data-type="rent">For Rent</button>
+          </div>
+        </div>
+
+        <div
+          id="listings-grid"
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            min-height: 200px;
+          "
+        >
+          <div
+            id="listings-state"
+            style="
+              grid-column: 1/-1;
+              text-align: center;
+              padding: 60px;
+              color: var(--gray-mid);
+            "
+          >
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 28px"></i>
+            <p style="margin-top: 12px">Loading listings&hellip;</p>
+          </div>
+        </div>
+
+        <div
+          id="pagination"
+          style="
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 48px;
+          "
+        >
+          <button
+            id="prev-btn"
+            class="btn btn-outline pagination-btn"
+            style="color: var(--navy); border-color: var(--gray-light)"
+            onclick="changePage(-1)"
+          >
+            &larr; Previous
+          </button>
+          <span
+            id="page-indicator"
+            style="
+              font-size: 14px;
+              color: var(--gray-mid);
+              min-width: 100px;
+              text-align: center;
+            "
+          ></span>
+          <button
+            id="next-btn"
+            class="btn btn-outline pagination-btn"
+            style="color: var(--navy); border-color: var(--gray-light)"
+            onclick="changePage(1)"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-top-bar"></div>
+      <div class="footer-main">
+        <div class="footer-inner">
+          <div class="footer-brand-col">
+            <img
+              src="assets/logo/packgroup_logo.png"
+              alt="Pack Group"
+              class="footer-logo"
+              loading="lazy"
+            />
+            <p class="footer-tagline">
+              &ldquo;Built on Trust. Driven by Unity.&rdquo;
+            </p>
+            <p class="footer-desc">
+              Uniting property and protection under one trusted name across
+              Namibia.
+            </p>
+            <div class="footer-contact">
+              <a href="tel:0858196462" class="footer-contact-link">
+                <i class="fa-solid fa-phone"></i> 085 819 6462
+              </a>
+              <a href="https://wa.me/264858196462" class="footer-contact-link">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Us
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-nav-col">
+            <h6 class="footer-col-title">Navigate</h6>
+            <nav class="footer-links">
+              <a href="index.html">Home</a>
+              <a href="real-estate.html">Real Estate</a>
+              <a href="listings.html">All Listings</a>
+              <a href="insurance.html">Insurance</a>
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+            </nav>
+          </div>
+
+          <div class="footer-div-col">
+            <h6 class="footer-col-title">Our Divisions</h6>
+            <a href="real-estate.html" class="footer-div-card">
+              <img
+                src="assets/logo/realestate_logo.png"
+                alt="Pack Real Estate"
+                loading="lazy"
+              />
+              <span>Property Solutions</span>
+            </a>
+            <a href="insurance.html" class="footer-div-card">
+              <img
+                src="assets/logo/insurance_logo.png"
+                alt="Pack Insurance Broker"
+                loading="lazy"
+              />
+              <span>Protection &amp; Cover</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <div class="footer-reg-strip">
+            <span>Pack Real Estate</span>
+            <span class="footer-dot">&bull;</span>
+            <span>Pack Insurance Broker</span>
+          </div>
+          <span class="footer-copy">&copy; 2026 Pack Group. Namibia.</span>
+        </div>
+        <div class="footer-credit">
+          <a href="https://www.spybitech.com.na" target="_blank" rel="noopener">
+            <img src="assets/logo/spybitechlogo.webp" alt="Spybitech, Inc." />
+            <span
+              >Designed &amp; Hosted by Spybitech, Inc.
+              (www.spybitech.com.na)</span
+            >
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="shared.js"></script>
+    <script>
+      (function () {
+        var PER_PAGE = 9;
+        var allProps = [];
+        var filtered = [];
+        var currentPage = 1;
+        var activeStatus = "";
+        var activeType = "";
+
+        fetch("/api/properties")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (props) {
+            allProps = props;
+            applyFilters();
+          })
+          .catch(function () {
+            document.getElementById("listings-state").innerHTML =
+              '<i class="fa-solid fa-triangle-exclamation" style="font-size:28px;color:var(--gray-mid);"></i>' +
+              '<p style="margin-top:12px;">Unable to load listings. Please refresh the page.</p>';
+          });
+
+        document
+          .querySelectorAll(".filter-chip[data-status]")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll(".filter-chip[data-status]")
+                .forEach(function (b) {
+                  b.classList.remove("active");
+                });
+              btn.classList.add("active");
+              activeStatus = btn.dataset.status;
+              currentPage = 1;
+              applyFilters();
+            });
+          });
+
+        document
+          .querySelectorAll(".filter-chip[data-type]")
+          .forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              document
+                .querySelectorAll(".filter-chip[data-type]")
+                .forEach(function (b) {
+                  b.classList.remove("active");
+                });
+              btn.classList.add("active");
+              activeType = btn.dataset.type;
+              currentPage = 1;
+              applyFilters();
+            });
+          });
+
+        function applyFilters() {
+          filtered = allProps.filter(function (p) {
+            if (activeStatus && p.status !== activeStatus) return false;
+            if (activeType && p.type !== activeType) return false;
+            return true;
+          });
+          renderPage();
+        }
+
+        function renderPage() {
+          var grid = document.getElementById("listings-grid");
+          var stateEl = document.getElementById("listings-state");
+          var totalPages = Math.ceil(filtered.length / PER_PAGE);
+          var start = (currentPage - 1) * PER_PAGE;
+          var pageProps = filtered.slice(start, start + PER_PAGE);
+
+          if (filtered.length === 0) {
+            grid.innerHTML =
+              '<div id="listings-state" style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray-mid);">' +
+              '<i class="fa-solid fa-house-circle-xmark" style="font-size:32px;opacity:0.4;"></i>' +
+              '<p style="margin-top:16px;font-size:15px;">No properties match your filters.</p>' +
+              '<p style="margin-top:8px;font-size:13px;">Try a different combination or clear the filters above.</p>' +
+              "</div>";
+            document.getElementById("pagination").style.display = "none";
+            return;
+          }
+
+          var cards = pageProps.map(renderCard).join("");
+          grid.innerHTML = cards;
+          grid.querySelectorAll(".reveal").forEach(function (el) {
+            observer.observe(el);
+          });
+
+          var pag = document.getElementById("pagination");
+          if (totalPages > 1) {
+            pag.style.display = "flex";
+            document.getElementById("page-indicator").textContent =
+              "Page " + currentPage + " of " + totalPages;
+            document.getElementById("prev-btn").disabled = currentPage === 1;
+            document.getElementById("next-btn").disabled =
+              currentPage === totalPages;
+          } else {
+            pag.style.display = "none";
+          }
+        }
+
+        window.changePage = function (dir) {
+          var totalPages = Math.ceil(filtered.length / PER_PAGE);
+          currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
+          renderPage();
+          document
+            .getElementById("listings-section")
+            .scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+
+        var STATUS_LABELS = {
+          available: "Available",
+          "under-offer": "Under Offer",
+          sold: "Sold",
+          rented: "Rented",
+        };
+
+        function renderCard(p) {
+          var images = p.images || [];
+          var cover =
+            images.find(function (i) {
+              return i.is_cover;
+            }) || images[0];
+          var imgHtml = cover
+            ? '<img src="/' +
+              cover.filename +
+              '" alt="' +
+              esc(p.title) +
+              '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">'
+            : "";
+          var typeLabel = p.type === "sale" ? "For Sale" : "To Rent";
+          var priceFmt = "N$" + Number(p.price).toLocaleString("en-NA");
+          var levyHtml = p.levy
+            ? '<div style="font-size:11px;color:var(--gray-mid);">Levy N$' +
+              esc(String(p.levy)) +
+              "/month</div>"
+            : "";
+          var statusBadge =
+            p.status !== "available"
+              ? '<div style="position:absolute;top:14px;right:14px;background:rgba(7,23,44,0.82);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;">' +
+                (STATUS_LABELS[p.status] || p.status) +
+                "</div>"
+              : p.units_available > 1
+                ? '<div style="position:absolute;top:14px;right:14px;background:rgba(7,23,44,0.82);color:#fff;font-size:11px;padding:5px 10px;border-radius:20px;">' +
+                  p.units_available +
+                  " Units</div>"
+                : "";
+          var featuredBadge = p.featured
+            ? '<span style="background:rgba(228,168,56,0.9);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;"><i class="fa-solid fa-star"></i> Featured</span>'
+            : "";
+          return (
+            '<div class="reveal" style="background:var(--white);border-radius:18px;border:1px solid var(--gray-light);overflow:hidden;transition:all 0.25s;box-shadow:0 2px 12px rgba(0,0,0,0.04);"' +
+            " onmouseover=\"this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(32,99,224,0.13)';\"" +
+            " onmouseout=\"this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.04)';\">" +
+            '<div style="position:relative;height:220px;overflow:hidden;background:var(--off-white);">' +
+            imgHtml +
+            '<div style="position:absolute;top:14px;left:14px;display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<span style="background:var(--blue-mid);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;">' +
+            typeLabel +
+            "</span>" +
+            featuredBadge +
+            "</div>" +
+            statusBadge +
+            "</div>" +
+            '<div style="padding:24px;">' +
+            '<p style="font-size:11px;color:var(--gray-mid);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">' +
+            esc(p.location) +
+            "</p>" +
+            "<h3 style=\"font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:12px;\">" +
+            esc(p.title) +
+            "</h3>" +
+            '<div style="display:flex;gap:20px;margin-bottom:16px;">' +
+            '<span style="font-size:13px;color:var(--text-body);"><i class="fa-solid fa-bed"></i> ' +
+            p.bedrooms +
+            " Bed</span>" +
+            '<span style="font-size:13px;color:var(--text-body);"><i class="fa-solid fa-bath"></i> ' +
+            p.bathrooms +
+            " Bath</span>" +
+            "</div>" +
+            '<div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-light);padding-top:16px;">' +
+            "<div>" +
+            '<div style="font-size:11px;color:var(--gray-mid);text-transform:uppercase;letter-spacing:1px;">Price</div>' +
+            "<div style=\"font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);\">" +
+            priceFmt +
+            "</div>" +
+            levyHtml +
+            "</div>" +
+            '<a href="listing.html?slug=' +
+            encodeURIComponent(p.slug) +
+            '"' +
+            ' style="background:var(--blue-mid);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;"' +
+            " onmouseover=\"this.style.background='var(--blue-dark)'\" onmouseout=\"this.style.background='var(--blue-mid)'\">View Listing &rarr;</a>" +
+            "</div>" +
+            "</div>" +
+            "</div>"
+          );
+        }
+
+        function esc(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+      })();
+    </script>
+  </body>
+</html>
