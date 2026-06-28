@@ -14,6 +14,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+    <link
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      href="https://images.unsplash.com/photo-1637942189194-be88fb56bc32?w=1600&q=80&auto=format&fit=crop"
+    />
   </head>
   <body>
     <nav>
@@ -44,7 +50,16 @@
       </ul>
     </nav>
 
-    <section class="page-hero">
+    <section
+      class="page-hero"
+      style="
+        background-image:
+          linear-gradient(rgba(7, 23, 44, 0.72), rgba(7, 23, 44, 0.88)),
+          url(&quot;https://images.unsplash.com/photo-1637942189194-be88fb56bc32?w=1600&q=80&auto=format&fit=crop&quot;);
+        background-size: cover;
+        background-position: center;
+      "
+    >
       <div class="page-hero-inner">
         <img
           src="assets/logo/insurance_logo.png"
