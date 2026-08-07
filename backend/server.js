@@ -14,10 +14,7 @@ const {
   apiRouter: propApi,
   adminRouter: propAdmin,
 } = require("./routes/properties");
-const {
-  apiRouter: insApi,
-  adminRouter: insAdmin,
-} = require("./routes/insurance");
+const { apiRouter: insApi } = require("./routes/insurance");
 const {
   apiRouter: leadsApi,
   adminRouter: leadsAdmin,
@@ -145,7 +142,6 @@ app.get("/admin/dashboard", requireAuth, (req, res) => {
 });
 
 app.use("/admin/properties", requireAuth, propAdmin);
-app.use("/admin/insurance", requireAuth, insAdmin);
 app.use("/admin/leads", requireAuth, leadsAdmin);
 app.use("/admin/settings", requireAuth, settingsRouter);
 app.use("/admin/account", requireAuth, accountRouter);

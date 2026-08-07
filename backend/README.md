@@ -39,7 +39,6 @@ Visit `/admin/login` after starting the server.
 
 - `/admin/dashboard` — overview stats + recent leads
 - `/admin/properties` — manage property listings
-- `/admin/insurance` — manage insurance products
 - `/admin/leads` — view and update enquiries
 - `/admin/settings` — site-wide text/contact settings
 - `/admin/account` — change email / password
