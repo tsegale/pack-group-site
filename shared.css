@@ -122,6 +122,17 @@ body > nav {
 .nav-has-dropdown {
   position: relative;
 }
+/* Invisible bridge over the visual gap between the trigger and the
+   dropdown menu, so hover isn't lost while the mouse crosses it. */
+.nav-has-dropdown::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  min-width: 160px;
+  height: 14px;
+}
 .nav-dropdown-trigger {
   display: inline-flex !important;
   align-items: center;
@@ -144,7 +155,6 @@ body > nav {
   transform: rotate(180deg);
 }
 .nav-dropdown-menu {
-  display: none;
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
@@ -156,10 +166,23 @@ body > nav {
   padding: 6px;
   min-width: 160px;
   z-index: 201;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
 }
 .nav-has-dropdown:hover .nav-dropdown-menu,
 .nav-has-dropdown:focus-within .nav-dropdown-menu {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0s;
 }
 .nav-dropdown-menu li {
   list-style: none;
@@ -1363,6 +1386,10 @@ footer {
   .nav-has-dropdown .nav-dropdown-menu {
     display: block;
     position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
     box-shadow: none;
     border: none;
     border-radius: 0;
