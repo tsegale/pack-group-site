@@ -1377,3 +1377,17 @@ footer {
     font-size: 12px;
   }
 }
+
+/* ===== Content Alignment Utilities ===== */
+.align-left {
+  align-items: flex-start;
+  text-align: left;
+}
+.align-center {
+  align-items: center;
+  text-align: center;
+}
+.align-right {
+  align-items: flex-end;
+  text-align: right;
+}

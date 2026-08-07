@@ -84,7 +84,6 @@
         flex-direction: column;
         justify-content: center;
         padding: 240px clamp(28px, 8vw, 120px) 100px;
-        max-width: 760px;
       }
 
       .hslide-tag {
@@ -120,6 +119,7 @@
         color: #fff;
         line-height: 1.1;
         margin: 0 0 28px;
+        max-width: 760px;
         opacity: 0;
         transform: translateY(24px);
         transition:
@@ -128,6 +128,26 @@
       }
 
       .hc-slide.active .hslide-headline {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hslide-subheadline {
+        font-family: "DM Sans", sans-serif;
+        font-size: clamp(15px, 2vw, 19px);
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.5;
+        margin: 0 0 28px;
+        max-width: 620px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.6s 0.38s ease,
+          transform 0.6s 0.38s ease;
+      }
+
+      .hc-slide.active .hslide-subheadline {
         opacity: 1;
         transform: translateY(0);
       }
@@ -377,147 +397,31 @@
         </a>
       </div>
 
-      <!-- Slide 1 — Real Estate: Property Exterior -->
-      <div class="hc-slide active" data-index="0">
-        <div
-          class="hslide-img"
-          style="
-            background-image: url(&quot;https://images.unsplash.com/photo-1762529388467-728757c7a446?w=1400&auto=format&fit=crop&quot;);
-            background-size: cover;
-            background-position: center;
-          "
-        ></div>
-        <div class="hslide-overlay"></div>
-        <div class="hslide-content">
-          <span class="hslide-tag" style="color: #378add; border-color: #378add"
-            >PROPERTY LISTINGS</span
-          >
-          <h2 class="hslide-headline">Find Your Perfect Property</h2>
-          <div class="hslide-ctas">
-            <a
-              href="real-estate.html"
-              class="hslide-btn"
-              style="background: #378add"
-              >View Listings</a
-            >
-            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 2 — Real Estate: Interior / Investment -->
-      <div class="hc-slide" data-index="1">
-        <div
-          class="hslide-img"
-          style="
-            background-image: url(&quot;https://images.unsplash.com/photo-1740057419431-b0a488f7503c?w=1400&auto=format&fit=crop&quot;);
-            background-size: cover;
-            background-position: center;
-          "
-        ></div>
-        <div class="hslide-overlay"></div>
-        <div class="hslide-content">
-          <span class="hslide-tag" style="color: #2a7fc4; border-color: #2a7fc4"
-            >BUY &middot; SELL &middot; RENT</span
-          >
-          <h2 class="hslide-headline">Your Property Journey Starts Here</h2>
-          <div class="hslide-ctas">
-            <a
-              href="real-estate.html"
-              class="hslide-btn"
-              style="background: #2a7fc4"
-              >View Listings</a
-            >
-            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 3 — Insurance: Professional Consultation -->
-      <div class="hc-slide" data-index="2">
-        <div
-          class="hslide-img"
-          style="
-            background-image: url(&quot;https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&auto=format&fit=crop&quot;);
-            background-size: cover;
-            background-position: center;
-          "
-        ></div>
-        <div class="hslide-overlay"></div>
-        <div class="hslide-content">
-          <span class="hslide-tag" style="color: #00b4d4; border-color: #00b4d4"
-            >FINANCIAL PROTECTION</span
-          >
-          <h2 class="hslide-headline">Protecting What Matters Most</h2>
-          <div class="hslide-ctas">
-            <a
-              href="insurance.html"
-              class="hslide-btn"
-              style="background: #00b4d4"
-              >Get Covered</a
-            >
-            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 4 — Insurance: Family / Protection -->
-      <div class="hc-slide" data-index="3">
-        <div
-          class="hslide-img"
-          style="
-            background-image: url(&quot;https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1400&auto=format&fit=crop&quot;);
-            background-size: cover;
-            background-position: center;
-          "
-        ></div>
-        <div class="hslide-overlay"></div>
-        <div class="hslide-content">
-          <span class="hslide-tag" style="color: #00c8e0; border-color: #00c8e0"
-            >PEACE OF MIND</span
-          >
-          <h2 class="hslide-headline">No Client Stands Alone</h2>
-          <div class="hslide-ctas">
-            <a
-              href="insurance.html"
-              class="hslide-btn"
-              style="background: #00b4d4"
-              >Get Covered</a
-            >
-            <a href="contact.html" class="hslide-btn-out">Contact Us</a>
-          </div>
-        </div>
-      </div>
+      <!-- Slides are rendered by JS from GET /api/hero (see bottom of page) -->
+      <div id="hcSlides"></div>
 
       <!-- Prev / Next arrows -->
-      <button class="hc-arrow hc-prev" aria-label="Previous slide">
+      <button class="hc-arrow hc-prev" id="hcPrev" aria-label="Previous slide">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <button class="hc-arrow hc-next" aria-label="Next slide">
+      <button class="hc-arrow hc-next" id="hcNext" aria-label="Next slide">
         <i class="fa-solid fa-chevron-right"></i>
       </button>
 
       <!-- Bottom bar: slide counter + dot navigation -->
-      <div class="hc-bottom-bar">
+      <div class="hc-bottom-bar" id="hcBottomBar">
         <div class="hc-counter">
-          <span class="hc-cur">01</span
+          <span class="hc-cur" id="hcCur">01</span
           ><span style="color: rgba(255, 255, 255, 0.35); margin: 0 5px">/</span
-          ><span>04</span>
+          ><span id="hcTotal">01</span>
         </div>
-        <div class="hc-dots">
-          <button
-            class="hc-dot active"
-            data-slide="0"
-            aria-label="Slide 1"
-          ></button>
-          <button class="hc-dot" data-slide="1" aria-label="Slide 2"></button>
-          <button class="hc-dot" data-slide="2" aria-label="Slide 3"></button>
-          <button class="hc-dot" data-slide="3" aria-label="Slide 4"></button>
-        </div>
+        <div class="hc-dots" id="hcDots"></div>
       </div>
 
       <!-- Progress bar -->
-      <div class="hc-progress-track"><div class="hc-progress-fill"></div></div>
+      <div class="hc-progress-track" id="hcProgressTrack">
+        <div class="hc-progress-fill" id="hcProgressFill"></div>
+      </div>
     </section>
 
     <div class="stats-strip">
@@ -856,115 +760,320 @@
         var c = document.getElementById("heroCarousel");
         if (!c) return;
 
-        var slides = Array.from(c.querySelectorAll(".hc-slide"));
-        var dots = Array.from(c.querySelectorAll(".hc-dot"));
-        var prevBtn = c.querySelector(".hc-prev");
-        var nextBtn = c.querySelector(".hc-next");
-        var curEl = c.querySelector(".hc-cur");
-        var fill = c.querySelector(".hc-progress-fill");
+        // Fallback content — used if /api/hero fails or returns no active
+        // slides, so the homepage never renders a blank hero.
+        var FALLBACK_SETTINGS = {
+          mode: "carousel",
+          autoplay: 1,
+          interval_ms: 6000,
+          show_arrows: 1,
+          show_dots: 1,
+        };
+        var FALLBACK_SLIDES = [
+          {
+            background_url:
+              "https://images.unsplash.com/photo-1762529388467-728757c7a446?w=1400&auto=format&fit=crop",
+            overlay_opacity: 0.78,
+            tag_text: "PROPERTY LISTINGS",
+            heading: "Find Your Perfect Property",
+            subheading: null,
+            cta_label: "View Listings",
+            cta_url: "real-estate.html",
+            accent_color: "#378add",
+            content_align: "left",
+          },
+          {
+            background_url:
+              "https://images.unsplash.com/photo-1740057419431-b0a488f7503c?w=1400&auto=format&fit=crop",
+            overlay_opacity: 0.78,
+            tag_text: "BUY · SELL · RENT",
+            heading: "Your Property Journey Starts Here",
+            subheading: null,
+            cta_label: "View Listings",
+            cta_url: "real-estate.html",
+            accent_color: "#2a7fc4",
+            content_align: "left",
+          },
+          {
+            background_url:
+              "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&auto=format&fit=crop",
+            overlay_opacity: 0.78,
+            tag_text: "FINANCIAL PROTECTION",
+            heading: "Protecting What Matters Most",
+            subheading: null,
+            cta_label: "Get Covered",
+            cta_url: "insurance.html",
+            accent_color: "#00b4d4",
+            content_align: "left",
+          },
+          {
+            background_url:
+              "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1400&auto=format&fit=crop",
+            overlay_opacity: 0.78,
+            tag_text: "PEACE OF MIND",
+            heading: "No Client Stands Alone",
+            subheading: null,
+            cta_label: "Get Covered",
+            cta_url: "insurance.html",
+            accent_color: "#00c8e0",
+            content_align: "left",
+          },
+        ];
 
-        if (!slides.length) return;
+        function esc(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
 
-        var N = slides.length,
-          INTERVAL = 6000,
-          cur = 0,
-          timer = null,
-          running = false;
+        function overlayGradient(opacity) {
+          var o = Math.min(1, Math.max(0, Number(opacity)));
+          var s2 = o * (0.42 / 0.78);
+          var s3 = o * (0.18 / 0.78);
+          return (
+            "linear-gradient(135deg, rgba(7,23,44," +
+            o.toFixed(3) +
+            ") 0%, rgba(7,23,44," +
+            s2.toFixed(3) +
+            ") 55%, rgba(7,23,44," +
+            s3.toFixed(3) +
+            ") 100%)"
+          );
+        }
+
+        function slideHtml(s, idx) {
+          var align =
+            ["left", "center", "right"].indexOf(s.content_align) >= 0
+              ? s.content_align
+              : "left";
+          var accent = s.accent_color || "#378add";
+          var tag = s.tag_text
+            ? '<span class="hslide-tag" style="color:' +
+              esc(accent) +
+              ";border-color:" +
+              esc(accent) +
+              '">' +
+              esc(s.tag_text) +
+              "</span>"
+            : "";
+          var sub = s.subheading
+            ? '<p class="hslide-subheadline">' + esc(s.subheading) + "</p>"
+            : "";
+          var cta = s.cta_label
+            ? '<a href="' +
+              esc(s.cta_url || "#") +
+              '" class="hslide-btn" style="background:' +
+              esc(accent) +
+              '">' +
+              esc(s.cta_label) +
+              "</a>"
+            : "";
+          return (
+            '<div class="hc-slide' +
+            (idx === 0 ? " active" : "") +
+            '" data-index="' +
+            idx +
+            '">' +
+            '<div class="hslide-img" style="background-image:url(&quot;' +
+            esc(s.background_url) +
+            '&quot;);background-size:cover;background-position:center;"></div>' +
+            '<div class="hslide-overlay" style="background:' +
+            overlayGradient(s.overlay_opacity) +
+            '"></div>' +
+            '<div class="hslide-content align-' +
+            align +
+            '">' +
+            tag +
+            '<h2 class="hslide-headline">' +
+            esc(s.heading) +
+            "</h2>" +
+            sub +
+            '<div class="hslide-ctas">' +
+            cta +
+            '<a href="contact.html" class="hslide-btn-out">Contact Us</a>' +
+            "</div></div></div>"
+          );
+        }
 
         function pad(n) {
           return n < 10 ? "0" + n : "" + n;
         }
 
-        function kbRestart(idx) {
-          var img = slides[idx].querySelector(".hslide-img");
-          if (!img) return;
-          img.style.animation = "none";
-          void img.offsetWidth;
-          img.style.animation = "";
-        }
+        function render(settings, slides) {
+          var isStatic = settings.mode === "static";
+          var rendered = isStatic ? slides.slice(0, 1) : slides;
 
-        function activate(idx) {
-          slides[cur].classList.remove("active");
-          dots[cur].classList.remove("active");
-          cur = ((idx % N) + N) % N;
-          slides[cur].classList.add("active");
-          dots[cur].classList.add("active");
-          if (curEl) curEl.textContent = pad(cur + 1);
-          kbRestart(cur);
-        }
+          document.getElementById("hcSlides").innerHTML = rendered
+            .map(slideHtml)
+            .join("");
 
-        function resetBar() {
-          if (!fill) return;
-          fill.style.transition = "none";
-          fill.style.width = "0%";
-          void fill.offsetWidth;
-          fill.style.transition = "width " + INTERVAL + "ms linear";
-          fill.style.width = "100%";
-        }
+          var slideEls = Array.from(c.querySelectorAll(".hc-slide"));
+          var prevBtn = document.getElementById("hcPrev");
+          var nextBtn = document.getElementById("hcNext");
+          var bottomBar = document.getElementById("hcBottomBar");
+          var progressTrack = document.getElementById("hcProgressTrack");
+          var dotsWrap = document.getElementById("hcDots");
+          var curEl = document.getElementById("hcCur");
+          var totalEl = document.getElementById("hcTotal");
+          var fill = document.getElementById("hcProgressFill");
 
-        function freezeBar() {
-          if (fill) fill.style.transition = "none";
-        }
+          var N = slideEls.length;
+          if (!N) return;
 
-        // Self-rescheduling loop — only one timer alive at a time
-        function loop() {
-          activate(cur + 1);
-          resetBar();
-          timer = setTimeout(loop, INTERVAL);
-        }
+          if (totalEl) totalEl.textContent = pad(N);
 
-        function start() {
-          if (running || document.hidden) return;
-          running = true;
-          resetBar();
-          timer = setTimeout(loop, INTERVAL);
-        }
+          var showArrows = !isStatic && N > 1 && !!settings.show_arrows;
+          var showDots = !isStatic && N > 1 && !!settings.show_dots;
+          var showControls = !isStatic && N > 1;
 
-        function stop() {
-          running = false;
-          clearTimeout(timer);
-          freezeBar();
-        }
+          if (prevBtn) prevBtn.style.display = showArrows ? "" : "none";
+          if (nextBtn) nextBtn.style.display = showArrows ? "" : "none";
+          if (bottomBar) bottomBar.style.display = showControls ? "" : "none";
+          if (dotsWrap) dotsWrap.style.display = showDots ? "" : "none";
 
-        function goTo(idx) {
-          stop();
-          activate(idx);
+          if (isStatic || N <= 1) {
+            if (progressTrack) progressTrack.style.display = "none";
+          }
+
+          if (dotsWrap) {
+            dotsWrap.innerHTML = showDots
+              ? slideEls
+                  .map(function (_, i) {
+                    return (
+                      '<button class="hc-dot' +
+                      (i === 0 ? " active" : "") +
+                      '" data-slide="' +
+                      i +
+                      '" aria-label="Slide ' +
+                      (i + 1) +
+                      '"></button>'
+                    );
+                  })
+                  .join("")
+              : "";
+          }
+
+          if (isStatic || N <= 1) {
+            var img = slideEls[0] && slideEls[0].querySelector(".hslide-img");
+            if (img) {
+              img.style.animation = "none";
+              void img.offsetWidth;
+              img.style.animation = "";
+            }
+            return; // No autoplay / nav wiring needed for a single static slide
+          }
+
+          var dots = Array.from(dotsWrap.querySelectorAll(".hc-dot"));
+          var INTERVAL = settings.interval_ms || 6000;
+          var autoplay = !!settings.autoplay;
+          var cur = 0,
+            timer = null,
+            running = false;
+
+          function kbRestart(idx) {
+            var img = slideEls[idx].querySelector(".hslide-img");
+            if (!img) return;
+            img.style.animation = "none";
+            void img.offsetWidth;
+            img.style.animation = "";
+          }
+
+          function activate(idx) {
+            slideEls[cur].classList.remove("active");
+            if (dots[cur]) dots[cur].classList.remove("active");
+            cur = ((idx % N) + N) % N;
+            slideEls[cur].classList.add("active");
+            if (dots[cur]) dots[cur].classList.add("active");
+            if (curEl) curEl.textContent = pad(cur + 1);
+            kbRestart(cur);
+          }
+
+          function resetBar() {
+            if (!fill || !autoplay) return;
+            fill.style.transition = "none";
+            fill.style.width = "0%";
+            void fill.offsetWidth;
+            fill.style.transition = "width " + INTERVAL + "ms linear";
+            fill.style.width = "100%";
+          }
+
+          function freezeBar() {
+            if (fill) fill.style.transition = "none";
+          }
+
+          function loop() {
+            activate(cur + 1);
+            resetBar();
+            timer = setTimeout(loop, INTERVAL);
+          }
+
+          function start() {
+            if (!autoplay || running || document.hidden) return;
+            running = true;
+            resetBar();
+            timer = setTimeout(loop, INTERVAL);
+          }
+
+          function stop() {
+            running = false;
+            clearTimeout(timer);
+            freezeBar();
+          }
+
+          function goTo(idx) {
+            stop();
+            activate(idx);
+            start();
+          }
+
+          if (prevBtn)
+            prevBtn.addEventListener("click", function () {
+              goTo(cur - 1);
+            });
+          if (nextBtn)
+            nextBtn.addEventListener("click", function () {
+              goTo(cur + 1);
+            });
+          dots.forEach(function (d) {
+            d.addEventListener("click", function () {
+              goTo(parseInt(d.dataset.slide, 10));
+            });
+          });
+
+          c.addEventListener("mouseenter", stop);
+          c.addEventListener("mouseleave", start);
+          document.addEventListener("visibilitychange", function () {
+            document.hidden ? stop() : start();
+          });
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowLeft") goTo(cur - 1);
+            if (e.key === "ArrowRight") goTo(cur + 1);
+          });
+
+          kbRestart(0);
+          if (!autoplay && progressTrack) progressTrack.style.display = "none";
           start();
         }
 
-        // Controls
-        if (prevBtn)
-          prevBtn.addEventListener("click", function () {
-            goTo(cur - 1);
+        fetch("/api/hero")
+          .then(function (r) {
+            if (!r.ok) throw new Error("bad status");
+            return r.json();
+          })
+          .then(function (data) {
+            var settings =
+              data && data.settings ? data.settings : FALLBACK_SETTINGS;
+            var slides =
+              data && Array.isArray(data.slides) && data.slides.length
+                ? data.slides
+                : FALLBACK_SLIDES;
+            render(settings, slides);
+          })
+          .catch(function () {
+            render(FALLBACK_SETTINGS, FALLBACK_SLIDES);
           });
-        if (nextBtn)
-          nextBtn.addEventListener("click", function () {
-            goTo(cur + 1);
-          });
-        dots.forEach(function (d) {
-          d.addEventListener("click", function () {
-            goTo(parseInt(d.dataset.slide, 10));
-          });
-        });
-
-        // Pause on hover
-        c.addEventListener("mouseenter", stop);
-        c.addEventListener("mouseleave", start);
-
-        // Pause when tab is hidden, resume when visible
-        document.addEventListener("visibilitychange", function () {
-          document.hidden ? stop() : start();
-        });
-
-        // Keyboard navigation
-        document.addEventListener("keydown", function (e) {
-          if (e.key === "ArrowLeft") goTo(cur - 1);
-          if (e.key === "ArrowRight") goTo(cur + 1);
-        });
-
-        // Init — slide 0 already marked active in HTML
-        kbRestart(0);
-        start();
       })();
     </script>
     <script src="shared.js"></script>

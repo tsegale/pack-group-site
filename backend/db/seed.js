@@ -228,4 +228,78 @@ const upsertSetting = db.prepare(
 Object.entries(defaults).forEach(([k, v]) => upsertSetting.run(k, v));
 console.log("✓ Site settings initialised");
 
+/* ── HERO CAROUSEL ── */
+const heroSettingsExisting = db
+  .prepare("SELECT id FROM hero_settings WHERE id = 1")
+  .get();
+if (!heroSettingsExisting) {
+  db.prepare(
+    `INSERT INTO hero_settings (id, mode, autoplay, interval_ms, show_arrows, show_dots)
+     VALUES (1, 'carousel', 1, 6000, 1, 1)`,
+  ).run();
+  console.log("✓ Hero settings initialised");
+} else {
+  console.log("  Hero settings already exist");
+}
+
+const heroSlideCount = db
+  .prepare("SELECT COUNT(*) as c FROM hero_slides")
+  .get();
+if (heroSlideCount.c === 0) {
+  const insertSlide = db.prepare(`
+    INSERT INTO hero_slides
+      (sort_order, active, background_url, overlay_opacity, tag_text, heading,
+       subheading, cta_label, cta_url, accent_color, content_align)
+    VALUES
+      (@sort_order, 1, @background_url, 0.78, @tag_text, @heading,
+       NULL, @cta_label, @cta_url, @accent_color, 'left')
+  `);
+  const heroSlides = [
+    {
+      sort_order: 1,
+      background_url:
+        "https://images.unsplash.com/photo-1762529388467-728757c7a446?w=1400&auto=format&fit=crop",
+      tag_text: "PROPERTY LISTINGS",
+      heading: "Find Your Perfect Property",
+      cta_label: "View Listings",
+      cta_url: "real-estate.html",
+      accent_color: "#378add",
+    },
+    {
+      sort_order: 2,
+      background_url:
+        "https://images.unsplash.com/photo-1740057419431-b0a488f7503c?w=1400&auto=format&fit=crop",
+      tag_text: "BUY · SELL · RENT",
+      heading: "Your Property Journey Starts Here",
+      cta_label: "View Listings",
+      cta_url: "real-estate.html",
+      accent_color: "#2a7fc4",
+    },
+    {
+      sort_order: 3,
+      background_url:
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1400&auto=format&fit=crop",
+      tag_text: "FINANCIAL PROTECTION",
+      heading: "Protecting What Matters Most",
+      cta_label: "Get Covered",
+      cta_url: "insurance.html",
+      accent_color: "#00b4d4",
+    },
+    {
+      sort_order: 4,
+      background_url:
+        "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=1400&auto=format&fit=crop",
+      tag_text: "PEACE OF MIND",
+      heading: "No Client Stands Alone",
+      cta_label: "Get Covered",
+      cta_url: "insurance.html",
+      accent_color: "#00c8e0",
+    },
+  ];
+  heroSlides.forEach((s) => insertSlide.run(s));
+  console.log(`✓ ${heroSlides.length} hero slides created`);
+} else {
+  console.log("  Hero slides already exist");
+}
+
 console.log("\nSeed complete. You can now start the server with: npm start");

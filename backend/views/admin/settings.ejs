@@ -7,31 +7,173 @@
 </div>
 <% } %>
 
-<form method="POST" action="/admin/settings">
-  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+<!-- HERO SECTION -->
+<div class="form-card">
+  <div class="form-card-title"><i class="fa-solid fa-images" style="color:var(--blue-mid);margin-right:8px;"></i>Hero Section</div>
+  <p style="font-size:12.5px;color:var(--gray-mid);margin-bottom:20px;">
+    Controls the homepage hero carousel: slides, images, text, and layout. Changes appear live on the homepage.
+  </p>
 
-  <!-- HERO -->
-  <div class="form-card">
-    <div class="form-card-title"><i class="fa-solid fa-image" style="color:var(--blue-mid);margin-right:8px;"></i>Homepage Hero</div>
+  <!-- A. GLOBAL CAROUSEL SETTINGS -->
+  <div class="hero-global-settings">
+    <div class="hero-mode-toggle">
+      <button type="button" class="hero-mode-btn active" data-mode="carousel" onclick="setHeroMode('carousel')">
+        <i class="fa-solid fa-images"></i> Carousel (multiple slides)
+      </button>
+      <button type="button" class="hero-mode-btn" data-mode="static" onclick="setHeroMode('static')">
+        <i class="fa-solid fa-image"></i> Static (single slide)
+      </button>
+    </div>
+
+    <div id="hero-carousel-options" class="hero-carousel-options">
+      <div class="form-row-3">
+        <div class="form-group toggle-field">
+          <label>Autoplay</label>
+          <label class="switch">
+            <input type="checkbox" id="hero-autoplay" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="form-group" id="hero-interval-group">
+          <label for="hero-interval">Slide Interval (seconds)</label>
+          <input type="number" id="hero-interval" min="2" max="30" step="0.5" value="6">
+        </div>
+        <div class="form-group toggle-field">
+          <label>Show Arrows</label>
+          <label class="switch">
+            <input type="checkbox" id="hero-arrows" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group toggle-field" style="max-width:200px;">
+        <label>Show Dots</label>
+        <label class="switch">
+          <input type="checkbox" id="hero-dots" checked>
+          <span class="switch-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-primary btn-sm" onclick="saveHeroSettings()">
+      <i class="fa-solid fa-floppy-disk"></i> Save Carousel Settings
+    </button>
+    <span id="hero-settings-status" class="hero-save-status"></span>
+  </div>
+
+  <!-- B. SLIDE MANAGER -->
+  <div class="hero-slide-manager">
+    <div class="section-header" style="margin-top:28px;">
+      <h2 style="font-size:15px;">Slides</h2>
+    </div>
+    <div id="hero-slide-list" class="hero-slide-list"></div>
+    <button type="button" class="btn btn-outline" onclick="openSlideEditor(null)">
+      <i class="fa-solid fa-plus"></i> Add New Slide
+    </button>
+  </div>
+
+  <!-- SLIDE EDITOR PANEL (single reusable instance for add + edit) -->
+  <div id="hero-slide-editor" class="hero-slide-editor" hidden>
+    <div class="hero-editor-section-label">Background Image</div>
     <div class="form-group">
-      <label for="hero_headline">Hero Headline (Slide 1)</label>
-      <input type="text" id="hero_headline" name="hero_headline"
-             value="<%= settings.hero_headline || '' %>"
-             placeholder="Find Your Perfect Property">
+      <label for="hs-bg-url">Image URL</label>
+      <div class="hero-image-test-row">
+        <input type="text" id="hs-bg-url" placeholder="https://images.unsplash.com/photo-...">
+        <button type="button" class="btn btn-outline btn-sm" onclick="testHeroImage()">
+          <i class="fa-solid fa-eye"></i> Test Image
+        </button>
+      </div>
+      <div class="hero-image-test-preview" id="hs-bg-test" style="display:none;"></div>
     </div>
     <div class="form-group">
-      <label for="hero_subheadline">Hero Sub-headline (Slide 2)</label>
-      <input type="text" id="hero_subheadline" name="hero_subheadline"
-             value="<%= settings.hero_subheadline || '' %>"
-             placeholder="Your Property Journey Starts Here">
+      <label for="hs-opacity">Overlay Opacity</label>
+      <div class="hero-opacity-row">
+        <input type="range" id="hs-opacity" min="0" max="100" step="1" value="55">
+        <span class="hero-opacity-value" id="hs-opacity-value">55%</span>
+      </div>
+    </div>
+
+    <div class="hero-editor-section-label">Content</div>
+    <div class="form-group">
+      <label for="hs-tag">Tag / Eyebrow Label</label>
+      <input type="text" id="hs-tag" placeholder="e.g. PROPERTY LISTINGS">
     </div>
     <div class="form-group">
-      <label for="hero_tagline">Pack Philosophy Tagline</label>
-      <input type="text" id="hero_tagline" name="hero_tagline"
-             value="<%= settings.hero_tagline || '' %>"
-             placeholder="Like a wolf pack, strategic, connected, and dependable.">
+      <label for="hs-heading">Heading *</label>
+      <input type="text" id="hs-heading" placeholder="Find Your Perfect Property">
+    </div>
+    <div class="form-group">
+      <label for="hs-subheading">Subheading</label>
+      <input type="text" id="hs-subheading" placeholder="Optional second line below the heading">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="hs-cta-label">CTA Button Label</label>
+        <input type="text" id="hs-cta-label" placeholder="View Listings">
+      </div>
+      <div class="form-group" id="hs-cta-url-group" hidden>
+        <label for="hs-cta-url">CTA Button URL</label>
+        <input type="text" id="hs-cta-url" placeholder="real-estate.html">
+      </div>
+    </div>
+
+    <div class="hero-editor-section-label">Style</div>
+    <div class="form-group">
+      <label for="hs-color">Accent Color</label>
+      <div class="hero-color-row">
+        <input type="color" id="hs-color" value="#378add">
+        <input type="text" id="hs-color-text" value="#378add">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Content Alignment</label>
+      <div class="hero-align-toggle">
+        <button type="button" class="hero-align-btn active" data-align="left" onclick="setHeroAlign('left')">
+          <span class="hero-align-indicator"></span><i class="fa-solid fa-arrow-left"></i> Left
+        </button>
+        <button type="button" class="hero-align-btn" data-align="center" onclick="setHeroAlign('center')">
+          <span class="hero-align-indicator"></span>Center
+        </button>
+        <button type="button" class="hero-align-btn" data-align="right" onclick="setHeroAlign('right')">
+          <span class="hero-align-indicator"></span>Right <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="form-group toggle-field" style="max-width:200px;">
+      <label>Active</label>
+      <label class="switch">
+        <input type="checkbox" id="hs-active" checked>
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <div class="hero-preview-wrap">
+      <div class="hero-preview-label">Preview <span>Actual appearance may vary slightly</span></div>
+      <div class="hero-preview">
+        <div class="hero-preview-bg" id="hs-prev-bg"></div>
+        <div class="hero-preview-overlay" id="hs-prev-overlay"></div>
+        <div class="hero-preview-content align-left" id="hs-prev-content">
+          <span class="hero-preview-tag" id="hs-prev-tag"></span>
+          <h3 class="hero-preview-heading" id="hs-prev-heading"></h3>
+          <p class="hero-preview-subheading" id="hs-prev-subheading"></p>
+          <span class="hero-preview-btn" id="hs-prev-btn"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="hero-slide-error" class="alert alert-error" style="display:none;"></div>
+
+    <div class="hero-editor-actions">
+      <button type="button" class="btn btn-outline" onclick="closeSlideEditor()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="saveSlide()">
+        <i class="fa-solid fa-floppy-disk"></i> Save Slide
+      </button>
     </div>
   </div>
+</div>
+
+<form method="POST" action="/admin/settings">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
   <!-- STATS STRIP -->
   <div class="form-card">
@@ -116,5 +258,336 @@
     <i class="fa-solid fa-floppy-disk"></i> Save All Settings
   </button>
 </form>
+
+<script>
+const HERO_CSRF = document.querySelector('meta[name="csrf-token"]').content;
+let heroSettingsState = { mode: 'carousel', autoplay: 1, interval_ms: 6000, show_arrows: 1, show_dots: 1 };
+let heroSlidesState = [];
+let heroEditingId = null;
+let heroCurrentAlign = 'left';
+
+function heroEsc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ── LOAD ── */
+async function loadHeroSettings() {
+  const res = await fetch('/admin/api/hero/settings');
+  heroSettingsState = await res.json();
+  renderHeroSettingsUI();
+}
+
+async function loadHeroSlides() {
+  const res = await fetch('/admin/api/hero/slides');
+  heroSlidesState = await res.json();
+  renderHeroSlideList();
+}
+
+/* ── A. GLOBAL CAROUSEL SETTINGS ── */
+function renderHeroSettingsUI() {
+  document.querySelectorAll('.hero-mode-btn').forEach(function (btn) {
+    btn.classList.toggle('active', btn.dataset.mode === heroSettingsState.mode);
+  });
+  document.getElementById('hero-carousel-options').hidden = heroSettingsState.mode === 'static';
+  document.getElementById('hero-autoplay').checked = !!heroSettingsState.autoplay;
+  document.getElementById('hero-interval').value = heroSettingsState.interval_ms / 1000;
+  document.getElementById('hero-interval-group').hidden = !heroSettingsState.autoplay;
+  document.getElementById('hero-arrows').checked = !!heroSettingsState.show_arrows;
+  document.getElementById('hero-dots').checked = !!heroSettingsState.show_dots;
+}
+
+function setHeroMode(mode) {
+  heroSettingsState.mode = mode;
+  renderHeroSettingsUI();
+}
+
+function heroFlashStatus(el, msg, isError) {
+  el.textContent = msg;
+  el.classList.toggle('error', !!isError);
+  el.classList.add('show');
+  clearTimeout(el._heroTimer);
+  el._heroTimer = setTimeout(function () { el.classList.remove('show'); }, 2500);
+}
+
+async function saveHeroSettings() {
+  const statusEl = document.getElementById('hero-settings-status');
+  const payload = {
+    mode: document.querySelector('.hero-mode-btn.active').dataset.mode,
+    autoplay: document.getElementById('hero-autoplay').checked,
+    interval_ms: Math.round(parseFloat(document.getElementById('hero-interval').value || '6') * 1000),
+    show_arrows: document.getElementById('hero-arrows').checked,
+    show_dots: document.getElementById('hero-dots').checked,
+  };
+  try {
+    const res = await fetch('/admin/api/hero/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': HERO_CSRF },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('save failed');
+    heroSettingsState = await res.json();
+    heroFlashStatus(statusEl, 'Saved.', false);
+  } catch (e) {
+    heroFlashStatus(statusEl, 'Could not save. Try again.', true);
+  }
+}
+
+/* ── B. SLIDE LIST ── */
+function renderHeroSlideList() {
+  const list = document.getElementById('hero-slide-list');
+  if (!heroSlidesState.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:30px;"><i class="fa-solid fa-images"></i><p>No slides yet. Add your first slide below.</p></div>';
+    return;
+  }
+  list.innerHTML = heroSlidesState.map(function (s) {
+    return (
+      '<div class="hero-slide-card" draggable="true" data-id="' + s.id + '">' +
+        '<span class="hero-drag-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></span>' +
+        '<img class="hero-slide-thumb" src="' + heroEsc(s.background_url) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+        '<span class="hero-slide-heading">' + heroEsc(s.heading) + '</span>' +
+        '<div class="hero-slide-actions">' +
+          '<span class="badge badge-' + (s.active ? 'active' : 'inactive') + '" style="cursor:pointer;" onclick="toggleHeroSlideActive(' + s.id + ')">' + (s.active ? 'Active' : 'Inactive') + '</span>' +
+          '<button type="button" class="btn btn-sm btn-outline" onclick="openSlideEditor(' + s.id + ')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button type="button" class="btn btn-sm btn-danger" onclick="deleteHeroSlide(' + s.id + ')"><i class="fa-solid fa-trash"></i></button>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+  wireHeroDragHandlers();
+}
+
+async function toggleHeroSlideActive(id) {
+  const res = await fetch('/admin/api/hero/slides/' + id + '/toggle', {
+    method: 'POST',
+    headers: { 'X-CSRF-Token': HERO_CSRF },
+  });
+  const data = await res.json();
+  const slide = heroSlidesState.find(function (s) { return s.id === id; });
+  if (slide) slide.active = data.active;
+  renderHeroSlideList();
+}
+
+async function deleteHeroSlide(id) {
+  const slide = heroSlidesState.find(function (s) { return s.id === id; });
+  if (!slide) return;
+  if (!confirm('Delete "' + slide.heading + '"? This cannot be undone.')) return;
+  await fetch('/admin/api/hero/slides/' + id, {
+    method: 'DELETE',
+    headers: { 'X-CSRF-Token': HERO_CSRF },
+  });
+  if (heroEditingId === id) closeSlideEditor();
+  loadHeroSlides();
+}
+
+/* ── DRAG REORDER (native HTML5 drag and drop, no external library) ── */
+function wireHeroDragHandlers() {
+  const cards = document.querySelectorAll('.hero-slide-card');
+  let dragEl = null;
+  cards.forEach(function (card) {
+    card.addEventListener('dragstart', function () {
+      dragEl = card;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', function () {
+      card.classList.remove('dragging');
+      persistHeroSlideOrder();
+    });
+    card.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      if (card === dragEl) return;
+      const rect = card.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height / 2;
+      card.parentNode.insertBefore(dragEl, before ? card : card.nextSibling);
+    });
+  });
+}
+
+async function persistHeroSlideOrder() {
+  const ids = Array.from(document.querySelectorAll('.hero-slide-card')).map(function (c) {
+    return parseInt(c.dataset.id, 10);
+  });
+  const order = ids.map(function (id, idx) { return { id: id, sort_order: idx + 1 }; });
+  heroSlidesState.sort(function (a, b) { return ids.indexOf(a.id) - ids.indexOf(b.id); });
+  await fetch('/admin/api/hero/slides/reorder', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': HERO_CSRF },
+    body: JSON.stringify(order),
+  });
+}
+
+/* ── SLIDE EDITOR ── */
+function openSlideEditor(id) {
+  heroEditingId = id;
+  const panel = document.getElementById('hero-slide-editor');
+  const slide = id ? heroSlidesState.find(function (s) { return s.id === id; }) : null;
+
+  document.getElementById('hs-bg-url').value = slide ? slide.background_url : '';
+  document.getElementById('hs-bg-test').style.display = 'none';
+  document.getElementById('hs-bg-test').classList.remove('error');
+  document.getElementById('hs-opacity').value = Math.round((slide ? slide.overlay_opacity : 0.55) * 100);
+  document.getElementById('hs-tag').value = slide ? (slide.tag_text || '') : '';
+  document.getElementById('hs-heading').value = slide ? slide.heading : '';
+  document.getElementById('hs-subheading').value = slide ? (slide.subheading || '') : '';
+  document.getElementById('hs-cta-label').value = slide ? (slide.cta_label || '') : '';
+  document.getElementById('hs-cta-url').value = slide ? (slide.cta_url || '') : '';
+  const color = slide && slide.accent_color ? slide.accent_color : '#378add';
+  document.getElementById('hs-color').value = color;
+  document.getElementById('hs-color-text').value = color;
+  document.getElementById('hs-active').checked = slide ? !!slide.active : true;
+  setHeroAlign(slide ? slide.content_align : 'left');
+  document.getElementById('hero-slide-error').style.display = 'none';
+
+  updateHeroOpacityDisplay();
+  toggleHeroCtaUrlField();
+  updateHeroLivePreview();
+
+  panel.hidden = false;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function closeSlideEditor() {
+  heroEditingId = null;
+  document.getElementById('hero-slide-editor').hidden = true;
+}
+
+function updateHeroOpacityDisplay() {
+  const v = document.getElementById('hs-opacity').value;
+  document.getElementById('hs-opacity-value').textContent = v + '%';
+  updateHeroLivePreview();
+}
+
+function toggleHeroCtaUrlField() {
+  const hasLabel = document.getElementById('hs-cta-label').value.trim() !== '';
+  document.getElementById('hs-cta-url-group').hidden = !hasLabel;
+  updateHeroLivePreview();
+}
+
+function setHeroAlign(align) {
+  heroCurrentAlign = align;
+  document.querySelectorAll('.hero-align-btn').forEach(function (btn) {
+    btn.classList.toggle('active', btn.dataset.align === align);
+  });
+  updateHeroLivePreview();
+}
+
+function testHeroImage() {
+  const url = document.getElementById('hs-bg-url').value.trim();
+  const box = document.getElementById('hs-bg-test');
+  box.classList.remove('error');
+  if (!url) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = '<img src="' + heroEsc(url) + '" alt="Preview" ' +
+    'onerror="this.parentNode.classList.add(\'error\');this.parentNode.textContent=\'Could not load image from this URL.\'" ' +
+    'onload="this.parentNode.classList.remove(\'error\')">';
+}
+
+function heroOverlayGradient(opacityPercent) {
+  const o = Math.min(1, Math.max(0, opacityPercent / 100));
+  const s2 = o * (0.42 / 0.78);
+  const s3 = o * (0.18 / 0.78);
+  return 'linear-gradient(135deg, rgba(7,23,44,' + o.toFixed(3) + ') 0%, rgba(7,23,44,' + s2.toFixed(3) + ') 55%, rgba(7,23,44,' + s3.toFixed(3) + ') 100%)';
+}
+
+function updateHeroLivePreview() {
+  const bgUrl = document.getElementById('hs-bg-url').value.trim();
+  const opacity = parseInt(document.getElementById('hs-opacity').value, 10) || 0;
+  const tag = document.getElementById('hs-tag').value.trim();
+  const heading = document.getElementById('hs-heading').value.trim();
+  const subheading = document.getElementById('hs-subheading').value.trim();
+  const ctaLabel = document.getElementById('hs-cta-label').value.trim();
+  const color = document.getElementById('hs-color').value;
+
+  document.getElementById('hs-prev-bg').style.backgroundImage = bgUrl ? 'url("' + bgUrl.replace(/"/g, '') + '")' : 'none';
+  document.getElementById('hs-prev-overlay').style.background = heroOverlayGradient(opacity);
+
+  const content = document.getElementById('hs-prev-content');
+  content.className = 'hero-preview-content align-' + heroCurrentAlign;
+
+  const tagEl = document.getElementById('hs-prev-tag');
+  tagEl.textContent = tag;
+  tagEl.style.display = tag ? 'inline-block' : 'none';
+  tagEl.style.color = color;
+  tagEl.style.borderColor = color;
+
+  document.getElementById('hs-prev-heading').textContent = heading || 'Your Heading Here';
+
+  const subEl = document.getElementById('hs-prev-subheading');
+  subEl.textContent = subheading;
+  subEl.style.display = subheading ? 'block' : 'none';
+
+  const btnEl = document.getElementById('hs-prev-btn');
+  btnEl.textContent = ctaLabel;
+  btnEl.style.display = ctaLabel ? 'inline-flex' : 'none';
+  btnEl.style.background = color;
+}
+
+async function saveSlide() {
+  const bg = document.getElementById('hs-bg-url').value.trim();
+  const heading = document.getElementById('hs-heading').value.trim();
+  const errEl = document.getElementById('hero-slide-error');
+  if (!bg || !heading) {
+    errEl.textContent = 'Background image URL and heading are required.';
+    errEl.style.display = 'flex';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  const payload = {
+    background_url: bg,
+    overlay_opacity: (parseInt(document.getElementById('hs-opacity').value, 10) || 0) / 100,
+    tag_text: document.getElementById('hs-tag').value.trim() || null,
+    heading: heading,
+    subheading: document.getElementById('hs-subheading').value.trim() || null,
+    cta_label: document.getElementById('hs-cta-label').value.trim() || null,
+    cta_url: document.getElementById('hs-cta-url').value.trim() || null,
+    accent_color: document.getElementById('hs-color').value,
+    content_align: heroCurrentAlign,
+    active: document.getElementById('hs-active').checked,
+  };
+
+  const url = heroEditingId ? '/admin/api/hero/slides/' + heroEditingId : '/admin/api/hero/slides';
+  const method = heroEditingId ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': HERO_CSRF },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(function () { return {}; });
+      throw new Error(data.error || 'Save failed.');
+    }
+    closeSlideEditor();
+    loadHeroSlides();
+  } catch (e) {
+    errEl.textContent = e.message || 'Could not save slide.';
+    errEl.style.display = 'flex';
+  }
+}
+
+/* ── INIT ── */
+document.getElementById('hero-autoplay').addEventListener('change', function () {
+  document.getElementById('hero-interval-group').hidden = !this.checked;
+});
+['hs-bg-url', 'hs-tag', 'hs-heading', 'hs-subheading'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', updateHeroLivePreview);
+});
+document.getElementById('hs-opacity').addEventListener('input', updateHeroOpacityDisplay);
+document.getElementById('hs-cta-label').addEventListener('input', toggleHeroCtaUrlField);
+document.getElementById('hs-color').addEventListener('input', function () {
+  document.getElementById('hs-color-text').value = this.value;
+  updateHeroLivePreview();
+});
+document.getElementById('hs-color-text').addEventListener('input', function () {
+  if (/^#[0-9a-fA-F]{6}$/.test(this.value)) {
+    document.getElementById('hs-color').value = this.value;
+    updateHeroLivePreview();
+  }
+});
+
+loadHeroSettings();
+loadHeroSlides();
+</script>
 
 <%- include('_foot') %>

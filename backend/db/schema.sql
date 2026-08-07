@@ -69,9 +69,38 @@ CREATE TABLE IF NOT EXISTS site_settings (
   value TEXT NOT NULL DEFAULT ''
 );
 
+CREATE TABLE IF NOT EXISTS hero_slides (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  sort_order       INTEGER NOT NULL DEFAULT 0,
+  active           INTEGER NOT NULL DEFAULT 1,
+  background_url   TEXT    NOT NULL,
+  overlay_opacity  REAL    NOT NULL DEFAULT 0.55,
+  tag_text         TEXT,
+  heading          TEXT    NOT NULL,
+  subheading       TEXT,
+  cta_label        TEXT,
+  cta_url          TEXT,
+  accent_color     TEXT,
+  content_align    TEXT    NOT NULL DEFAULT 'left'
+                    CHECK(content_align IN ('left','center','right')),
+  created_at       TEXT    DEFAULT (datetime('now')),
+  updated_at       TEXT    DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS hero_settings (
+  id           INTEGER PRIMARY KEY DEFAULT 1,
+  mode         TEXT    NOT NULL DEFAULT 'carousel' CHECK(mode IN ('carousel','static')),
+  autoplay     INTEGER NOT NULL DEFAULT 1,
+  interval_ms  INTEGER NOT NULL DEFAULT 6000,
+  show_arrows  INTEGER NOT NULL DEFAULT 1,
+  show_dots    INTEGER NOT NULL DEFAULT 1
+);
+
 CREATE INDEX IF NOT EXISTS idx_properties_slug    ON properties(slug);
 CREATE INDEX IF NOT EXISTS idx_properties_status  ON properties(status);
 CREATE INDEX IF NOT EXISTS idx_properties_featured ON properties(featured);
 CREATE INDEX IF NOT EXISTS idx_property_images_pid ON property_images(property_id);
 CREATE INDEX IF NOT EXISTS idx_leads_status       ON leads(status);
 CREATE INDEX IF NOT EXISTS idx_leads_division     ON leads(source_division);
+CREATE INDEX IF NOT EXISTS idx_hero_slides_sort   ON hero_slides(sort_order);
+CREATE INDEX IF NOT EXISTS idx_hero_slides_active ON hero_slides(active);

@@ -19,6 +19,7 @@ const {
   apiRouter: leadsApi,
   adminRouter: leadsAdmin,
 } = require("./routes/leads");
+const { apiRouter: heroApi, adminRouter: heroAdmin } = require("./routes/hero");
 const settingsRouter = require("./routes/settings");
 const accountRouter = require("./routes/account");
 
@@ -82,6 +83,7 @@ app.use("/admin-assets", express.static(path.join(__dirname, "public")));
 app.use("/api/properties", propApi);
 app.use("/api/insurance", insApi);
 app.use("/api/leads", leadsApi);
+app.use("/api/hero", heroApi);
 
 /* ── ADMIN ── */
 app.get("/admin", (req, res) => {
@@ -143,6 +145,7 @@ app.get("/admin/dashboard", requireAuth, (req, res) => {
 
 app.use("/admin/properties", requireAuth, propAdmin);
 app.use("/admin/leads", requireAuth, leadsAdmin);
+app.use("/admin/api/hero", requireAuth, heroAdmin);
 app.use("/admin/settings", requireAuth, settingsRouter);
 app.use("/admin/account", requireAuth, accountRouter);
 
