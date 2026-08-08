@@ -275,26 +275,37 @@
     <script src="shared.js"></script>
     <script>
       (function () {
+        // Guard against a fetch resolving before shared.js (which defines
+        // `observer`) has finished loading and run.
+        function safeObserve(el) {
+          if (typeof observer !== "undefined") observer.observe(el);
+        }
+
         var PER_PAGE = 9;
-        var allProps = [];
-        var filtered = [];
         var currentPage = 1;
+        var totalPages = 1;
         var activeStatus = "";
         var activeType = "";
 
-        fetch("/api/properties")
-          .then(function (r) {
-            return r.json();
-          })
-          .then(function (props) {
-            allProps = props;
-            applyFilters();
-          })
-          .catch(function () {
-            document.getElementById("listings-state").innerHTML =
-              '<i class="fa-solid fa-triangle-exclamation" style="font-size:28px;color:var(--gray-mid);"></i>' +
-              '<p style="margin-top:12px;">Unable to load listings. Please refresh the page.</p>';
+        // Read initial filters/page from the URL so a shared link
+        // reproduces the same filtered page of results.
+        var initParams = new URLSearchParams(window.location.search);
+        activeStatus = initParams.get("status") || "";
+        activeType = initParams.get("type") || "";
+        currentPage = Math.max(1, parseInt(initParams.get("page"), 10) || 1);
+
+        document
+          .querySelectorAll(".filter-chip[data-status]")
+          .forEach(function (btn) {
+            btn.classList.toggle("active", btn.dataset.status === activeStatus);
           });
+        document
+          .querySelectorAll(".filter-chip[data-type]")
+          .forEach(function (btn) {
+            btn.classList.toggle("active", btn.dataset.type === activeType);
+          });
+
+        loadPage();
 
         document
           .querySelectorAll(".filter-chip[data-status]")
@@ -308,7 +319,7 @@
               btn.classList.add("active");
               activeStatus = btn.dataset.status;
               currentPage = 1;
-              applyFilters();
+              loadPage();
             });
           });
 
@@ -324,27 +335,61 @@
               btn.classList.add("active");
               activeType = btn.dataset.type;
               currentPage = 1;
-              applyFilters();
+              loadPage();
             });
           });
 
-        function applyFilters() {
-          filtered = allProps.filter(function (p) {
-            if (activeStatus && p.status !== activeStatus) return false;
-            if (activeType && p.type !== activeType) return false;
-            return true;
-          });
-          renderPage();
+        function syncUrl() {
+          var qp = new URLSearchParams();
+          if (activeStatus) qp.set("status", activeStatus);
+          if (activeType) qp.set("type", activeType);
+          if (currentPage > 1) qp.set("page", currentPage);
+          var newUrl =
+            window.location.pathname +
+            (qp.toString() ? "?" + qp.toString() : "");
+          history.replaceState(null, "", newUrl);
         }
 
-        function renderPage() {
+        function loadPage() {
           var grid = document.getElementById("listings-grid");
-          var stateEl = document.getElementById("listings-state");
-          var totalPages = Math.ceil(filtered.length / PER_PAGE);
-          var start = (currentPage - 1) * PER_PAGE;
-          var pageProps = filtered.slice(start, start + PER_PAGE);
+          grid.innerHTML =
+            '<div id="listings-state" style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray-mid);">' +
+            '<i class="fa-solid fa-spinner fa-spin" style="font-size:28px;"></i></div>';
+          document.getElementById("pagination").style.display = "none";
 
-          if (filtered.length === 0) {
+          var qp = new URLSearchParams();
+          if (activeStatus) qp.set("status", activeStatus);
+          if (activeType) qp.set("type", activeType);
+          qp.set("page", currentPage);
+          qp.set("limit", PER_PAGE);
+
+          fetch("/api/properties?" + qp.toString())
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (data) {
+              totalPages = data.pages || 1;
+              // Guard against a stale/hand-edited ?page= beyond the real range
+              if (data.page > totalPages && totalPages >= 1) {
+                currentPage = totalPages;
+                return loadPage();
+              }
+              currentPage = data.page || 1;
+              renderPage(data.properties || []);
+              syncUrl();
+            })
+            .catch(function () {
+              grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray-mid);">' +
+                '<i class="fa-solid fa-triangle-exclamation" style="font-size:28px;"></i>' +
+                '<p style="margin-top:12px;">Unable to load listings. Please refresh the page.</p></div>';
+            });
+        }
+
+        function renderPage(pageProps) {
+          var grid = document.getElementById("listings-grid");
+
+          if (pageProps.length === 0) {
             grid.innerHTML =
               '<div id="listings-state" style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray-mid);">' +
               '<i class="fa-solid fa-house-circle-xmark" style="font-size:32px;opacity:0.4;"></i>' +
@@ -355,11 +400,8 @@
             return;
           }
 
-          var cards = pageProps.map(renderCard).join("");
-          grid.innerHTML = cards;
-          grid.querySelectorAll(".reveal").forEach(function (el) {
-            observer.observe(el);
-          });
+          grid.innerHTML = pageProps.map(renderCard).join("");
+          grid.querySelectorAll(".reveal").forEach(safeObserve);
 
           var pag = document.getElementById("pagination");
           if (totalPages > 1) {
@@ -375,9 +417,8 @@
         }
 
         window.changePage = function (dir) {
-          var totalPages = Math.ceil(filtered.length / PER_PAGE);
           currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
-          renderPage();
+          loadPage();
           document
             .getElementById("listings-section")
             .scrollIntoView({ behavior: "smooth", block: "start" });
@@ -397,8 +438,8 @@
               return i.is_cover;
             }) || images[0];
           var imgHtml = cover
-            ? '<img src="/' +
-              cover.filename +
+            ? '<img src="' +
+              imgSrc(cover.filename) +
               '" alt="' +
               esc(p.title) +
               '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">'
@@ -477,6 +518,10 @@
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
+        }
+
+        function imgSrc(filename) {
+          return /^https?:\/\//i.test(filename) ? filename : "/" + filename;
         }
       })();
     </script>

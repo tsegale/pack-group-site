@@ -48,9 +48,15 @@
       <tr>
         <td>
           <% if (p.coverImage) { %>
-            <img src="/<%= p.coverImage %>" alt="<%= p.title %>" class="tbl-thumb">
+            <img src="<%= /^https?:\/\//i.test(p.coverImage) ? p.coverImage : '/' + p.coverImage %>" alt="<%= p.title %>" class="tbl-thumb">
           <% } else { %>
-            <div class="tbl-thumb-ph"><i class="fa-solid fa-image"></i></div>
+            <div class="tbl-thumb-ph" aria-label="No photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M21 16l-5.5-5.5a1.5 1.5 0 0 0-2.12 0L4 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
           <% } %>
         </td>
         <td>
@@ -98,21 +104,57 @@
     </tbody>
   </table>
 </div>
+
+<% if (totalPages > 1) { %>
+<div class="admin-pagination">
+  <a href="/admin/properties?status=<%= filter === 'all' ? '' : filter %>&page=<%= Math.max(1, currentPage - 1) %>"
+     class="btn btn-sm btn-outline"
+     <% if (currentPage === 1) { %>style="opacity:.35;pointer-events:none;"<% } %>>
+    <i class="fa-solid fa-chevron-left"></i> Prev
+  </a>
+  <% for (let i = 1; i <= totalPages; i++) { %>
+  <a href="/admin/properties?status=<%= filter === 'all' ? '' : filter %>&page=<%= i %>"
+     class="filter-tab <%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+  <% } %>
+  <a href="/admin/properties?status=<%= filter === 'all' ? '' : filter %>&page=<%= Math.min(totalPages, currentPage + 1) %>"
+     class="btn btn-sm btn-outline"
+     <% if (currentPage === totalPages) { %>style="opacity:.35;pointer-events:none;"<% } %>>
+    Next <i class="fa-solid fa-chevron-right"></i>
+  </a>
+</div>
+<% } %>
 <% } %>
 
 <script>
 async function toggleFeatured(btn) {
-  const id    = btn.dataset.id;
-  const csrf  = btn.dataset.csrf;
-  const res   = await fetch(`/admin/properties/${id}/toggle-featured`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `_csrf=${encodeURIComponent(csrf)}`,
-  });
-  const data = await res.json();
-  if (data.featured !== undefined) {
+  const id       = btn.dataset.id;
+  const csrf     = btn.dataset.csrf;
+  const wasActive = btn.classList.contains('active');
+
+  // Optimistic UI: flip immediately, revert only if the request fails
+  btn.classList.toggle('active', !wasActive);
+  btn.title = !wasActive ? 'Remove from featured' : 'Mark as featured';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`/admin/properties/${id}/toggle-featured`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRF-Token': csrf,
+      },
+      body: `_csrf=${encodeURIComponent(csrf)}`,
+    });
+    if (!res.ok) throw new Error('request failed');
+    const data = await res.json();
+    if (data.featured === undefined) throw new Error('unexpected response');
     btn.classList.toggle('active', data.featured === 1);
     btn.title = data.featured ? 'Remove from featured' : 'Mark as featured';
+  } catch (e) {
+    btn.classList.toggle('active', wasActive);
+    btn.title = wasActive ? 'Remove from featured' : 'Mark as featured';
+  } finally {
+    btn.disabled = false;
   }
 }
 </script>

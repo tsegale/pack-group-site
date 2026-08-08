@@ -374,14 +374,14 @@ body.admin-body {
   border: 1px solid rgba(228, 168, 56, 0.2);
 }
 .badge-sold {
-  background: rgba(192, 57, 43, 0.1);
-  color: #a52a1a;
-  border: 1px solid rgba(192, 57, 43, 0.2);
+  background: rgba(7, 23, 44, 0.08);
+  color: var(--navy);
+  border: 1px solid rgba(7, 23, 44, 0.18);
 }
 .badge-rented {
-  background: rgba(32, 99, 224, 0.1);
-  color: var(--blue-mid);
-  border: 1px solid rgba(32, 99, 224, 0.2);
+  background: rgba(56, 189, 248, 0.12);
+  color: #0369a1;
+  border: 1px solid rgba(56, 189, 248, 0.25);
 }
 .badge-new {
   background: rgba(56, 189, 248, 0.12);
@@ -891,6 +891,100 @@ body.login-page-body {
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 26px;
+}
+
+/* ── STAGED IMAGE LIST (property photo upload) ── */
+.img-stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+.img-stage-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-light);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: all 0.15s;
+}
+.img-stage-card.dragging {
+  opacity: 0.4;
+}
+.img-stage-handle {
+  cursor: grab;
+  color: var(--gray-mid);
+  font-size: 15px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+.img-stage-handle:active {
+  cursor: grabbing;
+}
+.img-stage-thumb {
+  width: 64px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--gray-light);
+  background: var(--off-white);
+  flex-shrink: 0;
+}
+.img-stage-thumb-broken {
+  width: 64px;
+  height: 48px;
+  border-radius: 6px;
+  border: 1px dashed var(--gray-light);
+  background: var(--off-white);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c0392b;
+  font-size: 13px;
+}
+.img-stage-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.img-stage-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.img-stage-cover-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(212, 168, 67, 0.15);
+  color: var(--gold);
+  border: 1px solid rgba(212, 168, 67, 0.3);
+  white-space: nowrap;
+}
+
+/* ── PAGINATION ── */
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.admin-pagination .filter-tab {
+  min-width: 32px;
+  text-align: center;
 }
 
 /* ── TOGGLE SWITCH ── */

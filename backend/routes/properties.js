@@ -67,20 +67,38 @@ apiRouter.get("/featured", (req, res) => {
 
 apiRouter.get("/", (req, res) => {
   const db = getDb();
-  const status = req.query.status;
-  let props;
+  const { status, type } = req.query;
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 9));
+  const offset = (page - 1) * limit;
+
+  const conditions = [];
+  const params = [];
   if (status) {
-    props = db
-      .prepare(
-        "SELECT * FROM properties WHERE status = ? ORDER BY created_at DESC",
-      )
-      .all(status);
-  } else {
-    props = db
-      .prepare("SELECT * FROM properties ORDER BY created_at DESC")
-      .all();
+    conditions.push("status = ?");
+    params.push(status);
   }
-  res.json(props.map(withImages));
+  if (type) {
+    conditions.push("type = ?");
+    params.push(type);
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  const total = db
+    .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
+    .get(...params).c;
+  const props = db
+    .prepare(
+      `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+    )
+    .all(...params, limit, offset);
+
+  res.json({
+    properties: props.map(withImages),
+    total,
+    page,
+    pages: Math.max(1, Math.ceil(total / limit)),
+  });
 });
 
 apiRouter.get("/:slug", (req, res) => {
@@ -98,21 +116,24 @@ apiRouter.get("/:slug", (req, res) => {
 const adminRouter = express.Router();
 
 /* LIST */
+const ADMIN_PAGE_SIZE = 20;
 adminRouter.get("/", (req, res) => {
   const db = getDb();
   const filter = req.query.status || "all";
-  let props;
-  if (filter === "all") {
-    props = db
-      .prepare("SELECT * FROM properties ORDER BY created_at DESC")
-      .all();
-  } else {
-    props = db
-      .prepare(
-        "SELECT * FROM properties WHERE status = ? ORDER BY created_at DESC",
-      )
-      .all(filter);
-  }
+  const currentPage = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const offset = (currentPage - 1) * ADMIN_PAGE_SIZE;
+  const where = filter === "all" ? "" : "WHERE status = ?";
+  const params = filter === "all" ? [] : [filter];
+
+  const total = db
+    .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
+    .get(...params).c;
+  const props = db
+    .prepare(
+      `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+    )
+    .all(...params, ADMIN_PAGE_SIZE, offset);
+
   const propsWithImgs = props.map((p) => {
     const cover = db
       .prepare(
@@ -128,6 +149,8 @@ adminRouter.get("/", (req, res) => {
     csrfToken: req.session.csrfToken,
     properties: propsWithImgs,
     filter,
+    currentPage,
+    totalPages: Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)),
     flash: req.session.flash || null,
   });
   delete req.session.flash;
@@ -213,7 +236,8 @@ adminRouter.post("/", upload.array("images", 20), validateCsrf, (req, res) => {
     );
 
   const propId = result.lastInsertRowid;
-  _saveImages(db, propId, req.files || []);
+  const { urls, manifest, coverPosition } = _parseImageUpload(req);
+  _saveImages(db, propId, req.files || [], urls, manifest, coverPosition);
 
   req.session.flash = {
     type: "success",
@@ -310,8 +334,9 @@ adminRouter.post(
       prop.id,
     );
 
-    if (req.files && req.files.length > 0) {
-      _saveImages(db, prop.id, req.files);
+    const { urls, manifest, coverPosition } = _parseImageUpload(req);
+    if ((req.files && req.files.length > 0) || urls.length > 0) {
+      _saveImages(db, prop.id, req.files || [], urls, manifest, coverPosition);
     }
 
     req.session.flash = {
@@ -350,7 +375,7 @@ adminRouter.post("/:id/toggle-featured", validateCsrf, (req, res) => {
   const prop = db
     .prepare("SELECT featured FROM properties WHERE id = ?")
     .get(req.params.id);
-  if (!prop) return res.json({ error: "Not found" });
+  if (!prop) return res.status(404).json({ error: "Property not found" });
   const newVal = prop.featured ? 0 : 1;
   db.prepare("UPDATE properties SET featured = ? WHERE id = ?").run(
     newVal,
@@ -424,33 +449,121 @@ adminRouter.post("/:id/images/:imgId/move", validateCsrf, (req, res) => {
   res.json({ ok: true });
 });
 
-/* ── INTERNAL HELPER ── */
-function _saveImages(db, propId, files) {
+/* ── INTERNAL HELPERS ── */
+
+/* Reads the staged-image manifest submitted by property-form.ejs.
+   image_manifest describes the client-chosen order as a sequence of
+   {kind:'file'|'url'}; the nth 'file' entry maps to req.files[n], the
+   nth 'url' entry maps to the nth entry of image_urls_json. cover_position
+   is an index into the manifest, or empty if no explicit cover was chosen.
+   Both are sent as single JSON fields (not repeated form fields) since
+   multer/append-field only arrays bracketed field names. */
+function _parseImageUpload(req) {
+  let manifest = null;
+  try {
+    manifest = req.body.image_manifest
+      ? JSON.parse(req.body.image_manifest)
+      : null;
+  } catch (e) {
+    manifest = null;
+  }
+  if (!Array.isArray(manifest)) manifest = null;
+
+  let rawUrls = [];
+  try {
+    rawUrls = req.body.image_urls_json
+      ? JSON.parse(req.body.image_urls_json)
+      : [];
+  } catch (e) {
+    rawUrls = [];
+  }
+  if (!Array.isArray(rawUrls)) rawUrls = [];
+
+  const urls = rawUrls
+    .map((u) => String(u).trim())
+    .filter((u) => /^https?:\/\//i.test(u));
+
+  const coverPosition =
+    req.body.cover_position !== undefined && req.body.cover_position !== ""
+      ? parseInt(req.body.cover_position, 10)
+      : null;
+
+  return { urls, manifest, coverPosition };
+}
+
+function _saveUploadedFile(file) {
+  if (!isValidImage(file.buffer)) return null;
+  const ext =
+    file.mimetype === "image/png"
+      ? ".png"
+      : file.mimetype === "image/webp"
+        ? ".webp"
+        : ".jpg";
+  const filename = "uploads/" + uuid() + ext;
+  fs.writeFileSync(
+    path.join(UPLOADS_DIR, path.basename(filename)),
+    file.buffer,
+  );
+  return filename;
+}
+
+/* Saves newly added images for a property. Supports two intermixed
+   sources — uploaded files and pasted image URLs — combined in the
+   order described by `manifest`. Falls back to files-only, in given
+   order, when no manifest is present. */
+function _saveImages(db, propId, files, urls, manifest, coverPosition) {
+  urls = urls || [];
   const existCount = db
     .prepare("SELECT COUNT(*) as c FROM property_images WHERE property_id = ?")
     .get(propId).c;
   const insert = db.prepare(
     "INSERT INTO property_images (property_id, filename, sort_order, is_cover) VALUES (?, ?, ?, ?)",
   );
-  files.forEach((file, i) => {
-    if (!isValidImage(file.buffer)) return;
-    const ext =
-      file.mimetype === "image/png"
-        ? ".png"
-        : file.mimetype === "image/webp"
-          ? ".webp"
-          : ".jpg";
-    const filename = "uploads/" + uuid() + ext;
-    fs.writeFileSync(
-      path.join(UPLOADS_DIR, path.basename(filename)),
-      file.buffer,
-    );
-    insert.run(
-      propId,
-      filename,
-      existCount + i,
-      existCount === 0 && i === 0 ? 1 : 0,
-    );
+
+  const filenames = [];
+  if (manifest && manifest.length) {
+    let fileIdx = 0;
+    let urlIdx = 0;
+    manifest.forEach((entry) => {
+      if (entry && entry.kind === "file") {
+        const file = files[fileIdx++];
+        if (!file) return;
+        const filename = _saveUploadedFile(file);
+        if (filename) filenames.push(filename);
+      } else if (entry && entry.kind === "url") {
+        const url = urls[urlIdx++];
+        if (url) filenames.push(url);
+      }
+    });
+  } else {
+    files.forEach((file) => {
+      const filename = _saveUploadedFile(file);
+      if (filename) filenames.push(filename);
+    });
+    urls.forEach((url) => filenames.push(url));
+  }
+
+  if (filenames.length === 0) return;
+
+  const explicitCover =
+    Number.isInteger(coverPosition) &&
+    coverPosition >= 0 &&
+    coverPosition < filenames.length;
+  if (explicitCover) {
+    db.prepare(
+      "UPDATE property_images SET is_cover = 0 WHERE property_id = ?",
+    ).run(propId);
+  }
+
+  filenames.forEach((filename, i) => {
+    const isCover = explicitCover
+      ? i === coverPosition
+        ? 1
+        : 0
+      : existCount === 0 && i === 0
+        ? 1
+        : 0;
+    insert.run(propId, filename, existCount + i, isCover);
   });
 }
 

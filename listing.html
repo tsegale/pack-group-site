@@ -149,43 +149,55 @@
         background: var(--off-white);
         padding: 0;
       }
-      .gallery-grid {
-        display: grid;
-        grid-template-columns: 1.6fr 1fr 1fr;
-        grid-template-rows: 300px 300px;
-        gap: 4px;
-        max-height: 604px;
-        overflow: hidden;
-      }
-      .gallery-item {
-        overflow: hidden;
+      .gallery-main {
         position: relative;
+        width: 100%;
+        height: 520px;
+        overflow: hidden;
         cursor: pointer;
+        background: var(--navy);
       }
-      .gallery-item img {
+      .gallery-main img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
         transition: transform 0.4s ease;
       }
-      .gallery-item:hover img {
-        transform: scale(1.05);
+      .gallery-main:hover img {
+        transform: scale(1.03);
       }
-      .gallery-item.main {
-        grid-row: span 2;
+      .gallery-thumbs {
+        display: flex;
+        gap: 8px;
+        padding: 14px 6%;
+        overflow-x: auto;
+        background: var(--off-white);
       }
-      .gallery-item .overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          to bottom,
-          transparent 60%,
-          rgba(30, 61, 114, 0.5)
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
+      .gallery-thumb {
+        flex: 0 0 auto;
+        width: 96px;
+        height: 72px;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition:
+          border-color 0.2s,
+          opacity 0.2s;
+        opacity: 0.7;
       }
-      .gallery-item:hover .overlay {
+      .gallery-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .gallery-thumb:hover {
+        opacity: 1;
+      }
+      .gallery-thumb.active {
+        border-color: var(--cyan);
         opacity: 1;
       }
       .gallery-count {
@@ -199,6 +211,7 @@
         padding: 6px 12px;
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.15);
+        pointer-events: none;
       }
       .modal-bg {
         display: none;
@@ -486,12 +499,8 @@
         .listing-sidebar {
           order: -1;
         }
-        .gallery-grid {
-          grid-template-columns: 1fr 1fr;
-          grid-template-rows: 220px 220px 220px;
-        }
-        .gallery-item.main {
-          grid-row: span 1;
+        .gallery-main {
+          height: 360px;
         }
         .listing-specs {
           grid-template-columns: 1fr 1fr;
@@ -511,9 +520,12 @@
         }
       }
       @media (max-width: 600px) {
-        .gallery-grid {
-          grid-template-columns: 1fr;
-          grid-template-rows: repeat(5, 200px);
+        .gallery-main {
+          height: 260px;
+        }
+        .gallery-thumb {
+          width: 76px;
+          height: 58px;
         }
         .features-list {
           grid-template-columns: 1fr;
@@ -607,8 +619,16 @@
         </div>
       </section>
 
-      <div class="gallery-section">
-        <div class="gallery-grid" id="gallery-grid"></div>
+      <div class="gallery-section" id="gallery-section">
+        <div class="gallery-main" id="gallery-main">
+          <img id="gallery-main-img" src="" alt="Property photo" />
+          <div
+            class="gallery-count"
+            id="gallery-count"
+            style="display: none"
+          ></div>
+        </div>
+        <div class="gallery-thumbs" id="gallery-thumbs"></div>
       </div>
 
       <div class="modal-bg" id="modal" onclick="handleModalClick(event)">
@@ -765,6 +785,12 @@
     <script src="shared.js"></script>
     <script>
       (function () {
+        // Guard against a fetch resolving before shared.js (which defines
+        // `observer`) has finished loading and run.
+        function safeObserve(el) {
+          if (typeof observer !== "undefined") observer.observe(el);
+        }
+
         const params = new URLSearchParams(window.location.search);
         const slug = params.get("slug");
 
@@ -790,8 +816,40 @@
           return "N$" + Number(n).toLocaleString("en-NA");
         }
 
+        function imgSrc(filename) {
+          return /^https?:\/\//i.test(filename) ? filename : "/" + filename;
+        }
+
         let galleryImgs = [];
         let currentIdx = 0;
+        let activeIdx = 0;
+
+        function setMainImage(idx) {
+          activeIdx = idx;
+          document.getElementById("gallery-main-img").src = imgSrc(
+            galleryImgs[idx].filename,
+          );
+          document
+            .getElementById("gallery-thumbs")
+            .querySelectorAll(".gallery-thumb")
+            .forEach((thumb) => {
+              thumb.classList.toggle(
+                "active",
+                parseInt(thumb.dataset.idx, 10) === idx,
+              );
+            });
+          const countEl = document.getElementById("gallery-count");
+          if (galleryImgs.length > 1) {
+            countEl.style.display = "";
+            countEl.innerHTML = `<i class="fa-solid fa-camera"></i> ${idx + 1} / ${galleryImgs.length}`;
+          } else {
+            countEl.style.display = "none";
+          }
+        }
+
+        document
+          .getElementById("gallery-main")
+          .addEventListener("click", () => openModal(activeIdx));
 
         function renderProperty(p) {
           document.title = p.title + " | Pack Real Estate";
@@ -830,36 +888,31 @@
             levyEl.style.display = "";
           }
 
-          // Gallery
+          // Gallery — main image + thumbnail strip below, lightbox on click
           galleryImgs = p.images || [];
-          const grid = document.getElementById("gallery-grid");
           if (galleryImgs.length === 0) {
-            grid.closest(".gallery-section").style.display = "none";
+            document.getElementById("gallery-section").style.display = "none";
           } else {
-            const displayImgs = galleryImgs.slice(0, 5);
-            const mainImg =
-              galleryImgs.find((i) => i.is_cover) || galleryImgs[0];
-            const rest = displayImgs.filter(
-              (i) => i.filename !== mainImg.filename,
-            );
+            const coverIdx = galleryImgs.findIndex((i) => i.is_cover);
+            activeIdx = coverIdx >= 0 ? coverIdx : 0;
 
-            let gridHTML = `
-        <div class="gallery-item main" onclick="openModal(${galleryImgs.indexOf(mainImg)})">
-          <img src="/${mainImg.filename}" alt="${p.title}" loading="lazy">
-          <div class="overlay"></div>
-        </div>
-      `;
-            rest.slice(0, 4).forEach((img, i) => {
-              const isLast = i === 3 && galleryImgs.length > 5;
-              gridHTML += `
-          <div class="gallery-item" onclick="openModal(${galleryImgs.indexOf(img)})">
-            <img src="/${img.filename}" alt="Photo ${i + 2}" loading="lazy">
-            <div class="overlay"></div>
-            ${isLast ? `<div class="gallery-count"><i class="fa-solid fa-camera"></i> View All ${galleryImgs.length} Photos</div>` : ""}
-          </div>
-        `;
-            });
-            grid.innerHTML = gridHTML;
+            document.getElementById("gallery-thumbs").innerHTML = galleryImgs
+              .map(
+                (img, i) =>
+                  `<div class="gallery-thumb${i === activeIdx ? " active" : ""}" data-idx="${i}">` +
+                  `<img src="${imgSrc(img.filename)}" alt="Photo ${i + 1}" loading="lazy"></div>`,
+              )
+              .join("");
+            document
+              .getElementById("gallery-thumbs")
+              .querySelectorAll(".gallery-thumb")
+              .forEach((thumb) => {
+                thumb.addEventListener("click", () =>
+                  setMainImage(parseInt(thumb.dataset.idx, 10)),
+                );
+              });
+
+            setMainImage(activeIdx);
           }
 
           // Specs
@@ -916,27 +969,28 @@
           document.getElementById("listing-content").style.display = "block";
 
           // Re-run scroll reveal for newly added elements
-          document.querySelectorAll(".reveal").forEach((el) => {
-            observer.observe(el);
-          });
+          document.querySelectorAll(".reveal").forEach(safeObserve);
         }
 
         window.openModal = function (idx) {
           currentIdx = idx;
-          document.getElementById("modal-img").src =
-            "/" + galleryImgs[idx].filename;
+          document.getElementById("modal-img").src = imgSrc(
+            galleryImgs[idx].filename,
+          );
           document.getElementById("modal").classList.add("open");
           document.body.style.overflow = "hidden";
         };
         window.closeModal = function () {
           document.getElementById("modal").classList.remove("open");
           document.body.style.overflow = "";
+          setMainImage(currentIdx);
         };
         window.modalNav = function (dir) {
           currentIdx =
             (currentIdx + dir + galleryImgs.length) % galleryImgs.length;
-          document.getElementById("modal-img").src =
-            "/" + galleryImgs[currentIdx].filename;
+          document.getElementById("modal-img").src = imgSrc(
+            galleryImgs[currentIdx].filename,
+          );
         };
         window.handleModalClick = function (e) {
           if (e.target === document.getElementById("modal")) closeModal();

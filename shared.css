@@ -1418,3 +1418,65 @@ footer {
   align-items: flex-end;
   text-align: right;
 }
+
+/* ===== Featured Listings Carousel (4+ properties, 3 per page) ===== */
+.feat-page {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.feat-page.active {
+  display: grid;
+}
+
+.feat-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.feat-arrow {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gray-light);
+  background: var(--white);
+  color: var(--navy);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.feat-arrow:hover {
+  background: var(--blue-mid);
+  border-color: var(--blue-mid);
+  color: #fff;
+}
+
+.feat-dots {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.feat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gray-light);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s;
+}
+
+.feat-dot.active {
+  background: var(--blue-mid);
+  transform: scale(1.3);
+}

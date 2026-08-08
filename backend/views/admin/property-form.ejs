@@ -18,6 +18,9 @@
       enctype="multipart/form-data"
       id="prop-form">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="image_manifest" id="image-manifest-input">
+  <input type="hidden" name="image_urls_json" id="image-urls-input">
+  <input type="hidden" name="cover_position" id="cover-position-input">
 
   <!-- SECTION 1: Basic Info -->
   <div class="form-card">
@@ -139,7 +142,7 @@
     <div class="image-grid" id="image-grid">
       <% images.forEach(img => { %>
       <div class="image-item <%= img.is_cover ? 'is-cover' : '' %>" id="img-<%= img.id %>">
-        <img src="/<%= img.filename %>" alt="Property photo">
+        <img src="<%= /^https?:\/\//i.test(img.filename) ? img.filename : '/' + img.filename %>" alt="Property photo">
         <% if (img.is_cover) { %><span class="cover-badge">Cover</span><% } %>
         <div class="image-actions">
           <% if (!img.is_cover) { %>
@@ -166,18 +169,36 @@
     </div>
     <div style="margin-top:14px;font-size:12.5px;color:var(--gray-mid);">
       <i class="fa-solid fa-circle-info"></i>
-      Gold border = cover photo shown on listing cards. First image is cover by default.
+      Gold border = cover photo shown on listing cards.
     </div>
-    <div style="margin-top:16px;border-top:1px solid var(--gray-light);padding-top:16px;">
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Add More Photos</div>
+    <div style="margin-top:20px;border-top:1px solid var(--gray-light);padding-top:16px;">
     <% } %>
+
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Add Photos</div>
 
     <label class="upload-label" for="images">
       <i class="fa-solid fa-cloud-arrow-up"></i>
-      <span>Click to upload photos (JPEG, PNG, WebP · max 5MB each)</span>
+      <span>Upload from computer (JPEG, PNG, WebP &middot; max 5MB each)</span>
       <span style="font-size:11.5px;">Multiple files supported</span>
       <input type="file" id="images" name="images" multiple accept="image/jpeg,image/png,image/webp">
     </label>
+
+    <div class="form-group" style="margin-top:16px;">
+      <label for="image-url-input">Or add image by URL</label>
+      <div class="hero-image-test-row">
+        <input type="text" id="image-url-input" placeholder="https://images.unsplash.com/photo-...">
+        <button type="button" class="btn btn-outline btn-sm" onclick="addUrlImage()">
+          <i class="fa-solid fa-plus"></i> Add
+        </button>
+      </div>
+      <div class="hero-image-test-preview" id="image-url-preview" style="display:none;"></div>
+    </div>
+
+    <div id="staged-image-list" class="img-stage-list"></div>
+    <div id="staged-image-hint" style="display:none;font-size:12.5px;color:var(--gray-mid);margin-top:4px;">
+      <i class="fa-solid fa-circle-info"></i>
+      These photos are added when you save. Drag to reorder, or mark one as cover to override the existing cover photo.
+    </div>
 
     <% if (images && images.length > 0) { %>
     </div>
@@ -254,11 +275,130 @@ async function deleteImage(propId, imgId) {
   document.getElementById(`img-${imgId}`)?.remove();
 }
 
-// Show filename preview on file select
+/* ── STAGED IMAGE LIST (new photos added this session, not yet saved) ── */
+const HAS_EXISTING_IMAGES = <%= images && images.length > 0 ? 'true' : 'false' %>;
+let stagedImages = []; // { id, kind: 'file'|'url', file?, url?, isCover }
+let stagedSeq = 0;
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 document.getElementById('images').addEventListener('change', function() {
-  const count = this.files.length;
-  const span = this.closest('label').querySelector('span:nth-of-type(2)');
-  if (span) span.textContent = count > 0 ? `${count} file(s) selected` : 'Multiple files supported';
+  Array.from(this.files).forEach((file) => {
+    stagedImages.push({ id: ++stagedSeq, kind: 'file', file, isCover: false });
+  });
+  renderStagedList();
+});
+
+function addUrlImage() {
+  const input = document.getElementById('image-url-input');
+  const url = input.value.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    alert('Please enter a valid image URL starting with http:// or https://');
+    return;
+  }
+  stagedImages.push({ id: ++stagedSeq, kind: 'url', url, isCover: false });
+  input.value = '';
+  document.getElementById('image-url-preview').style.display = 'none';
+  renderStagedList();
+}
+
+// Preview the pasted URL on blur, before it's added to the list
+document.getElementById('image-url-input').addEventListener('blur', function() {
+  const url = this.value.trim();
+  const box = document.getElementById('image-url-preview');
+  box.classList.remove('error');
+  if (!url) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = '<img src="' + esc(url) + '" alt="Preview" ' +
+    'onerror="this.parentNode.classList.add(\'error\');this.parentNode.textContent=\'Could not load image from this URL.\'" ' +
+    'onload="this.parentNode.classList.remove(\'error\')">';
+});
+
+function setStagedCover(id) {
+  stagedImages.forEach((img) => { img.isCover = img.id === id; });
+  renderStagedList();
+}
+
+function removeStagedImage(id) {
+  stagedImages = stagedImages.filter((img) => img.id !== id);
+  renderStagedList();
+}
+
+function renderStagedList() {
+  const list = document.getElementById('staged-image-list');
+  const hint = document.getElementById('staged-image-hint');
+  hint.style.display = stagedImages.length ? 'block' : 'none';
+
+  list.innerHTML = stagedImages.map((img, i) => {
+    const thumb = img.kind === 'file'
+      ? '<img class="img-stage-thumb" src="' + URL.createObjectURL(img.file) + '" alt="">'
+      : '<img class="img-stage-thumb" src="' + esc(img.url) + '" alt="" onerror="this.outerHTML=\'<div class=&quot;img-stage-thumb-broken&quot;><i class=&quot;fa-solid fa-triangle-exclamation&quot;></i></div>\'">';
+    const label = img.kind === 'file' ? esc(img.file.name) : esc(img.url);
+    const showsAsCoverByDefault = !HAS_EXISTING_IMAGES && i === 0 && !stagedImages.some((s) => s.isCover);
+    const isCover = img.isCover || showsAsCoverByDefault;
+    return (
+      '<div class="img-stage-card" draggable="true" data-id="' + img.id + '">' +
+        '<span class="img-stage-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></span>' +
+        thumb +
+        '<span class="img-stage-label">' + label + '</span>' +
+        '<div class="img-stage-actions">' +
+          (isCover
+            ? '<span class="img-stage-cover-pill"><i class="fa-solid fa-star"></i> Cover</span>'
+            : '<button type="button" class="btn btn-sm btn-outline" onclick="setStagedCover(' + img.id + ')">Set as Cover</button>') +
+          '<button type="button" class="btn btn-sm btn-danger" onclick="removeStagedImage(' + img.id + ')"><i class="fa-solid fa-trash"></i></button>' +
+        '</div>' +
+      '</div>'
+    );
+  }).join('');
+
+  wireStagedDragHandlers();
+}
+
+function wireStagedDragHandlers() {
+  const cards = document.querySelectorAll('.img-stage-card');
+  let dragEl = null;
+  cards.forEach((card) => {
+    card.addEventListener('dragstart', () => {
+      dragEl = card;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      syncStagedOrderFromDom();
+    });
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (card === dragEl) return;
+      const rect = card.getBoundingClientRect();
+      const before = (e.clientY - rect.top) < rect.height / 2;
+      card.parentNode.insertBefore(dragEl, before ? card : card.nextSibling);
+    });
+  });
+}
+
+function syncStagedOrderFromDom() {
+  const ids = Array.from(document.querySelectorAll('.img-stage-card')).map((c) => parseInt(c.dataset.id, 10));
+  stagedImages.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+}
+
+// Build the manifest + rebuild the file input's FileList to match the
+// staged order, then let the native form submission carry everything.
+document.getElementById('prop-form').addEventListener('submit', function() {
+  const manifest = stagedImages.map((img) => ({ kind: img.kind }));
+  const urls = stagedImages.filter((img) => img.kind === 'url').map((img) => img.url);
+
+  const dt = new DataTransfer();
+  stagedImages.filter((img) => img.kind === 'file').forEach((img) => dt.items.add(img.file));
+  document.getElementById('images').files = dt.files;
+
+  let coverPosition = stagedImages.findIndex((img) => img.isCover);
+  if (coverPosition === -1 && !HAS_EXISTING_IMAGES && stagedImages.length > 0) coverPosition = 0;
+
+  document.getElementById('image-manifest-input').value = JSON.stringify(manifest);
+  document.getElementById('image-urls-input').value = JSON.stringify(urls);
+  document.getElementById('cover-position-input').value = coverPosition >= 0 ? String(coverPosition) : '';
 });
 </script>
 
