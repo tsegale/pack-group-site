@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Property Listing | Pack Real Estate</title>
+    <!-- /listing/:slug is two path segments deep, unlike every other clean
+         URL on this site, so relative hrefs below would otherwise resolve
+         against /listing/ instead of the site root. -->
+    <base href="/" />
     <link rel="icon" type="image/png" href="assets/logo/realestate_logo.png" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap"
@@ -535,7 +539,7 @@
   </head>
   <body>
     <nav>
-      <a href="index.html" class="nav-brand">
+      <a href="/" class="nav-brand">
         <img
           src="assets/logo/realestate_logo.png"
           alt="Pack Real Estate"
@@ -546,19 +550,19 @@
         <i class="fa-solid fa-bars"></i>
       </button>
       <ul class="nav-links" id="navlinks">
-        <li><a href="index.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li class="nav-has-dropdown">
-          <a href="real-estate.html" class="nav-dropdown-trigger active"
+          <a href="/real-estate" class="nav-dropdown-trigger active"
             >Real Estate</a
           >
           <ul class="nav-dropdown-menu">
-            <li><a href="real-estate.html">Overview</a></li>
-            <li><a href="listings.html">All Listings</a></li>
+            <li><a href="/real-estate">Overview</a></li>
+            <li><a href="/listings">All Listings</a></li>
           </ul>
         </li>
-        <li><a href="insurance.html">Insurance</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html" class="nav-cta">Contact</a></li>
+        <li><a href="/insurance">Insurance</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Contact</a></li>
       </ul>
     </nav>
 
@@ -585,7 +589,7 @@
         </div>
       </section>
       <div class="more-listings">
-        <a href="real-estate.html" class="btn btn-primary"
+        <a href="/real-estate" class="btn btn-primary"
           >View All Listings &rarr;</a
         >
       </div>
@@ -596,8 +600,8 @@
       <section class="listing-hero">
         <div class="listing-hero-inner">
           <div class="breadcrumb">
-            <a href="index.html">Home</a><span>/</span>
-            <a href="real-estate.html">Real Estate</a><span>/</span>
+            <a href="/">Home</a><span>/</span>
+            <a href="/real-estate">Real Estate</a><span>/</span>
             <span id="bc-title" style="color: rgba(255, 255, 255, 0.6)"></span>
           </div>
           <div class="listing-title-row">
@@ -691,9 +695,9 @@
             "
             class="reveal"
           >
-            <a href="listings.html" class="btn btn-primary">All Listings</a>
+            <a href="/listings" class="btn btn-primary">All Listings</a>
             <a
-              href="contact.html"
+              href="/contact"
               class="btn btn-outline"
               style="color: var(--navy); border-color: var(--gray-light)"
               >Contact Our Team</a
@@ -737,16 +741,16 @@
           <div class="footer-nav-col">
             <h6 class="footer-col-title">Navigate</h6>
             <nav class="footer-links">
-              <a href="index.html">Home</a>
-              <a href="real-estate.html">Real Estate</a>
-              <a href="insurance.html">Insurance</a>
-              <a href="about.html">About</a>
-              <a href="contact.html">Contact</a>
+              <a href="/">Home</a>
+              <a href="/real-estate">Real Estate</a>
+              <a href="/insurance">Insurance</a>
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
             </nav>
           </div>
           <div class="footer-div-col">
             <h6 class="footer-col-title">Our Divisions</h6>
-            <a href="real-estate.html" class="footer-div-card">
+            <a href="/real-estate" class="footer-div-card">
               <img
                 src="assets/logo/realestate_logo.png"
                 alt="Pack Real Estate"
@@ -754,7 +758,7 @@
               />
               <span>Property Solutions</span>
             </a>
-            <a href="insurance.html" class="footer-div-card">
+            <a href="/insurance" class="footer-div-card">
               <img
                 src="assets/logo/insurance_logo.png"
                 alt="Pack Insurance Broker"
@@ -794,8 +798,9 @@
           if (typeof observer !== "undefined") observer.observe(el);
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const slug = params.get("slug");
+        const slug = decodeURIComponent(
+          window.location.pathname.split("/").pop(),
+        );
 
         if (!slug) {
           showError();
@@ -964,7 +969,7 @@
       <img src="assets/logo/realestate_logo.png" alt="Pack Real Estate" style="height:48px;width:auto;object-fit:contain;margin-bottom:16px;" loading="lazy">
       <div class="sidebar-divider"></div>
       <p style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;">Professional property solutions across Namibia. Contact us today to arrange a viewing or enquire about this listing.</p>
-      <a href="contact.html?property=${encodeURIComponent(p.slug)}" class="contact-btn outline" style="margin-top:16px;">Enquire About This Listing</a>
+      <a href="/contact?property=${encodeURIComponent(p.slug)}" class="contact-btn outline" style="margin-top:16px;">Enquire About This Listing</a>
     `;
 
           // Show content

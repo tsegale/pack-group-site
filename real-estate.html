@@ -23,7 +23,7 @@
   </head>
   <body>
     <nav>
-      <a href="index.html" class="nav-brand">
+      <a href="/" class="nav-brand">
         <img
           src="assets/logo/realestate_logo.png"
           alt="Pack Real Estate"
@@ -34,19 +34,19 @@
         <i class="fa-solid fa-bars"></i>
       </button>
       <ul class="nav-links" id="navlinks">
-        <li><a href="index.html">Home</a></li>
+        <li><a href="/">Home</a></li>
         <li class="nav-has-dropdown">
-          <a href="real-estate.html" class="nav-dropdown-trigger active"
+          <a href="/real-estate" class="nav-dropdown-trigger active"
             >Real Estate</a
           >
           <ul class="nav-dropdown-menu">
-            <li><a href="real-estate.html" class="active">Overview</a></li>
-            <li><a href="listings.html">All Listings</a></li>
+            <li><a href="/real-estate" class="active">Overview</a></li>
+            <li><a href="/listings">All Listings</a></li>
           </ul>
         </li>
-        <li><a href="insurance.html">Insurance</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html" class="nav-cta">Contact</a></li>
+        <li><a href="/insurance">Insurance</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact" class="nav-cta">Contact</a></li>
       </ul>
     </nav>
 
@@ -152,7 +152,7 @@
               </p>
             </div>
             <a
-              href="contact.html"
+              href="/contact"
               class="btn btn-primary"
               style="margin-top: 24px; justify-content: center"
               >Get In Touch &rarr;</a
@@ -242,7 +242,7 @@
           </div>
         </div>
         <div style="text-align: center; margin-top: 48px" class="reveal">
-          <a href="contact.html" class="btn btn-primary"
+          <a href="/contact" class="btn btn-primary"
             >Start Your Property Journey &rarr;</a
           >
         </div>
@@ -289,7 +289,7 @@
           </div>
         </div>
         <div style="text-align: center; margin-top: 40px" class="reveal">
-          <a href="listings.html" class="btn btn-primary"
+          <a href="/listings" class="btn btn-primary"
             >View All Listings &rarr;</a
           >
         </div>
@@ -455,7 +455,7 @@
               <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--navy);">${priceFmt}</div>
               ${levyFmt ? `<div style="font-size:11px;color:var(--gray-mid);">${esc(levyFmt)}</div>` : ""}
             </div>
-            <a href="listing.html?slug=${encodeURIComponent(p.slug)}"
+            <a href="/listing/${encodeURIComponent(p.slug)}"
                style="background:var(--blue-mid);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;"
                onmouseover="this.style.background='var(--blue-dark)'" onmouseout="this.style.background='var(--blue-mid)'">View Listing &rarr;</a>
           </div>
@@ -510,17 +510,17 @@
           <div class="footer-nav-col">
             <h6 class="footer-col-title">Navigate</h6>
             <nav class="footer-links">
-              <a href="index.html">Home</a>
-              <a href="real-estate.html">Real Estate</a>
-              <a href="insurance.html">Insurance</a>
-              <a href="about.html">About</a>
-              <a href="contact.html">Contact</a>
+              <a href="/">Home</a>
+              <a href="/real-estate">Real Estate</a>
+              <a href="/insurance">Insurance</a>
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
             </nav>
           </div>
 
           <div class="footer-div-col">
             <h6 class="footer-col-title">Our Divisions</h6>
-            <a href="real-estate.html" class="footer-div-card">
+            <a href="/real-estate" class="footer-div-card">
               <img
                 src="assets/logo/realestate_logo.png"
                 alt="Pack Real Estate"
@@ -528,7 +528,7 @@
               />
               <span>Property Solutions</span>
             </a>
-            <a href="insurance.html" class="footer-div-card">
+            <a href="/insurance" class="footer-div-card">
               <img
                 src="assets/logo/insurance_logo.png"
                 alt="Pack Insurance Broker"
