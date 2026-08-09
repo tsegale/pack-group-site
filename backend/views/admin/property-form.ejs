@@ -213,7 +213,7 @@
     </button>
     <a href="/admin/properties" class="btn btn-outline">Cancel</a>
     <% if (property) { %>
-    <a href="/listing.html?slug=<%= property.slug %>" target="_blank" class="btn btn-outline" style="margin-left:auto;">
+    <a href="/listing/<%= property.slug %>" target="_blank" class="btn btn-outline" style="margin-left:auto;">
       <i class="fa-solid fa-eye"></i> Preview Listing
     </a>
     <% } %>

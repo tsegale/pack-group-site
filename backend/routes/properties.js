@@ -5,6 +5,7 @@ const multer = require("multer");
 const { v4: uuid } = require("uuid");
 const { getDb } = require("../db/database");
 const { validateCsrf } = require("../middleware/requireAuth");
+const { asyncHandler } = require("../middleware/asyncHandler");
 
 const UPLOADS_DIR = path.join(__dirname, "..", "public", "uploads");
 
@@ -39,9 +40,8 @@ function slugify(text) {
     .replace(/[\s-]+/g, "-");
 }
 
-function withImages(property) {
+function withImages(db, property) {
   if (!property) return null;
-  const db = getDb();
   const imgs = db
     .prepare(
       "SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order ASC",
@@ -55,60 +55,72 @@ function withImages(property) {
    ════════════════════════════════ */
 const apiRouter = express.Router();
 
-apiRouter.get("/featured", (req, res) => {
-  const db = getDb();
-  const props = db
-    .prepare(
-      "SELECT * FROM properties WHERE featured = 1 AND status = 'available' ORDER BY created_at DESC",
-    )
-    .all();
-  res.json(props.map(withImages));
-});
+apiRouter.get(
+  "/featured",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const props = db
+      .prepare(
+        "SELECT * FROM properties WHERE featured = 1 AND status = 'available' ORDER BY created_at DESC",
+      )
+      .all();
+    res.json(props.map((p) => withImages(db, p)));
+  }),
+);
 
-apiRouter.get("/", (req, res) => {
-  const db = getDb();
-  const { status, type } = req.query;
-  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 9));
-  const offset = (page - 1) * limit;
+apiRouter.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const { status, type } = req.query;
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.max(
+      1,
+      Math.min(100, parseInt(req.query.limit, 10) || 9),
+    );
+    const offset = (page - 1) * limit;
 
-  const conditions = [];
-  const params = [];
-  if (status) {
-    conditions.push("status = ?");
-    params.push(status);
-  }
-  if (type) {
-    conditions.push("type = ?");
-    params.push(type);
-  }
-  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const conditions = [];
+    const params = [];
+    if (status) {
+      conditions.push("status = ?");
+      params.push(status);
+    }
+    if (type) {
+      conditions.push("type = ?");
+      params.push(type);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  const total = db
-    .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
-    .get(...params).c;
-  const props = db
-    .prepare(
-      `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-    )
-    .all(...params, limit, offset);
+    const total = db
+      .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
+      .get(...params).c;
+    const props = db
+      .prepare(
+        `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      )
+      .all(...params, limit, offset);
 
-  res.json({
-    properties: props.map(withImages),
-    total,
-    page,
-    pages: Math.max(1, Math.ceil(total / limit)),
-  });
-});
+    res.json({
+      properties: props.map((p) => withImages(db, p)),
+      total,
+      page,
+      pages: Math.max(1, Math.ceil(total / limit)),
+    });
+  }),
+);
 
-apiRouter.get("/:slug", (req, res) => {
-  const db = getDb();
-  const prop = db
-    .prepare("SELECT * FROM properties WHERE slug = ?")
-    .get(req.params.slug);
-  if (!prop) return res.status(404).json({ error: "Property not found" });
-  res.json(withImages(prop));
-});
+apiRouter.get(
+  "/:slug",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const prop = db
+      .prepare("SELECT * FROM properties WHERE slug = ?")
+      .get(req.params.slug);
+    if (!prop) return res.status(404).json({ error: "Property not found" });
+    res.json(withImages(db, prop));
+  }),
+);
 
 /* ════════════════════════════════
    ADMIN ROUTER
@@ -117,44 +129,47 @@ const adminRouter = express.Router();
 
 /* LIST */
 const ADMIN_PAGE_SIZE = 20;
-adminRouter.get("/", (req, res) => {
-  const db = getDb();
-  const filter = req.query.status || "all";
-  const currentPage = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const offset = (currentPage - 1) * ADMIN_PAGE_SIZE;
-  const where = filter === "all" ? "" : "WHERE status = ?";
-  const params = filter === "all" ? [] : [filter];
+adminRouter.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const filter = req.query.status || "all";
+    const currentPage = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const offset = (currentPage - 1) * ADMIN_PAGE_SIZE;
+    const where = filter === "all" ? "" : "WHERE status = ?";
+    const params = filter === "all" ? [] : [filter];
 
-  const total = db
-    .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
-    .get(...params).c;
-  const props = db
-    .prepare(
-      `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-    )
-    .all(...params, ADMIN_PAGE_SIZE, offset);
-
-  const propsWithImgs = props.map((p) => {
-    const cover = db
+    const total = db
+      .prepare(`SELECT COUNT(*) as c FROM properties ${where}`)
+      .get(...params).c;
+    const props = db
       .prepare(
-        "SELECT filename FROM property_images WHERE property_id = ? AND is_cover = 1 LIMIT 1",
+        `SELECT * FROM properties ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
       )
-      .get(p.id);
-    return { ...p, coverImage: cover ? cover.filename : null };
-  });
-  res.render("admin/properties", {
-    title: "Properties",
-    page: "properties",
-    user: req.session.user,
-    csrfToken: req.session.csrfToken,
-    properties: propsWithImgs,
-    filter,
-    currentPage,
-    totalPages: Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)),
-    flash: req.session.flash || null,
-  });
-  delete req.session.flash;
-});
+      .all(...params, ADMIN_PAGE_SIZE, offset);
+
+    const propsWithImgs = props.map((p) => {
+      const cover = db
+        .prepare(
+          "SELECT filename FROM property_images WHERE property_id = ? AND is_cover = 1 LIMIT 1",
+        )
+        .get(p.id);
+      return { ...p, coverImage: cover ? cover.filename : null };
+    });
+    res.render("admin/properties", {
+      title: "Properties",
+      page: "properties",
+      user: req.session.user,
+      csrfToken: req.session.csrfToken,
+      properties: propsWithImgs,
+      filter,
+      currentPage,
+      totalPages: Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE)),
+      flash: req.session.flash || null,
+    });
+    delete req.session.flash;
+  }),
+);
 
 /* NEW FORM */
 adminRouter.get("/new", (req, res) => {
@@ -170,113 +185,124 @@ adminRouter.get("/new", (req, res) => {
 });
 
 /* CREATE */
-adminRouter.post("/", upload.array("images", 20), validateCsrf, (req, res) => {
-  const db = getDb();
-  let {
-    title,
-    type,
-    price,
-    levy,
-    bedrooms,
-    bathrooms,
-    location,
-    description,
-    status,
-    units_available,
-    rental_option,
-    contact_phone,
-    featured,
-    slug,
-  } = req.body;
+adminRouter.post(
+  "/",
+  upload.array("images", 20),
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    let {
+      title,
+      type,
+      price,
+      levy,
+      bedrooms,
+      bathrooms,
+      location,
+      description,
+      status,
+      units_available,
+      rental_option,
+      contact_phone,
+      featured,
+      slug,
+    } = req.body;
 
-  if (!title || !location || !price) {
-    return res.render("admin/property-form", {
-      title: "Add Property",
+    if (!title || !location || !price) {
+      return res.render("admin/property-form", {
+        title: "Add Property",
+        page: "properties",
+        user: req.session.user,
+        csrfToken: req.session.csrfToken,
+        property: req.body,
+        images: [],
+        flash: {
+          type: "error",
+          msg: "Title, location, and price are required.",
+        },
+      });
+    }
+
+    slug = slug ? slugify(slug) : slugify(title);
+
+    const existing = db
+      .prepare("SELECT id FROM properties WHERE slug = ?")
+      .get(slug);
+    if (existing) slug = slug + "-" + Date.now();
+
+    const result = db
+      .prepare(
+        `
+      INSERT INTO properties
+        (title, type, price, levy, bedrooms, bathrooms, location,
+         description, status, units_available, rental_option,
+         contact_phone, featured, slug)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+      )
+      .run(
+        title.trim(),
+        type || "sale",
+        parseFloat(price) || 0,
+        levy || null,
+        parseInt(bedrooms) || 0,
+        parseInt(bathrooms) || 0,
+        location.trim(),
+        description || null,
+        status || "available",
+        parseInt(units_available) || 1,
+        rental_option === "on" ? 1 : 0,
+        contact_phone || "0858196462",
+        featured === "on" ? 1 : 0,
+        slug,
+      );
+
+    const propId = result.lastInsertRowid;
+    const { urls, manifest, coverPosition } = _parseImageUpload(req);
+    _saveImages(db, propId, req.files || [], urls, manifest, coverPosition);
+
+    req.session.flash = {
+      type: "success",
+      msg: `"${title}" created successfully.`,
+    };
+    res.redirect(`/admin/properties/${propId}/edit`);
+  }),
+);
+
+/* EDIT FORM */
+adminRouter.get(
+  "/:id/edit",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const prop = db
+      .prepare("SELECT * FROM properties WHERE id = ?")
+      .get(req.params.id);
+    if (!prop) return res.redirect("/admin/properties");
+    const images = db
+      .prepare(
+        "SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order",
+      )
+      .all(prop.id);
+    res.render("admin/property-form", {
+      title: `Edit — ${prop.title}`,
       page: "properties",
       user: req.session.user,
       csrfToken: req.session.csrfToken,
-      property: req.body,
-      images: [],
-      flash: { type: "error", msg: "Title, location, and price are required." },
+      property: prop,
+      images,
+      flash: req.session.flash || null,
     });
-  }
-
-  slug = slug ? slugify(slug) : slugify(title);
-
-  const existing = db
-    .prepare("SELECT id FROM properties WHERE slug = ?")
-    .get(slug);
-  if (existing) slug = slug + "-" + Date.now();
-
-  const result = db
-    .prepare(
-      `
-    INSERT INTO properties
-      (title, type, price, levy, bedrooms, bathrooms, location,
-       description, status, units_available, rental_option,
-       contact_phone, featured, slug)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `,
-    )
-    .run(
-      title.trim(),
-      type || "sale",
-      parseFloat(price) || 0,
-      levy || null,
-      parseInt(bedrooms) || 0,
-      parseInt(bathrooms) || 0,
-      location.trim(),
-      description || null,
-      status || "available",
-      parseInt(units_available) || 1,
-      rental_option === "on" ? 1 : 0,
-      contact_phone || "0858196462",
-      featured === "on" ? 1 : 0,
-      slug,
-    );
-
-  const propId = result.lastInsertRowid;
-  const { urls, manifest, coverPosition } = _parseImageUpload(req);
-  _saveImages(db, propId, req.files || [], urls, manifest, coverPosition);
-
-  req.session.flash = {
-    type: "success",
-    msg: `"${title}" created successfully.`,
-  };
-  res.redirect(`/admin/properties/${propId}/edit`);
-});
-
-/* EDIT FORM */
-adminRouter.get("/:id/edit", (req, res) => {
-  const db = getDb();
-  const prop = db
-    .prepare("SELECT * FROM properties WHERE id = ?")
-    .get(req.params.id);
-  if (!prop) return res.redirect("/admin/properties");
-  const images = db
-    .prepare(
-      "SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order",
-    )
-    .all(prop.id);
-  res.render("admin/property-form", {
-    title: `Edit — ${prop.title}`,
-    page: "properties",
-    user: req.session.user,
-    csrfToken: req.session.csrfToken,
-    property: prop,
-    images,
-    flash: req.session.flash || null,
-  });
-  delete req.session.flash;
-});
+    delete req.session.flash;
+  }),
+);
 
 /* UPDATE */
 adminRouter.post(
   "/:id",
   upload.array("images", 20),
   validateCsrf,
-  (req, res) => {
-    const db = getDb();
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
     const prop = db
       .prepare("SELECT * FROM properties WHERE id = ?")
       .get(req.params.id);
@@ -309,13 +335,13 @@ adminRouter.post(
 
     db.prepare(
       `
-    UPDATE properties SET
-      title = ?, type = ?, price = ?, levy = ?, bedrooms = ?, bathrooms = ?,
-      location = ?, description = ?, status = ?, units_available = ?,
-      rental_option = ?, contact_phone = ?, featured = ?, slug = ?,
-      updated_at = datetime('now')
-    WHERE id = ?
-  `,
+      UPDATE properties SET
+        title = ?, type = ?, price = ?, levy = ?, bedrooms = ?, bathrooms = ?,
+        location = ?, description = ?, status = ?, units_available = ?,
+        rental_option = ?, contact_phone = ?, featured = ?, slug = ?,
+        updated_at = datetime('now')
+      WHERE id = ?
+    `,
     ).run(
       title.trim(),
       type || "sale",
@@ -344,110 +370,130 @@ adminRouter.post(
       msg: `"${title}" updated successfully.`,
     };
     res.redirect(`/admin/properties/${prop.id}/edit`);
-  },
+  }),
 );
 
 /* DELETE */
-adminRouter.post("/:id/delete", validateCsrf, (req, res) => {
-  const db = getDb();
-  const prop = db
-    .prepare("SELECT * FROM properties WHERE id = ?")
-    .get(req.params.id);
-  if (prop) {
-    const imgs = db
-      .prepare("SELECT filename FROM property_images WHERE property_id = ?")
-      .all(prop.id);
-    imgs.forEach((img) => {
+adminRouter.post(
+  "/:id/delete",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const prop = db
+      .prepare("SELECT * FROM properties WHERE id = ?")
+      .get(req.params.id);
+    if (prop) {
+      const imgs = db
+        .prepare("SELECT filename FROM property_images WHERE property_id = ?")
+        .all(prop.id);
+      imgs.forEach((img) => {
+        if (img.filename.startsWith("uploads/")) {
+          const fpath = path.join(UPLOADS_DIR, path.basename(img.filename));
+          if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
+        }
+      });
+      db.prepare("DELETE FROM properties WHERE id = ?").run(prop.id);
+    }
+    req.session.flash = { type: "success", msg: "Property deleted." };
+    res.redirect("/admin/properties");
+  }),
+);
+
+/* TOGGLE FEATURED */
+adminRouter.post(
+  "/:id/toggle-featured",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const prop = db
+      .prepare("SELECT featured FROM properties WHERE id = ?")
+      .get(req.params.id);
+    if (!prop) return res.status(404).json({ error: "Property not found" });
+    const newVal = prop.featured ? 0 : 1;
+    db.prepare("UPDATE properties SET featured = ? WHERE id = ?").run(
+      newVal,
+      req.params.id,
+    );
+    res.json({ featured: newVal });
+  }),
+);
+
+/* SET COVER IMAGE */
+adminRouter.post(
+  "/:id/images/:imgId/cover",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    db.prepare(
+      "UPDATE property_images SET is_cover = 0 WHERE property_id = ?",
+    ).run(req.params.id);
+    db.prepare(
+      "UPDATE property_images SET is_cover = 1 WHERE id = ? AND property_id = ?",
+    ).run(req.params.imgId, req.params.id);
+    res.json({ ok: true });
+  }),
+);
+
+/* DELETE IMAGE */
+adminRouter.post(
+  "/:id/images/:imgId/delete",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const img = db
+      .prepare("SELECT * FROM property_images WHERE id = ? AND property_id = ?")
+      .get(req.params.imgId, req.params.id);
+    if (img) {
       if (img.filename.startsWith("uploads/")) {
         const fpath = path.join(UPLOADS_DIR, path.basename(img.filename));
         if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
       }
-    });
-    db.prepare("DELETE FROM properties WHERE id = ?").run(prop.id);
-  }
-  req.session.flash = { type: "success", msg: "Property deleted." };
-  res.redirect("/admin/properties");
-});
-
-/* TOGGLE FEATURED */
-adminRouter.post("/:id/toggle-featured", validateCsrf, (req, res) => {
-  const db = getDb();
-  const prop = db
-    .prepare("SELECT featured FROM properties WHERE id = ?")
-    .get(req.params.id);
-  if (!prop) return res.status(404).json({ error: "Property not found" });
-  const newVal = prop.featured ? 0 : 1;
-  db.prepare("UPDATE properties SET featured = ? WHERE id = ?").run(
-    newVal,
-    req.params.id,
-  );
-  res.json({ featured: newVal });
-});
-
-/* SET COVER IMAGE */
-adminRouter.post("/:id/images/:imgId/cover", validateCsrf, (req, res) => {
-  const db = getDb();
-  db.prepare(
-    "UPDATE property_images SET is_cover = 0 WHERE property_id = ?",
-  ).run(req.params.id);
-  db.prepare(
-    "UPDATE property_images SET is_cover = 1 WHERE id = ? AND property_id = ?",
-  ).run(req.params.imgId, req.params.id);
-  res.json({ ok: true });
-});
-
-/* DELETE IMAGE */
-adminRouter.post("/:id/images/:imgId/delete", validateCsrf, (req, res) => {
-  const db = getDb();
-  const img = db
-    .prepare("SELECT * FROM property_images WHERE id = ? AND property_id = ?")
-    .get(req.params.imgId, req.params.id);
-  if (img) {
-    if (img.filename.startsWith("uploads/")) {
-      const fpath = path.join(UPLOADS_DIR, path.basename(img.filename));
-      if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
+      db.prepare("DELETE FROM property_images WHERE id = ?").run(img.id);
+      if (img.is_cover) {
+        const next = db
+          .prepare(
+            "SELECT id FROM property_images WHERE property_id = ? ORDER BY sort_order LIMIT 1",
+          )
+          .get(req.params.id);
+        if (next)
+          db.prepare(
+            "UPDATE property_images SET is_cover = 1 WHERE id = ?",
+          ).run(next.id);
+      }
     }
-    db.prepare("DELETE FROM property_images WHERE id = ?").run(img.id);
-    if (img.is_cover) {
-      const next = db
-        .prepare(
-          "SELECT id FROM property_images WHERE property_id = ? ORDER BY sort_order LIMIT 1",
-        )
-        .get(req.params.id);
-      if (next)
-        db.prepare("UPDATE property_images SET is_cover = 1 WHERE id = ?").run(
-          next.id,
-        );
-    }
-  }
-  res.json({ ok: true });
-});
+    res.json({ ok: true });
+  }),
+);
 
 /* MOVE IMAGE */
-adminRouter.post("/:id/images/:imgId/move", validateCsrf, (req, res) => {
-  const db = getDb();
-  const { direction } = req.body;
-  const imgs = db
-    .prepare(
-      "SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order ASC",
-    )
-    .all(req.params.id);
-  const idx = imgs.findIndex((i) => i.id == req.params.imgId);
-  if (idx === -1) return res.json({ ok: false });
-  const swapIdx = direction === "up" ? idx - 1 : idx + 1;
-  if (swapIdx < 0 || swapIdx >= imgs.length) return res.json({ ok: false });
-  const a = imgs[idx],
-    b = imgs[swapIdx];
-  db.prepare("UPDATE property_images SET sort_order = ? WHERE id = ?").run(
-    b.sort_order,
-    a.id,
-  );
-  db.prepare("UPDATE property_images SET sort_order = ? WHERE id = ?").run(
-    a.sort_order,
-    b.id,
-  );
-  res.json({ ok: true });
-});
+adminRouter.post(
+  "/:id/images/:imgId/move",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const { direction } = req.body;
+    const imgs = db
+      .prepare(
+        "SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order ASC",
+      )
+      .all(req.params.id);
+    const idx = imgs.findIndex((i) => i.id == req.params.imgId);
+    if (idx === -1) return res.json({ ok: false });
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= imgs.length) return res.json({ ok: false });
+    const a = imgs[idx],
+      b = imgs[swapIdx];
+    db.prepare("UPDATE property_images SET sort_order = ? WHERE id = ?").run(
+      b.sort_order,
+      a.id,
+    );
+    db.prepare("UPDATE property_images SET sort_order = ? WHERE id = ?").run(
+      a.sort_order,
+      b.id,
+    );
+    res.json({ ok: true });
+  }),
+);
 
 /* ── INTERNAL HELPERS ── */
 

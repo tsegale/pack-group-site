@@ -2,6 +2,7 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { getDb } = require("../db/database");
 const { validateCsrf } = require("../middleware/requireAuth");
+const { asyncHandler } = require("../middleware/asyncHandler");
 
 /* ── Rate limiter: 5 submissions per IP per hour ── */
 const leadLimiter = rateLimit({
@@ -38,114 +39,125 @@ function validateLead(body) {
    ════════════════════════════ */
 const apiRouter = express.Router();
 
-apiRouter.post("/", leadLimiter, (req, res) => {
-  const { name, phone, email, message, source_division, property_id } =
-    req.body;
+apiRouter.post(
+  "/",
+  leadLimiter,
+  asyncHandler(async (req, res) => {
+    const { name, phone, email, message, source_division, property_id } =
+      req.body;
 
-  const err = validateLead(req.body);
-  if (err) return res.status(400).json({ error: err });
+    const err = validateLead(req.body);
+    if (err) return res.status(400).json({ error: err });
 
-  const db = getDb();
+    const db = await getDb();
 
-  let resolvedPropertyId = null;
-  if (property_id) {
-    const prop = db
-      .prepare("SELECT id FROM properties WHERE id = ?")
-      .get(parseInt(property_id));
-    if (prop) resolvedPropertyId = prop.id;
-  }
+    let resolvedPropertyId = null;
+    if (property_id) {
+      const prop = db
+        .prepare("SELECT id FROM properties WHERE id = ?")
+        .get(parseInt(property_id));
+      if (prop) resolvedPropertyId = prop.id;
+    }
 
-  db.prepare(
-    `
-    INSERT INTO leads (name, phone, email, message, source_division, property_id)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `,
-  ).run(
-    name.trim(),
-    phone ? phone.trim() : null,
-    email ? email.trim().toLowerCase() : null,
-    message ? message.trim() : null,
-    source_division,
-    resolvedPropertyId,
-  );
+    db.prepare(
+      `
+      INSERT INTO leads (name, phone, email, message, source_division, property_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+    ).run(
+      name.trim(),
+      phone ? phone.trim() : null,
+      email ? email.trim().toLowerCase() : null,
+      message ? message.trim() : null,
+      source_division,
+      resolvedPropertyId,
+    );
 
-  res.json({
-    success: true,
-    message: "Thank you. We will be in touch shortly.",
-  });
-});
+    res.json({
+      success: true,
+      message: "Thank you. We will be in touch shortly.",
+    });
+  }),
+);
 
 /* ════════════════════════════
    ADMIN ROUTER
    ════════════════════════════ */
 const adminRouter = express.Router();
 
-adminRouter.get("/", (req, res) => {
-  const db = getDb();
-  const division = req.query.division || "all";
-  const status = req.query.status || "all";
+adminRouter.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const division = req.query.division || "all";
+    const status = req.query.status || "all";
 
-  let query = `
-    SELECT l.*, p.title as property_title, p.slug as property_slug
-    FROM leads l
-    LEFT JOIN properties p ON l.property_id = p.id
-  `;
-  const conditions = [];
-  const params = [];
+    let query = `
+      SELECT l.*, p.title as property_title, p.slug as property_slug
+      FROM leads l
+      LEFT JOIN properties p ON l.property_id = p.id
+    `;
+    const conditions = [];
+    const params = [];
 
-  if (division !== "all") {
-    conditions.push("l.source_division = ?");
-    params.push(division);
-  }
-  if (status !== "all") {
-    conditions.push("l.status = ?");
-    params.push(status);
-  }
+    if (division !== "all") {
+      conditions.push("l.source_division = ?");
+      params.push(division);
+    }
+    if (status !== "all") {
+      conditions.push("l.status = ?");
+      params.push(status);
+    }
 
-  if (conditions.length) query += " WHERE " + conditions.join(" AND ");
-  query += " ORDER BY l.created_at DESC";
+    if (conditions.length) query += " WHERE " + conditions.join(" AND ");
+    query += " ORDER BY l.created_at DESC";
 
-  const leads = db.prepare(query).all(...params);
+    const leads = db.prepare(query).all(...params);
 
-  const counts = db
-    .prepare(
-      `
-    SELECT
-      COUNT(*) as total,
-      SUM(CASE WHEN source_division = 'real-estate' THEN 1 ELSE 0 END) as re_count,
-      SUM(CASE WHEN source_division = 'insurance'   THEN 1 ELSE 0 END) as ins_count,
-      SUM(CASE WHEN status = 'new'                  THEN 1 ELSE 0 END) as new_count
-    FROM leads
-  `,
-    )
-    .get();
+    const counts = db
+      .prepare(
+        `
+      SELECT
+        COUNT(*) as total,
+        SUM(CASE WHEN source_division = 'real-estate' THEN 1 ELSE 0 END) as re_count,
+        SUM(CASE WHEN source_division = 'insurance'   THEN 1 ELSE 0 END) as ins_count,
+        SUM(CASE WHEN status = 'new'                  THEN 1 ELSE 0 END) as new_count
+      FROM leads
+    `,
+      )
+      .get();
 
-  res.render("admin/leads", {
-    title: "Leads",
-    page: "leads",
-    user: req.session.user,
-    csrfToken: req.session.csrfToken,
-    leads,
-    division,
-    status,
-    counts,
-    flash: req.session.flash || null,
-  });
-  delete req.session.flash;
-});
+    res.render("admin/leads", {
+      title: "Leads",
+      page: "leads",
+      user: req.session.user,
+      csrfToken: req.session.csrfToken,
+      leads,
+      division,
+      status,
+      counts,
+      flash: req.session.flash || null,
+    });
+    delete req.session.flash;
+  }),
+);
 
 /* UPDATE STATUS (AJAX) */
-adminRouter.post("/:id/status", validateCsrf, (req, res) => {
-  const db = getDb();
-  const { status } = req.body;
-  const valid = ["new", "contacted", "closed"];
-  if (!valid.includes(status))
-    return res.status(400).json({ error: "Invalid status" });
-  db.prepare("UPDATE leads SET status = ? WHERE id = ?").run(
-    status,
-    req.params.id,
-  );
-  res.json({ ok: true, status });
-});
+adminRouter.post(
+  "/:id/status",
+  validateCsrf,
+  asyncHandler(async (req, res) => {
+    const db = await getDb();
+    const { status } = req.body;
+    const valid = ["new", "contacted", "closed"];
+    if (!valid.includes(status))
+      return res.status(400).json({ error: "Invalid status" });
+    db.prepare("UPDATE leads SET status = ? WHERE id = ?").run(
+      status,
+      req.params.id,
+    );
+    res.json({ ok: true, status });
+  }),
+);
 
 module.exports = { apiRouter, adminRouter };

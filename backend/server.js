@@ -4,10 +4,11 @@ const path = require("path");
 const crypto = require("crypto");
 const session = require("express-session");
 const helmet = require("helmet");
-const BetterSqlite3 = require("better-sqlite3");
+const { createSqlJsClient } = require("./db/sqlJsClient");
 const SqliteStore = require("better-sqlite3-session-store")(session);
 
 const { requireAuth } = require("./middleware/requireAuth");
+const { asyncHandler } = require("./middleware/asyncHandler");
 
 const authRouter = require("./routes/auth");
 const {
@@ -25,8 +26,9 @@ const accountRouter = require("./routes/account");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SITE_ROOT = path.join(__dirname, "..");
 
-/* ── TRUST PROXY (Railway/reverse proxy) ── */
+/* ── TRUST PROXY (Railway/reverse proxy/Passenger) ── */
 app.set("trust proxy", 1);
 
 /* ── VIEW ENGINE ── */
@@ -45,146 +47,224 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ── SESSION ── */
-app.use(
-  session({
-    store: new SqliteStore({
-      client: new BetterSqlite3(path.join(__dirname, "db", "sessions.db")),
-      expired: { clear: true, intervalMs: 15 * 60 * 1000 },
-    }),
-    secret: process.env.SESSION_SECRET || "dev-secret-please-change",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    },
-  }),
-);
-
-/* ── CSRF TOKEN (per-session) ── */
+/* express.static(SITE_ROOT) below serves the whole project root, and this
+   backend/ directory lives inside it — without this guard, pack.db,
+   sessions.db, package.json, and everything else in here would be
+   directly downloadable (e.g. GET /backend/db/pack.db). Block it outright
+   before any static or route handling gets a chance to serve it. */
 app.use((req, res, next) => {
-  if (!req.session.csrfToken) {
-    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+  if (req.path === "/backend" || req.path.startsWith("/backend/")) {
+    return res.status(404).end();
   }
-  res.locals.csrfToken = req.session.csrfToken;
   next();
 });
 
-/* ── STATIC: admin uploads ── */
-app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
+/* Clean public URLs, mapped to their static HTML file. Registered before
+   express.static() so they take priority over direct file access. */
+const CLEAN_PAGES = {
+  "/": "index.html",
+  "/real-estate": "real-estate.html",
+  "/insurance": "insurance.html",
+  "/listings": "listings.html",
+  "/about": "about.html",
+  "/contact": "contact.html",
+};
 
-/* ── STATIC: admin CSS ── */
-app.use("/admin-assets", express.static(path.join(__dirname, "public")));
+/* 301s for the old .html URLs, so nothing that already linked or bookmarked
+   them breaks. /listing.html has no slug in the path, so it falls back to
+   the listings index rather than a specific property. */
+const LEGACY_REDIRECTS = {
+  "/index.html": "/",
+  "/real-estate.html": "/real-estate",
+  "/insurance.html": "/insurance",
+  "/listings.html": "/listings",
+  "/about.html": "/about",
+  "/contact.html": "/contact",
+  "/listing.html": "/listings",
+};
 
-/* ── PUBLIC API ── */
-app.use("/api/properties", propApi);
-app.use("/api/insurance", insApi);
-app.use("/api/leads", leadsApi);
-app.use("/api/hero", heroApi);
+/* Sessions live in their own sql.js-backed database, separate from pack.db.
+   Server startup is wrapped in an async function because sql.js's WASM
+   module has to finish loading before the session store (and later, any
+   route touching pack.db) can be used. */
+async function start() {
+  const sessionClient = await createSqlJsClient(
+    path.join(__dirname, "db", "sessions.db"),
+  );
 
-/* ── ADMIN ── */
-app.get("/admin", (req, res) => {
-  res.redirect(req.session.userId ? "/admin/dashboard" : "/admin/login");
-});
-app.use("/admin", authRouter);
+  /* ── SESSION ── */
+  app.use(
+    session({
+      store: new SqliteStore({
+        client: sessionClient,
+        expired: { clear: true, intervalMs: 15 * 60 * 1000 },
+      }),
+      secret: process.env.SESSION_SECRET || "dev-secret-please-change",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+      },
+    }),
+  );
 
-app.get("/admin/dashboard", requireAuth, (req, res) => {
-  const { getDb } = require("./db/database");
-  const db = getDb();
-
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const stats = {
-    activeListings: db
-      .prepare(
-        "SELECT COUNT(*) as c FROM properties WHERE status = 'available'",
-      )
-      .get().c,
-    totalListings: db.prepare("SELECT COUNT(*) as c FROM properties").get().c,
-    newLeads: db
-      .prepare("SELECT COUNT(*) as c FROM leads WHERE created_at >= ?")
-      .get(weekAgo).c,
-    totalLeads: db.prepare("SELECT COUNT(*) as c FROM leads").get().c,
-    reLeads: db
-      .prepare(
-        "SELECT COUNT(*) as c FROM leads WHERE source_division = 'real-estate'",
-      )
-      .get().c,
-    insLeads: db
-      .prepare(
-        "SELECT COUNT(*) as c FROM leads WHERE source_division = 'insurance'",
-      )
-      .get().c,
-    newStatus: db
-      .prepare("SELECT COUNT(*) as c FROM leads WHERE status = 'new'")
-      .get().c,
-  };
-  const recentLeads = db
-    .prepare(
-      `
-    SELECT l.*, p.title as property_title
-    FROM leads l LEFT JOIN properties p ON l.property_id = p.id
-    ORDER BY l.created_at DESC LIMIT 5
-  `,
-    )
-    .all();
-
-  res.render("admin/dashboard", {
-    title: "Dashboard",
-    page: "dashboard",
-    user: req.session.user,
-    csrfToken: req.session.csrfToken,
-    stats,
-    recentLeads,
-    flash: req.session.flash || null,
+  /* ── CSRF TOKEN (per-session) ── */
+  app.use((req, res, next) => {
+    if (!req.session.csrfToken) {
+      req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+    }
+    res.locals.csrfToken = req.session.csrfToken;
+    next();
   });
-  delete req.session.flash;
-});
 
-app.use("/admin/properties", requireAuth, propAdmin);
-app.use("/admin/leads", requireAuth, leadsAdmin);
-app.use("/admin/api/hero", requireAuth, heroAdmin);
-app.use("/admin/settings", requireAuth, settingsRouter);
-app.use("/admin/account", requireAuth, accountRouter);
+  /* ── STATIC: admin uploads ── */
+  app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "public", "uploads")),
+  );
 
-/* ── STATIC SITE (must be last) ── */
-app.use(express.static(path.join(__dirname, "..")));
+  /* ── STATIC: admin CSS ── */
+  app.use("/admin-assets", express.static(path.join(__dirname, "public")));
 
-/* ── 404 FALLBACK ── */
-app.use((req, res) => {
-  if (req.path.startsWith("/admin")) {
-    return res.status(404).render("admin/error", {
-      title: "404 Not Found",
-      message: "The page you requested does not exist.",
+  /* ── PUBLIC API ── */
+  app.use("/api/properties", propApi);
+  app.use("/api/insurance", insApi);
+  app.use("/api/leads", leadsApi);
+  app.use("/api/hero", heroApi);
+
+  /* ── ADMIN ── */
+  app.get("/admin", (req, res) => {
+    res.redirect(req.session.userId ? "/admin/dashboard" : "/admin/login");
+  });
+  app.use("/admin", authRouter);
+
+  app.get(
+    "/admin/dashboard",
+    requireAuth,
+    asyncHandler(async (req, res) => {
+      const { getDb } = require("./db/database");
+      const db = await getDb();
+
+      const weekAgo = new Date(
+        Date.now() - 7 * 24 * 60 * 60 * 1000,
+      ).toISOString();
+      const stats = {
+        activeListings: db
+          .prepare(
+            "SELECT COUNT(*) as c FROM properties WHERE status = 'available'",
+          )
+          .get().c,
+        totalListings: db.prepare("SELECT COUNT(*) as c FROM properties").get()
+          .c,
+        newLeads: db
+          .prepare("SELECT COUNT(*) as c FROM leads WHERE created_at >= ?")
+          .get(weekAgo).c,
+        totalLeads: db.prepare("SELECT COUNT(*) as c FROM leads").get().c,
+        reLeads: db
+          .prepare(
+            "SELECT COUNT(*) as c FROM leads WHERE source_division = 'real-estate'",
+          )
+          .get().c,
+        insLeads: db
+          .prepare(
+            "SELECT COUNT(*) as c FROM leads WHERE source_division = 'insurance'",
+          )
+          .get().c,
+        newStatus: db
+          .prepare("SELECT COUNT(*) as c FROM leads WHERE status = 'new'")
+          .get().c,
+      };
+      const recentLeads = db
+        .prepare(
+          `
+        SELECT l.*, p.title as property_title
+        FROM leads l LEFT JOIN properties p ON l.property_id = p.id
+        ORDER BY l.created_at DESC LIMIT 5
+      `,
+        )
+        .all();
+
+      res.render("admin/dashboard", {
+        title: "Dashboard",
+        page: "dashboard",
+        user: req.session.user,
+        csrfToken: req.session.csrfToken,
+        stats,
+        recentLeads,
+        flash: req.session.flash || null,
+      });
+      delete req.session.flash;
+    }),
+  );
+
+  app.use("/admin/properties", requireAuth, propAdmin);
+  app.use("/admin/leads", requireAuth, leadsAdmin);
+  app.use("/admin/api/hero", requireAuth, heroAdmin);
+  app.use("/admin/settings", requireAuth, settingsRouter);
+  app.use("/admin/account", requireAuth, accountRouter);
+
+  /* ── CLEAN PUBLIC PAGE URLs ── */
+  Object.entries(CLEAN_PAGES).forEach(([route, file]) => {
+    app.get(route, (req, res) => {
+      res.sendFile(path.join(SITE_ROOT, file));
+    });
+  });
+
+  /* listing.html itself still reads the slug — from the URL path now
+     instead of a ?slug= query param, see listing.html's own script. */
+  app.get("/listing/:slug", (req, res) => {
+    res.sendFile(path.join(SITE_ROOT, "listing.html"));
+  });
+
+  /* ── LEGACY .html REDIRECTS ── */
+  Object.entries(LEGACY_REDIRECTS).forEach(([oldPath, newPath]) => {
+    app.get(oldPath, (req, res) => {
+      res.redirect(301, newPath);
+    });
+  });
+
+  /* ── STATIC SITE (must be last) ── */
+  app.use(express.static(SITE_ROOT));
+
+  /* ── 404 FALLBACK ── */
+  app.use((req, res) => {
+    if (req.path.startsWith("/admin")) {
+      return res.status(404).render("admin/error", {
+        title: "404 Not Found",
+        message: "The page you requested does not exist.",
+        csrfToken: req.session.csrfToken || "",
+        user: req.session.user || { name: "" },
+        page: "",
+      });
+    }
+    res.status(404).sendFile(path.join(SITE_ROOT, "index.html"));
+  });
+
+  /* ── ERROR HANDLER ── */
+  app.use((err, req, res, _next) => {
+    console.error(err);
+    if (req.path.startsWith("/api")) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(500).render("admin/error", {
+      title: "Server Error",
+      message:
+        process.env.NODE_ENV === "production"
+          ? "Something went wrong."
+          : err.message,
       csrfToken: req.session.csrfToken || "",
       user: req.session.user || { name: "" },
       page: "",
     });
-  }
-  res.status(404).sendFile(path.join(__dirname, "..", "index.html"));
-});
-
-/* ── ERROR HANDLER ── */
-app.use((err, req, res, _next) => {
-  console.error(err);
-  if (req.path.startsWith("/api")) {
-    return res.status(500).json({ error: "Internal server error" });
-  }
-  res.status(500).render("admin/error", {
-    title: "Server Error",
-    message:
-      process.env.NODE_ENV === "production"
-        ? "Something went wrong."
-        : err.message,
-    csrfToken: req.session.csrfToken || "",
-    user: req.session.user || { name: "" },
-    page: "",
   });
-});
 
-app.listen(PORT, () => {
-  console.log(`Pack Group server running on http://localhost:${PORT}`);
-  console.log(`  Admin panel: http://localhost:${PORT}/admin`);
-});
+  app.listen(PORT, () => {
+    console.log(`Pack Group server running on http://localhost:${PORT}`);
+    console.log(`  Admin panel: http://localhost:${PORT}/admin`);
+  });
+}
+
+start();

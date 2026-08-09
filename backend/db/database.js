@@ -1,20 +1,20 @@
-const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
+const { createSqlJsClient } = require("./sqlJsClient");
 
 const DB_PATH = path.join(__dirname, "pack.db");
-const SCHEMA = path.join(__dirname, "schema.sql");
+const SCHEMA_PATH = path.join(__dirname, "schema.sql");
 
-let _db;
+let dbPromise = null;
 
-function getDb() {
-  if (_db) return _db;
-  _db = new Database(DB_PATH);
-  _db.pragma("journal_mode = WAL");
-  _db.pragma("foreign_keys = ON");
-  const schema = fs.readFileSync(SCHEMA, "utf8");
-  _db.exec(schema);
-  return _db;
+async function getDb() {
+  if (!dbPromise) {
+    dbPromise = createSqlJsClient(DB_PATH).then((client) => {
+      client.exec(fs.readFileSync(SCHEMA_PATH, "utf8"));
+      return client;
+    });
+  }
+  return dbPromise;
 }
 
-module.exports = { getDb };
+module.exports = { getDb, DB_PATH };

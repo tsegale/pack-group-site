@@ -1,10 +1,7 @@
 node_modules/
 db/pack.db
-db/pack.db-shm
-db/pack.db-wal
 db/sessions.db
 .env
-public/uploads/*.jpg
-public/uploads/*.jpeg
-public/uploads/*.png
-public/uploads/*.webp
+.env.production
+public/uploads/*
+!public/uploads/.gitkeep
