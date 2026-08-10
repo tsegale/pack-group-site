@@ -1,28 +1,36 @@
 # Deploying Pack Group to pack.com.na (Namhost cPanel)
 
-This is a Node.js/Express app (in `backend/`) serving both the public
-site (the HTML/CSS/JS files at the project root) and the admin
-dashboard, backed by a single SQLite file (`backend/db/pack.db`) read
-through `sql.js` — pure JavaScript, no native compilation, so it
-installs cleanly on Namhost shared hosting.
+This is a Node.js/Express app serving both the public site (the
+HTML/CSS/JS files) and the admin dashboard, backed by a single SQLite
+file (`db/pack.db`) read through `sql.js` — pure JavaScript, no native
+compilation, so it installs cleanly on Namhost shared hosting.
 
-**Project layout that matters for this guide:**
+**Project layout on the server — everything lives in ONE flat folder:**
 
 ```
-pack-group-website/          <- upload this whole folder
+pack-group-website/          <- cPanel "Application root" points HERE
 ├── index.html, real-estate.html, ...   <- public site, served as static files
 ├── assets/
 ├── shared.css, shared.js
-└── backend/                 <- cPanel "Application root" points HERE
-    ├── app.js               <- Passenger "Application startup file"
-    ├── server.js
-    ├── package.json
-    └── db/pack.db           <- the live database (NOT committed to git)
+├── app.js                   <- Passenger "Application startup file"
+├── server.js
+├── package.json
+└── db/pack.db               <- the live database (NOT committed to git)
 ```
 
-`backend/server.js` resolves the public site as `path.join(__dirname, "..")`,
-so the public HTML files must stay one directory above `backend/` — that's
-already how the repo is structured, just don't restructure it during upload.
+`server.js` resolves the public site as `path.join(__dirname, "./")` —
+i.e. the *same* folder `server.js` itself lives in. This only applies to
+the deployed server: locally in this repo, `backend/` stays a nested
+subfolder (nothing here needs to move on your machine) — the flat
+layout only has to exist once the files land on cPanel.
+
+Because everything sits in one folder, `server.js` also blocks direct
+public access to every internal-only entry at that top level (`db/`,
+`routes/`, `middleware/`, `views/`, `node_modules/`, `server.js`,
+`app.js`, `package.json`, `package-lock.json`, `.env`, `.env.production`,
+`.gitignore`, `README.md`) — otherwise `GET /db/pack.db` would serve the
+database (with the admin password hash) to anyone. This is already
+verified working locally against a flat copy of the project.
 
 ---
 
@@ -32,8 +40,8 @@ already how the repo is structured, just don't restructure it during upload.
 - Create new application:
   - **Node.js version**: highest available (18.x+)
   - **Application mode**: Production
-  - **Application root**: the `backend` folder inside wherever you upload
-    the project, e.g. `pack-group-website/backend`
+  - **Application root**: wherever you upload the project, e.g.
+    `pack-group-website` — the SAME folder that will contain `index.html`
   - **Application URL**: `pack.com.na`
   - **Application startup file**: `app.js`
 - Click Create — note the path to the virtual environment it creates
@@ -43,16 +51,19 @@ already how the repo is structured, just don't restructure it during upload.
 
 ## STEP 2 — Upload files
 
-- Zip the entire project **excluding**:
-  - `backend/node_modules/`
-  - `backend/.env`
-  - `backend/.env.production`
-  - `backend/db/pack.db`
-  - `backend/db/sessions.db`
-  - `backend/public/uploads/*` (except `.gitkeep`)
-- Upload the zip via cPanel File Manager to wherever you want the project
-  to live on the server (e.g. your home directory)
-- Extract in place, so you end up with the layout shown above
+- Two zips: one with the public site files (`index.html`, `assets/`,
+  `shared.css`/`.js`, etc.), one with the backend (`server.js`, `app.js`,
+  `routes/`, `db/`, `views/`, `middleware/`, `package.json` — excluding
+  `node_modules/`, `.env`, `.env.production`; whether `db/pack.db` and
+  `public/uploads/` are included depends on whether this is a fresh
+  install or you're bringing existing data, see Step 5)
+- Upload both zips via cPanel File Manager to the SAME destination
+  folder (e.g. your home directory or wherever the Application root
+  points)
+- Extract **both zips into that same folder** — since each zip's files
+  sit at its own root, extracting both there merges them into the flat
+  layout shown above (`index.html` and `server.js` end up as siblings).
+  Do not extract the backend zip into a `backend/` subfolder.
 
 ## STEP 3 — Set environment variables
 
@@ -73,9 +84,8 @@ already how the repo is structured, just don't restructure it during upload.
 ## STEP 4 — Install dependencies
 
 - In **Setup Node.js App**, click **Run NPM Install**
-- This runs `npm install` inside `backend/` (the Application root),
-  using Passenger's own virtual environment — not your local
-  `node_modules`
+- This runs `npm install` inside the Application root, using Passenger's
+  own virtual environment — not your local `node_modules`
 - Should complete cleanly: `sql.js` and `better-sqlite3-session-store`
   are both pure JavaScript, nothing here needs compiling
 
@@ -87,18 +97,18 @@ already how the repo is structured, just don't restructure it during upload.
   ```
   node db/seed.js
   ```
-  (from inside the `backend/` directory)
-- This creates `backend/db/pack.db` with the admin account (from the
+  (from the Application root)
+- This creates `db/pack.db` with the admin account (from the
   `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars above) and the default hero
   slides
-- Verify `pack.db` now exists in `backend/db/`
+- Verify `pack.db` now exists in `db/`
 
 **If you are redeploying and `pack.db` already has real data (listings,
 leads, hero slides, settings) — the normal case after the first
-deploy:**
+deploy, or if your backend zip already included it:**
 
-- Upload `pack.db` alongside the rest of the project files (via File
-  Manager, into `backend/db/`)
+- Confirm `db/pack.db` is present (via File Manager, or included in
+  your backend zip already)
 - Do **NOT** run `node db/seed.js` — it detects the existing file and
   exits immediately without touching it:
   ```
@@ -120,11 +130,11 @@ deploy:**
 ## STEP 7 — Test uploads folder
 
 - From the admin dashboard, try uploading a property image
-- Confirm the file appears in `backend/public/uploads/`
+- Confirm the file appears in `public/uploads/`
 - Confirm the image displays on the property's public listing page
 - If uploads fail with a permissions error, SSH in and run:
   ```
-  chmod 755 backend/public/uploads
+  chmod 755 public/uploads
   ```
 
 ## STEP 8 — DNS / domain check

@@ -26,7 +26,7 @@ const accountRouter = require("./routes/account");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SITE_ROOT = path.join(__dirname, "..");
+const SITE_ROOT = path.join(__dirname, "./");
 
 /* ── TRUST PROXY (Railway/reverse proxy/Passenger) ── */
 app.set("trust proxy", 1);
@@ -47,13 +47,30 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* express.static(SITE_ROOT) below serves the whole project root, and this
-   backend/ directory lives inside it — without this guard, pack.db,
-   sessions.db, package.json, and everything else in here would be
-   directly downloadable (e.g. GET /backend/db/pack.db). Block it outright
-   before any static or route handling gets a chance to serve it. */
+/* On the deployed server, server.js and the rest of this app sit in the
+   SAME folder as the public HTML files (SITE_ROOT === __dirname) — so
+   express.static(SITE_ROOT) below would otherwise also serve pack.db,
+   node_modules, source code, .env, etc. directly (e.g. GET /db/pack.db).
+   Block every internal-only top-level entry before static or route
+   handling gets a chance to serve it. */
+const BLOCKED_TOP_LEVEL = [
+  "db",
+  "routes",
+  "middleware",
+  "views",
+  "node_modules",
+  "server.js",
+  "app.js",
+  "package.json",
+  "package-lock.json",
+  ".env",
+  ".env.production",
+  ".gitignore",
+  "README.md",
+];
 app.use((req, res, next) => {
-  if (req.path === "/backend" || req.path.startsWith("/backend/")) {
+  const firstSegment = req.path.split("/")[1];
+  if (BLOCKED_TOP_LEVEL.includes(firstSegment)) {
     return res.status(404).end();
   }
   next();
