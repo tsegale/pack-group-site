@@ -234,7 +234,11 @@
               var division = document.getElementById("eq-division").value;
               var message = document.getElementById("eq-message").value.trim();
               var source =
-                division === "insurance" ? "insurance" : "real-estate";
+                division === "insurance"
+                  ? "insurance"
+                  : division === "both"
+                    ? "general"
+                    : "real-estate";
               btn.disabled = true;
               btn.textContent = "Sending…";
               fetch("/api/leads", {

@@ -662,6 +662,107 @@
           <div class="listing-sidebar">
             <div class="sidebar-card" id="sidebar-price-card"></div>
             <div class="sidebar-card dark reveal" id="sidebar-agent-card"></div>
+            <div class="sidebar-card reveal">
+              <h4
+                style="
+                  font-family: &quot;Playfair Display&quot;, serif;
+                  font-size: 18px;
+                  color: var(--navy);
+                  margin-bottom: 4px;
+                "
+              >
+                Enquire About This Property
+              </h4>
+              <p
+                style="
+                  font-size: 13px;
+                  color: var(--gray-mid);
+                  margin-bottom: 18px;
+                "
+              >
+                Send us your details and we&rsquo;ll be in touch shortly.
+              </p>
+              <form
+                class="enquiry-form"
+                id="listing-enquiry-form"
+                style="margin-top: 0; gap: 14px"
+              >
+                <input type="hidden" id="le-property-id" value="" />
+                <div class="form-group">
+                  <label for="le-name">Your Name</label>
+                  <input
+                    type="text"
+                    id="le-name"
+                    name="name"
+                    placeholder="Full name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="le-email">Email Address</label>
+                  <input
+                    type="email"
+                    id="le-email"
+                    name="email"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="le-phone">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="le-phone"
+                    name="phone"
+                    placeholder="081 xxx xxxx"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="le-message">Message</label>
+                  <textarea
+                    id="le-message"
+                    name="message"
+                    rows="3"
+                    placeholder="I'm interested in this property&hellip;"
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  style="width: 100%; justify-content: center"
+                >
+                  Send Enquiry &rarr;
+                </button>
+              </form>
+              <div
+                id="listing-enquiry-success"
+                style="display: none; text-align: center; padding: 12px 0"
+              >
+                <div
+                  style="
+                    font-size: 32px;
+                    margin-bottom: 8px;
+                    color: var(--blue-mid);
+                  "
+                >
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <p
+                  style="font-size: 14px; color: var(--navy); font-weight: 600"
+                >
+                  Enquiry sent!
+                </p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--gray-mid);
+                    margin-top: 4px;
+                  "
+                >
+                  We&rsquo;ll be in touch shortly.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -862,6 +963,8 @@
         function renderProperty(p) {
           document.title = p.title + " | Pack Real Estate";
 
+          document.getElementById("le-property-id").value = p.id;
+
           // Breadcrumb
           document.getElementById("bc-title").textContent =
             p.title + ", " + p.location;
@@ -979,6 +1082,57 @@
           // Re-run scroll reveal for newly added elements
           document.querySelectorAll(".reveal").forEach(safeObserve);
         }
+
+        document
+          .getElementById("listing-enquiry-form")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            var form = this;
+            var btn = form.querySelector('button[type="submit"]');
+            var name = document.getElementById("le-name").value.trim();
+            var email = document.getElementById("le-email").value.trim();
+            var phone = document.getElementById("le-phone").value.trim();
+            var message = document.getElementById("le-message").value.trim();
+            var propertyId = document.getElementById("le-property-id").value;
+            btn.disabled = true;
+            btn.textContent = "Sending…";
+            fetch("/api/leads", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: name,
+                email: email,
+                phone: phone,
+                message: message,
+                source_division: "real-estate",
+                property_id: propertyId,
+              }),
+            })
+              .then(function (r) {
+                return r.json();
+              })
+              .then(function (data) {
+                if (data.success) {
+                  form.style.display = "none";
+                  document.getElementById(
+                    "listing-enquiry-success",
+                  ).style.display = "block";
+                } else {
+                  btn.disabled = false;
+                  btn.textContent = "Send Enquiry →";
+                  alert(
+                    data.error || "Could not send enquiry. Please try again.",
+                  );
+                }
+              })
+              .catch(function () {
+                btn.disabled = false;
+                btn.textContent = "Send Enquiry →";
+                alert(
+                  "Network error. Please check your connection and try again.",
+                );
+              });
+          });
 
         window.openModal = function (idx) {
           currentIdx = idx;

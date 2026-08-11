@@ -476,6 +476,149 @@
         }
       })();
     </script>
+
+    <section class="section-dark" id="enquire">
+      <div class="inner" style="max-width: 680px; margin: 0 auto">
+        <span
+          class="section-label reveal"
+          style="display: block; text-align: center"
+          >Get In Touch</span
+        >
+        <h2 class="section-title reveal" style="text-align: center">
+          Have a property<br />question?
+        </h2>
+        <p
+          class="reveal"
+          style="
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 0;
+          "
+        >
+          Tell us what you&rsquo;re looking for and our team will be in touch
+          shortly.
+        </p>
+        <form
+          class="enquiry-form reveal"
+          id="re-enquiry-form"
+          style="margin-top: 36px"
+        >
+          <div class="form-group">
+            <label for="re-name">Your Name</label>
+            <input
+              type="text"
+              id="re-name"
+              name="name"
+              placeholder="Full name"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="re-email">Email Address</label>
+              <input
+                type="email"
+                id="re-email"
+                name="email"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="re-phone">Phone Number</label>
+              <input
+                type="tel"
+                id="re-phone"
+                name="phone"
+                placeholder="081 xxx xxxx"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="re-message">Your Message</label>
+            <textarea
+              id="re-message"
+              name="message"
+              rows="4"
+              placeholder="Tell us what you're looking for&hellip;"
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; justify-content: center; font-size: 15px"
+          >
+            Send Message &rarr;
+          </button>
+        </form>
+        <div
+          id="re-enquiry-success"
+          class="form-success reveal"
+          style="display: none; margin-top: 40px"
+        >
+          <div style="font-size: 48px; margin-bottom: 16px">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h3>Message received!</h3>
+          <p>
+            Thank you for reaching out. A member of our team will contact you
+            shortly.
+          </p>
+        </div>
+        <script>
+          document
+            .getElementById("re-enquiry-form")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+              var form = this;
+              var btn = form.querySelector('button[type="submit"]');
+              var name = document.getElementById("re-name").value.trim();
+              var email = document.getElementById("re-email").value.trim();
+              var phone = document.getElementById("re-phone").value.trim();
+              var message = document.getElementById("re-message").value.trim();
+              btn.disabled = true;
+              btn.textContent = "Sending…";
+              fetch("/api/leads", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: name,
+                  email: email,
+                  phone: phone,
+                  message: message,
+                  source_division: "real-estate",
+                }),
+              })
+                .then(function (r) {
+                  return r.json();
+                })
+                .then(function (data) {
+                  if (data.success) {
+                    form.style.display = "none";
+                    document.getElementById(
+                      "re-enquiry-success",
+                    ).style.display = "block";
+                  } else {
+                    btn.disabled = false;
+                    btn.textContent = "Send Message →";
+                    alert(
+                      data.error || "Could not send message. Please try again.",
+                    );
+                  }
+                })
+                .catch(function () {
+                  btn.disabled = false;
+                  btn.textContent = "Send Message →";
+                  alert(
+                    "Network error. Please check your connection and try again.",
+                  );
+                });
+            });
+        </script>
+      </div>
+    </section>
+
     <footer>
       <div class="footer-top-bar"></div>
       <div class="footer-main">
