@@ -23,6 +23,7 @@ const {
 const { apiRouter: heroApi, adminRouter: heroAdmin } = require("./routes/hero");
 const settingsRouter = require("./routes/settings");
 const accountRouter = require("./routes/account");
+const { verifyTransporters } = require("./utils/mailer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -282,6 +283,8 @@ async function start() {
     console.log(`Pack Group server running on http://localhost:${PORT}`);
     console.log(`  Admin panel: http://localhost:${PORT}/admin`);
   });
+
+  verifyTransporters();
 }
 
 start();

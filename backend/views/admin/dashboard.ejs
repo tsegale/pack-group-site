@@ -79,8 +79,8 @@
           <% if (lead.phone) { %><div style="font-size:12px;"><%= lead.phone %></div><% } %>
         </td>
         <td>
-          <span class="badge badge-<%= lead.source_division === 'real-estate' ? 're' : 'ins' %>">
-            <%= lead.source_division === 'real-estate' ? 'Real Estate' : 'Insurance' %>
+          <span class="badge badge-<%= lead.source_division === 'real-estate' ? 're' : lead.source_division === 'insurance' ? 'ins' : 'gen' %>">
+            <%= lead.source_division === 'real-estate' ? 'Real Estate' : lead.source_division === 'insurance' ? 'Insurance' : 'General' %>
           </span>
         </td>
         <td><%= lead.property_title || '—' %></td>

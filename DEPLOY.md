@@ -19,7 +19,7 @@ pack-group-website/          <- cPanel "Application root" points HERE
 ```
 
 `server.js` resolves the public site as `path.join(__dirname, "./")` —
-i.e. the *same* folder `server.js` itself lives in. This only applies to
+i.e. the _same_ folder `server.js` itself lives in. This only applies to
 the deployed server: locally in this repo, `backend/` stays a nested
 subfolder (nothing here needs to move on your machine) — the flat
 layout only has to exist once the files land on cPanel.

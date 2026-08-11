@@ -3,6 +3,7 @@ const rateLimit = require("express-rate-limit");
 const { getDb } = require("../db/database");
 const { validateCsrf } = require("../middleware/requireAuth");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const { sendInquiryNotification, sendAutoReply } = require("../utils/mailer");
 
 /* ── Rate limiter: 5 submissions per IP per hour ── */
 const leadLimiter = rateLimit({
@@ -25,7 +26,7 @@ function validateLead(body) {
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return "Please provide a valid email address.";
   }
-  if (!["real-estate", "insurance"].includes(source_division)) {
+  if (!["real-estate", "insurance", "general"].includes(source_division)) {
     return "Invalid source division.";
   }
   if (message && message.length > 3000) {
@@ -52,12 +53,21 @@ apiRouter.post(
     const db = await getDb();
 
     let resolvedPropertyId = null;
+    let propertyTitle = null;
     if (property_id) {
       const prop = db
-        .prepare("SELECT id FROM properties WHERE id = ?")
+        .prepare("SELECT id, title FROM properties WHERE id = ?")
         .get(parseInt(property_id));
-      if (prop) resolvedPropertyId = prop.id;
+      if (prop) {
+        resolvedPropertyId = prop.id;
+        propertyTitle = prop.title;
+      }
     }
+
+    const trimmedName = name.trim();
+    const trimmedPhone = phone ? phone.trim() : null;
+    const trimmedEmail = email ? email.trim().toLowerCase() : null;
+    const trimmedMessage = message ? message.trim() : null;
 
     db.prepare(
       `
@@ -65,10 +75,10 @@ apiRouter.post(
       VALUES (?, ?, ?, ?, ?, ?)
     `,
     ).run(
-      name.trim(),
-      phone ? phone.trim() : null,
-      email ? email.trim().toLowerCase() : null,
-      message ? message.trim() : null,
+      trimmedName,
+      trimmedPhone,
+      trimmedEmail,
+      trimmedMessage,
       source_division,
       resolvedPropertyId,
     );
@@ -77,6 +87,24 @@ apiRouter.post(
       success: true,
       message: "Thank you. We will be in touch shortly.",
     });
+
+    /* The lead is already saved above regardless of what happens here —
+       email delivery failures must never surface to the client or cost
+       them their submission. */
+    const leadForEmail = {
+      name: trimmedName,
+      phone: trimmedPhone,
+      email: trimmedEmail,
+      message: trimmedMessage,
+      source_division,
+      property_title: propertyTitle,
+    };
+    try {
+      await sendInquiryNotification(leadForEmail);
+      await sendAutoReply(leadForEmail);
+    } catch (err) {
+      console.error("Lead notification email failed:", err.message);
+    }
   }),
 );
 
@@ -121,6 +149,7 @@ adminRouter.get(
         COUNT(*) as total,
         SUM(CASE WHEN source_division = 'real-estate' THEN 1 ELSE 0 END) as re_count,
         SUM(CASE WHEN source_division = 'insurance'   THEN 1 ELSE 0 END) as ins_count,
+        SUM(CASE WHEN source_division = 'general'     THEN 1 ELSE 0 END) as gen_count,
         SUM(CASE WHEN status = 'new'                  THEN 1 ELSE 0 END) as new_count
       FROM leads
     `,

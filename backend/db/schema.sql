@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS leads (
   email           TEXT,
   message         TEXT,
   source_division TEXT    NOT NULL DEFAULT 'real-estate'
-                    CHECK(source_division IN ('real-estate','insurance')),
+                    CHECK(source_division IN ('real-estate','insurance','general')),
   property_id     INTEGER REFERENCES properties(id) ON DELETE SET NULL,
   status          TEXT    NOT NULL DEFAULT 'new'
                     CHECK(status IN ('new','contacted','closed')),

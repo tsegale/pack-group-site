@@ -408,6 +408,11 @@ body.admin-body {
   color: #0369a1;
   border: 1px solid rgba(56, 189, 248, 0.25);
 }
+.badge-gen {
+  background: rgba(212, 168, 67, 0.12);
+  color: #9a7418;
+  border: 1px solid rgba(212, 168, 67, 0.28);
+}
 .badge-active {
   background: rgba(39, 174, 96, 0.1);
   color: #1e8a4a;
